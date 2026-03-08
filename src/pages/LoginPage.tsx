@@ -1,8 +1,10 @@
 import { useState, type FormEvent } from "react";
-import { Link } from "react-router-dom";
-import { Button, Card, TextInput } from "tf-ui";
+import { Link, useNavigate } from "react-router-dom";
+import { Button, Card, TextInput } from "fundbrdet-ui";
+import { supabase } from "../lib/supabase";
 
 export default function LoginPage() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,16 +20,22 @@ export default function LoginPage() {
     }
 
     setLoading(true);
-    // Simulate an auth request
-    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const { error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
     setLoading(false);
-    setError("Invalid email or password. Please try again.");
+
+    if (authError) {
+      setError(authError.message);
+    } else {
+      navigate("/home");
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-page">
       <div className="w-full max-w-[420px]">
-
         {/* Brand header */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-block no-underline">
@@ -119,7 +127,7 @@ export default function LoginPage() {
         <p className="text-center text-sm text-ink-muted mt-6">
           Don't have an account?{" "}
           <Link
-            to="/login"
+            to="/signup"
             className="text-primary font-semibold no-underline hover:text-primary-dark hover:underline transition-colors"
           >
             Sign up for free

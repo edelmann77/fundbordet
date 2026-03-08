@@ -83,7 +83,7 @@ export default function LandingPage() {
         </Link>
         <div className="flex items-center gap-3">
           <LanguageMenu />
-          <Link to="/signup">
+          <Link to="/login">
             <Button variant="ghost" size="sm">
               {t("nav.login")}
             </Button>
