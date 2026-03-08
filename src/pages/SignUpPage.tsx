@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button, Card, TextInput } from "tf-ui";
+import { Button, Card, TextInput } from "fundbrdet-ui";
 import { supabase } from "../lib/supabase";
 
 export default function SignUpPage() {
@@ -28,7 +28,10 @@ export default function SignUpPage() {
     }
 
     setLoading(true);
-    const { error: authError } = await supabase.auth.signUp({ email, password });
+    const { error: authError } = await supabase.auth.signUp({
+      email,
+      password,
+    });
     setLoading(false);
 
     if (authError) {
@@ -59,7 +62,6 @@ export default function SignUpPage() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-page">
       <div className="w-full max-w-[420px]">
-
         {/* Brand header */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-block no-underline">
@@ -74,7 +76,11 @@ export default function SignUpPage() {
         </div>
 
         <Card variant="elevated" padding="p-8">
-          <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col gap-5"
+          >
             {error && (
               <div
                 role="alert"

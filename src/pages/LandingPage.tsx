@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button, Card } from "tf-ui";
+import { Button, Card } from "fundbrdet-ui";
 
 type Language = "da" | "en";
 
@@ -26,7 +26,8 @@ function LanguageMenu() {
     return () => document.removeEventListener("mousedown", handler);
   }, [open]);
 
-  const current = languages.find((l) => l.value === i18n.language) ?? languages[0];
+  const current =
+    languages.find((l) => l.value === i18n.language) ?? languages[0];
 
   return (
     <div ref={ref} className="relative">
@@ -162,7 +163,6 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-
     </div>
   );
 }
