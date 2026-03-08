@@ -11,13 +11,15 @@
   "dependencies": {
     "@supabase/supabase-js": "^2.98.0",
     "@tailwindcss/vite": "^4.2.1",
+    "fundbrdet-ui": "file:../fundbrdet-ui",
     "i18next": "^25.8.13",
+    "mapbox-gl": "^3.19.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-i18next": "^16.5.4",
+    "react-map-gl": "^8.1.0",
     "react-router-dom": "^7.13.1",
-    "tailwindcss": "^4.2.1",
-    "fundbrdet-ui": "file:../fundbrdet-ui"
+    "tailwindcss": "^4.2.1"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
