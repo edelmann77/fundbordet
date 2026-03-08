@@ -1,37 +1,45 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import Map from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoibWVuNzciLCJhIjoiY21taHF0dWU4MHFnNzJwczZwajg0eGNxcCJ9.jbHXwO95T8UKk1vBHgccyw";
 
-const navCards = [
-  { to: "/my-findings", label: "Mine fund", description: "Se og administrer dine registrerede fund" },
-  { to: "/create-finding", label: "Opret fund", description: "Registrer et nyt fund" },
-  { to: "/import-findings", label: "Importer fund", description: "Importer fund fra en fil" },
+const navItems = [
+  { to: "/my-findings", label: "Mine fund" },
+  { to: "/create-finding", label: "Opret fund" },
+  { to: "/import-findings", label: "Importer fund" },
 ];
 
-export default function HomePage() {
+export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Top bar */}
-      <header className="h-14 bg-ink flex items-center px-6 shrink-0">
+      <header className="h-14 bg-ink flex items-center px-6 gap-8 shrink-0">
         <span className="text-xl">🪙</span>
+        <nav className="flex items-center gap-1">
+          {navItems.map(({ to, label }) => (
+            <NavLink
+              key={to}
+              to={to}
+              className={({ isActive }) =>
+                [
+                  "px-4 py-1.5 rounded-md text-sm font-medium transition-colors no-underline",
+                  isActive
+                    ? "bg-white/15 text-white"
+                    : "text-white/60 hover:text-white hover:bg-white/10",
+                ].join(" ")
+              }
+            >
+              {label}
+            </NavLink>
+          ))}
+        </nav>
       </header>
 
       <main className="flex-1 flex items-center">
-        {/* Navigation cards */}
-        <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
-          {navCards.map(({ to, label, description }) => (
-            <Link
-              key={to}
-              to={to}
-              className="w-full max-w-sm no-underline rounded-xl border border-edge bg-surface hover:bg-black/5 transition-colors px-6 py-4"
-            >
-              <p className="font-semibold text-ink text-base">{label}</p>
-              <p className="text-sm text-ink-muted mt-0.5">{description}</p>
-            </Link>
-          ))}
+        {/* Page content */}
+        <div className="flex-1 h-full flex items-center justify-center p-8">
+          {children}
         </div>
 
         {/* Map */}

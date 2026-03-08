@@ -5,8 +5,12 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import SignUpPage from "./pages/SignUpPage";
 import HomePage from "./pages/HomePage";
+import MyFindingsPage from "./pages/MyFindingsPage";
+import CreateFindingPage from "./pages/CreateFindingPage";
+import ImportFindingsPage from "./pages/ImportFindingsPage";
 import RequireAuth from "./components/RequireAuth";
 import RedirectIfAuthed from "./components/RedirectIfAuthed";
+import AppShell from "./components/AppShell";
 
 function App() {
   return (
@@ -17,6 +21,9 @@ function App() {
           <Route path="/login" element={<RedirectIfAuthed><LoginPage /></RedirectIfAuthed>} />
           <Route path="/signup" element={<RedirectIfAuthed><SignUpPage /></RedirectIfAuthed>} />
           <Route path="/home" element={<RequireAuth><HomePage /></RequireAuth>} />
+          <Route path="/my-findings" element={<RequireAuth><AppShell><MyFindingsPage /></AppShell></RequireAuth>} />
+          <Route path="/create-finding" element={<RequireAuth><AppShell><CreateFindingPage /></AppShell></RequireAuth>} />
+          <Route path="/import-findings" element={<RequireAuth><AppShell><ImportFindingsPage /></AppShell></RequireAuth>} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
