@@ -1,0 +1,37 @@
+{
+  "nav": {
+    "login": "Log in",
+    "signup": "Sign up"
+  },
+  "hero": {
+    "eyebrow": "Your outdoor finding journal",
+    "headline": "Every find tells a story. Start recording yours.",
+    "description": "Placeholder — add your application description here. Tell visitors what Hobbybordet is about and why they should join.",
+    "cta": "Get started free"
+  },
+  "signup": {
+    "subtitle": "Create your account",
+    "email": "Email address",
+    "password": "Password",
+    "confirmPassword": "Confirm password",
+    "submit": "Create account",
+    "haveAccount": "Already have an account?",
+    "backHome": "Go back",
+    "success": {
+      "title": "Check your email",
+      "message": "We sent a confirmation link to {{email}}. Click it to activate your account."
+    },
+    "errors": {
+      "fillAll": "Please fill in all fields.",
+      "passwordMismatch": "Passwords do not match."
+    }
+  },
+  "findingTypes": {
+    "heading": "What you can track",
+    "subtext": "Placeholder — introduce the different finding categories here.",
+    "metalDetecting": {
+      "title": "Metal Detecting",
+      "description": "Placeholder — describe what metal detecting findings look like in the app: location, depth, material, photos, and more."
+    }
+  }
+}

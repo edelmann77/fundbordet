@@ -1,0 +1,37 @@
+{
+  "nav": {
+    "login": "Log ind",
+    "signup": "Opret konto"
+  },
+  "hero": {
+    "eyebrow": "Dit udendørs fundjournal",
+    "headline": "Hvert fund fortæller en historie. Begynd at registrere dine.",
+    "description": "Placeholder — tilføj din applikationsbeskrivelse her. Fortæl besøgende, hvad Hobbybordet handler om, og hvorfor de skal tilmelde sig.",
+    "cta": "Kom i gang gratis"
+  },
+  "signup": {
+    "subtitle": "Opret din konto",
+    "email": "E-mailadresse",
+    "password": "Adgangskode",
+    "confirmPassword": "Bekræft adgangskode",
+    "submit": "Opret konto",
+    "haveAccount": "Har du allerede en konto?",
+    "backHome": "Gå tilbage",
+    "success": {
+      "title": "Tjek din e-mail",
+      "message": "Vi har sendt et bekræftelseslink til {{email}}. Klik på det for at aktivere din konto."
+    },
+    "errors": {
+      "fillAll": "Udfyld venligst alle felter.",
+      "passwordMismatch": "Adgangskoderne stemmer ikke overens."
+    }
+  },
+  "findingTypes": {
+    "heading": "Hvad du kan spore",
+    "subtext": "Placeholder — introducer de forskellige fundkategorier her.",
+    "metalDetecting": {
+      "title": "Metaldetektering",
+      "description": "Placeholder — beskriv, hvad metaldetekteringsfund ser ud som i appen: placering, dybde, materiale, fotos og mere."
+    }
+  }
+}

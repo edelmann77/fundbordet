@@ -1,0 +1,58 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-sans: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "Consolas", "Courier New", monospace;
+
+  /* Brand — Forest Green */
+  --color-primary: #4a7c59;
+  --color-primary-dark: #2d5c3e;
+  --color-primary-light: #7aad8a;
+
+  /* Brand — Earth Brown */
+  --color-secondary: #8b6347;
+  --color-secondary-dark: #5c3e2a;
+  --color-secondary-light: #b89578;
+
+  /* Accent — Sky Blue */
+  --color-accent: #4a85c4;
+
+  /* Backgrounds */
+  --color-page: #f2ede4;
+  --color-surface: #fafaf7;
+  --color-surface-raised: #ffffff;
+
+  /* Text */
+  --color-ink: #1a2d1a;
+  --color-ink-muted: #5c4a3a;
+  --color-ink-faint: #a09585;
+  --color-ink-inverse: #fafaf7;
+
+  /* Borders */
+  --color-edge: #c4bbad;
+  --color-edge-focus: #4a7c59;
+  --color-edge-error: #c0392b;
+
+  /* Semantic */
+  --color-error: #c0392b;
+  --color-error-soft: #fadbd8;
+  --color-success: #3a7d44;
+  --color-success-soft: #d5edd8;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    min-height: 100dvh;
+    -webkit-font-smoothing: antialiased;
+  }
+}
