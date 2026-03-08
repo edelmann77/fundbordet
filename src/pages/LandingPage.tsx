@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button, Card } from "fundbrdet-ui";
+import { Button } from "fundbrdet-ui";
 
 type Language = "da" | "en";
 
@@ -96,73 +96,19 @@ export default function LandingPage() {
         </div>
       </nav>
 
-      {/* Hero */}
-      <section className="flex-1 flex flex-col items-center justify-center text-center py-16 px-8 bg-linear-to-br from-page to-surface">
-        <p className="text-sm font-semibold text-primary tracking-widest uppercase mb-2">
-          {t("hero.eyebrow")}
-        </p>
-        <h1 className="text-3xl lg:text-4xl font-bold text-ink leading-tight max-w-xl mb-3">
-          {t("hero.headline")}
+      {/* Main info */}
+      <main className="flex-1 flex flex-col items-center justify-center text-center py-16 px-8">
+        <h1 className="text-2xl lg:text-3xl font-bold text-ink mb-4">
+          {t("landing.title", "Welcome to Hobbybordet")}
         </h1>
-        <p className="text-base lg:text-lg text-ink-muted leading-relaxed max-w-lg mb-6">
-          {t("hero.description")}
+        <p className="text-base lg:text-lg text-ink-muted leading-relaxed max-w-lg">
+          {/* informational content about the site will be added here later */}
+          {t(
+            "landing.info",
+            "This page will provide information about the site. Text will be added later.",
+          )}
         </p>
-        <div className="flex gap-4 flex-wrap justify-center">
-          <Link to="/signup">
-            <Button variant="primary" size="lg">
-              {t("hero.cta")}
-            </Button>
-          </Link>
-        </div>
-      </section>
-
-      {/* Finding types */}
-      <section className="bg-primary-dark py-6 lg:py-10 px-8">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="text-xl font-bold text-ink-inverse mb-1">
-            {t("findingTypes.heading")}
-          </h2>
-          <p className="text-sm text-ink-inverse/70 leading-relaxed">
-            {t("findingTypes.subtext")}
-          </p>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-4 mt-5">
-            <Card variant="default" padding="p-5">
-              <div className="mb-2">
-                <svg
-                  viewBox="0 0 24 24"
-                  width="1.875rem"
-                  height="1.875rem"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="text-primary"
-                  aria-hidden="true"
-                >
-                  {/* Search coil */}
-                  <ellipse cx="4.5" cy="20" rx="3.5" ry="2" />
-                  {/* Lower arm */}
-                  <line x1="4.5" y1="18" x2="8" y2="14.5" />
-                  {/* Main shaft */}
-                  <line x1="8" y1="14.5" x2="18" y2="4.5" />
-                  {/* Handle grip */}
-                  <line x1="15.5" y1="4" x2="21" y2="4" />
-                  <line x1="21" y1="4" x2="21" y2="7" />
-                  {/* Control box */}
-                  <rect x="10" y="9" width="4" height="2.5" rx="0.5" />
-                </svg>
-              </div>
-              <h3 className="text-base font-semibold text-ink mb-1">
-                {t("findingTypes.metalDetecting.title")}
-              </h3>
-              <p className="text-sm text-ink-muted leading-relaxed">
-                {t("findingTypes.metalDetecting.description")}
-              </p>
-            </Card>
-          </div>
-        </div>
-      </section>
+      </main>
     </div>
   );
 }
