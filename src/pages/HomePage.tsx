@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Modal } from "fundbrdet-ui";
+import { Modal, Tabs } from "fundbrdet-ui";
 import Map from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -39,7 +39,6 @@ export default function HomePage() {
               Registrer et nyt fund
             </p>
           </button>
-
         </div>
 
         {/* Map */}
@@ -68,11 +67,19 @@ export default function HomePage() {
       <Modal
         open={createOpen}
         onClose={() => setCreateOpen(false)}
-        title="Opret fund"
         size="full"
         className="h-50"
+        hideCloseButton
       >
-        {/* Opret fund content */}
+        <Tabs
+          defaultValue="register"
+          variant="line"
+          size="md"
+          tabs={[
+            { value: "register", label: "Registrer fund", children: null },
+            { value: "import", label: "Importer fund", children: null },
+          ]}
+        />
       </Modal>
     </div>
   );
