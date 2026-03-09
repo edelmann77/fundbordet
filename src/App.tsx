@@ -20,10 +20,10 @@ function App() {
           <Route path="/" element={<RedirectIfAuthed><LandingPage /></RedirectIfAuthed>} />
           <Route path="/login" element={<RedirectIfAuthed><LoginPage /></RedirectIfAuthed>} />
           <Route path="/signup" element={<RedirectIfAuthed><SignUpPage /></RedirectIfAuthed>} />
-          <Route path="/home" element={<RequireAuth><HomePage /></RequireAuth>} />
-          <Route path="/my-findings" element={<RequireAuth><AppShell><MyFindingsPage /></AppShell></RequireAuth>} />
-          <Route path="/create-finding" element={<RequireAuth><AppShell><CreateFindingPage /></AppShell></RequireAuth>} />
-          <Route path="/import-findings" element={<RequireAuth><AppShell><ImportFindingsPage /></AppShell></RequireAuth>} />
+          <Route path="/detector/home" element={<RequireAuth><HomePage /></RequireAuth>} />
+          <Route path="/detector/my-findings" element={<RequireAuth><AppShell><MyFindingsPage /></AppShell></RequireAuth>} />
+          <Route path="/detector/create-finding" element={<RequireAuth><AppShell><CreateFindingPage /></AppShell></RequireAuth>} />
+          <Route path="/detector/import-findings" element={<RequireAuth><AppShell><ImportFindingsPage /></AppShell></RequireAuth>} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

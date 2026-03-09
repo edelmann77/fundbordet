@@ -29,7 +29,7 @@ export default function LoginPage() {
     if (authError) {
       setError(authError.message);
     } else {
-      navigate("/home");
+      navigate("/detector/home");
     }
   };
 

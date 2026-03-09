@@ -6,9 +6,9 @@ const MAPBOX_TOKEN =
   "pk.eyJ1IjoibWVuNzciLCJhIjoiY21taHF0dWU4MHFnNzJwczZwajg0eGNxcCJ9.jbHXwO95T8UKk1vBHgccyw";
 
 const navItems = [
-  { to: "/my-findings", label: "Mine fund" },
-  { to: "/create-finding", label: "Opret fund" },
-  { to: "/import-findings", label: "Importer fund" },
+  { to: "/detector/my-findings", label: "Mine fund" },
+  { to: "/detector/create-finding", label: "Opret fund" },
+  { to: "/detector/import-findings", label: "Importer fund" },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {

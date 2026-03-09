@@ -6,9 +6,9 @@ const MAPBOX_TOKEN =
   "pk.eyJ1IjoibWVuNzciLCJhIjoiY21taHF0dWU4MHFnNzJwczZwajg0eGNxcCJ9.jbHXwO95T8UKk1vBHgccyw";
 
 const navCards = [
-  { to: "/my-findings", label: "Mine fund", description: "Se og administrer dine registrerede fund" },
-  { to: "/create-finding", label: "Opret fund", description: "Registrer et nyt fund" },
-  { to: "/import-findings", label: "Importer fund", description: "Importer fund fra en fil" },
+  { to: "/detector/my-findings", label: "Mine fund", description: "Se og administrer dine registrerede fund" },
+  { to: "/detector/create-finding", label: "Opret fund", description: "Registrer et nyt fund" },
+  { to: "/detector/import-findings", label: "Importer fund", description: "Importer fund fra en fil" },
 ];
 
 export default function HomePage() {
