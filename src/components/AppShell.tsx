@@ -8,7 +8,6 @@ const MAPBOX_TOKEN =
 const navItems = [
   { to: "/detector/my-findings", label: "Mine fund" },
   { to: "/detector/create-finding", label: "Opret fund" },
-  { to: "/detector/import-findings", label: "Importer fund" },
 ];
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
