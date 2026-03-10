@@ -1,0 +1,103 @@
+import { useState, useRef, useEffect } from "react";
+import { TextInput, Button } from "fundbrdet-ui";
+import Map, {
+  Marker,
+  type MapRef,
+  type MapMouseEvent,
+  type ViewStateChangeEvent,
+} from "react-map-gl/mapbox";
+import "mapbox-gl/dist/mapbox-gl.css";
+import proj4 from "proj4";
+
+const MAPBOX_TOKEN =
+  "pk.eyJ1IjoibWVuNzciLCJhIjoiY21taHF0dWU4MHFnNzJwczZwajg0eGNxcCJ9.jbHXwO95T8UKk1vBHgccyw";
+
+const PLACE_MARKER_ZOOM = 14;
+
+const WGS84 = "EPSG:4326";
+const UTM32N = "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs";
+
+function toUTM(lng: number, lat: number): { easting: number; northing: number } {
+  const [easting, northing] = proj4(WGS84, UTM32N, [lng, lat]);
+  return { easting: Math.round(easting), northing: Math.round(northing) };
+}
+
+interface Props {
+  onCancel?: () => void;
+  onSubmit?: () => void;
+}
+
+export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
+  const [genstand, setGenstand] = useState("");
+  const [materiale, setMateriale] = useState("");
+  const [datering, setDatering] = useState("");
+  const [oest, setOest] = useState("");
+  const [nord, setNord] = useState("");
+  const [dimeId, setDimeId] = useState("");
+  const [zoom, setZoom] = useState(6);
+  const [markerPos, setMarkerPos] = useState<{ lng: number; lat: number } | null>(null);
+  const mapRef = useRef<MapRef>(null);
+
+  useEffect(() => {
+    const canvas = mapRef.current?.getCanvas();
+    if (!canvas) return;
+    canvas.style.cursor = zoom >= PLACE_MARKER_ZOOM ? "crosshair" : "";
+  }, [zoom]);
+
+  const handleMapClick = (e: MapMouseEvent) => {
+    const { lng, lat } = e.lngLat;
+    if (zoom >= PLACE_MARKER_ZOOM) {
+      setMarkerPos({ lng, lat });
+      const { easting, northing } = toUTM(lng, lat);
+      setOest(String(easting));
+      setNord(String(northing));
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-4 h-full">
+      {/* Fields + Map */}
+      <div className="flex gap-6 flex-1">
+        <div className="flex flex-col gap-4 flex-1">
+          <TextInput label="Genstand" value={genstand} onChange={(e) => setGenstand(e.target.value)} size="md" />
+          <TextInput label="Materiale" value={materiale} onChange={(e) => setMateriale(e.target.value)} size="md" />
+          <TextInput label="Datering" value={datering} onChange={(e) => setDatering(e.target.value)} size="md" />
+          <TextInput label="Øst" value={oest} onChange={(e) => setOest(e.target.value)} size="md" />
+          <TextInput label="Nord" value={nord} onChange={(e) => setNord(e.target.value)} size="md" />
+          <TextInput label="DimeId" value={dimeId} onChange={(e) => setDimeId(e.target.value)} size="md" />
+        </div>
+
+        <div className="w-1/2 shrink-0">
+          <Map
+            ref={mapRef}
+            mapboxAccessToken={MAPBOX_TOKEN}
+            initialViewState={{ longitude: 11.5, latitude: 56.2, zoom: 5.5 }}
+            style={{ width: "100%", height: "100%" }}
+            mapStyle="mapbox://styles/mapbox/satellite-streets-v12"
+            onClick={handleMapClick}
+            onZoom={(e: ViewStateChangeEvent) => setZoom(e.viewState.zoom)}
+          >
+            {markerPos && (
+              <Marker longitude={markerPos.lng} latitude={markerPos.lat} anchor="bottom">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                  <path
+                    fill="#e63946"
+                    stroke="#fff"
+                    strokeWidth="1"
+                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                  />
+                </svg>
+              </Marker>
+            )}
+          </Map>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex justify-end gap-3 shrink-0">
+        <Button variant="outline" size="md" onClick={onCancel}>Fortryd</Button>
+        <Button variant="primary" size="md" onClick={onSubmit}>Gem</Button>
+      </div>
+    </div>
+  );
+}

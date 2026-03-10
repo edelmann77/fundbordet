@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Modal, Tabs } from "fundbrdet-ui";
+import RegisterFindingForm from "../components/RegisterFindingForm";
 import Map from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -68,7 +69,7 @@ export default function HomePage() {
         open={createOpen}
         onClose={() => setCreateOpen(false)}
         size="full"
-        className="h-50"
+        className="h-157"
         hideCloseButton
       >
         <Tabs
@@ -76,7 +77,16 @@ export default function HomePage() {
           variant="line"
           size="md"
           tabs={[
-            { value: "register", label: "Registrer fund", children: null },
+            {
+              value: "register",
+              label: "Opret fund",
+              children: (
+                <RegisterFindingForm
+                  key={String(createOpen)}
+                  onCancel={() => setCreateOpen(false)}
+                />
+              ),
+            },
             { value: "import", label: "Importer fund", children: null },
           ]}
         />
