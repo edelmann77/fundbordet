@@ -22,6 +22,16 @@ function toUTM(lng: number, lat: number): { easting: number; northing: number } 
   return { easting: Math.round(easting), northing: Math.round(northing) };
 }
 
+function utmToWGS84(easting: number, northing: number): [number, number] {
+  const [lng, lat] = proj4(UTM32N, WGS84, [easting, northing]);
+  return [lng, lat];
+}
+
+function isValidUTM(easting: number, northing: number): boolean {
+  return easting >= 400000 && easting <= 900000 &&
+         northing >= 6000000 && northing <= 6800000;
+}
+
 interface Props {
   onCancel?: () => void;
   onSubmit?: () => void;
@@ -43,6 +53,24 @@ export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
     if (!canvas) return;
     canvas.style.cursor = zoom >= PLACE_MARKER_ZOOM ? "crosshair" : "";
   }, [zoom]);
+
+  useEffect(() => {
+    const e = Number(oest);
+    const n = Number(nord);
+    if (!oest || !nord || !isValidUTM(e, n)) return;
+    const timer = setTimeout(() => {
+      const [lng, lat] = utmToWGS84(e, n);
+      const map = mapRef.current;
+      if (!map) return;
+      const onMoveEnd = () => {
+        setMarkerPos({ lng, lat });
+        map.off("moveend", onMoveEnd);
+      };
+      map.on("moveend", onMoveEnd);
+      map.flyTo({ center: [lng, lat], zoom: 14, duration: 2500 });
+    }, 600);
+    return () => clearTimeout(timer);
+  }, [oest, nord]);
 
   const handleMapClick = (e: MapMouseEvent) => {
     const { lng, lat } = e.lngLat;
