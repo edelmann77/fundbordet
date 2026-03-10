@@ -84,6 +84,7 @@ export default function HomePage() {
                 <RegisterFindingForm
                   key={String(createOpen)}
                   onCancel={() => setCreateOpen(false)}
+                  onSubmit={() => setCreateOpen(false)}
                 />
               ),
             },

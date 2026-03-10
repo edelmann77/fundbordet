@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { TextInput, Button } from "fundbrdet-ui";
+import { supabase } from "../lib/supabase";
 import Map, {
   Marker,
   type MapRef,
@@ -17,7 +18,10 @@ const PLACE_MARKER_ZOOM = 14;
 const WGS84 = "EPSG:4326";
 const UTM32N = "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs";
 
-function toUTM(lng: number, lat: number): { easting: number; northing: number } {
+function toUTM(
+  lng: number,
+  lat: number,
+): { easting: number; northing: number } {
   const [easting, northing] = proj4(WGS84, UTM32N, [lng, lat]);
   return { easting: Math.round(easting), northing: Math.round(northing) };
 }
@@ -28,8 +32,12 @@ function utmToWGS84(easting: number, northing: number): [number, number] {
 }
 
 function isValidUTM(easting: number, northing: number): boolean {
-  return easting >= 400000 && easting <= 900000 &&
-         northing >= 6000000 && northing <= 6800000;
+  return (
+    easting >= 400000 &&
+    easting <= 900000 &&
+    northing >= 6000000 &&
+    northing <= 6800000
+  );
 }
 
 interface Props {
@@ -45,7 +53,10 @@ export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
   const [nord, setNord] = useState("");
   const [dimeId, setDimeId] = useState("");
   const [zoom, setZoom] = useState(6);
-  const [markerPos, setMarkerPos] = useState<{ lng: number; lat: number } | null>(null);
+  const [markerPos, setMarkerPos] = useState<{
+    lng: number;
+    lat: number;
+  } | null>(null);
   const mapRef = useRef<MapRef>(null);
 
   useEffect(() => {
@@ -72,6 +83,22 @@ export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
     return () => clearTimeout(timer);
   }, [oest, nord]);
 
+  const handleSubmit = async () => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { error } = await supabase.from("findings").insert({
+      user_id: user?.id,
+      written_name: genstand,
+      material: materiale,
+      dating: datering,
+      easting: oest ? Number(oest) : null,
+      northing: nord ? Number(nord) : null,
+      dime_id: dimeId || null,
+    });
+    if (!error) onSubmit?.();
+  };
+
   const handleMapClick = (e: MapMouseEvent) => {
     const { lng, lat } = e.lngLat;
     if (zoom >= PLACE_MARKER_ZOOM) {
@@ -87,12 +114,42 @@ export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
       {/* Fields + Map */}
       <div className="flex gap-6 flex-1">
         <div className="flex flex-col gap-4 flex-1">
-          <TextInput label="Genstand" value={genstand} onChange={(e) => setGenstand(e.target.value)} size="md" />
-          <TextInput label="Materiale" value={materiale} onChange={(e) => setMateriale(e.target.value)} size="md" />
-          <TextInput label="Datering" value={datering} onChange={(e) => setDatering(e.target.value)} size="md" />
-          <TextInput label="Øst" value={oest} onChange={(e) => setOest(e.target.value)} size="md" />
-          <TextInput label="Nord" value={nord} onChange={(e) => setNord(e.target.value)} size="md" />
-          <TextInput label="DimeId" value={dimeId} onChange={(e) => setDimeId(e.target.value)} size="md" />
+          <TextInput
+            label="Genstand"
+            value={genstand}
+            onChange={(e) => setGenstand(e.target.value)}
+            size="md"
+          />
+          <TextInput
+            label="Materiale"
+            value={materiale}
+            onChange={(e) => setMateriale(e.target.value)}
+            size="md"
+          />
+          <TextInput
+            label="Datering"
+            value={datering}
+            onChange={(e) => setDatering(e.target.value)}
+            size="md"
+          />
+          <TextInput
+            label="Øst"
+            value={oest}
+            onChange={(e) => setOest(e.target.value)}
+            size="md"
+          />
+          <TextInput
+            label="Nord"
+            value={nord}
+            onChange={(e) => setNord(e.target.value)}
+            size="md"
+          />
+          <TextInput
+            label="DimeId"
+            value={dimeId}
+            onChange={(e) => setDimeId(e.target.value)}
+            size="md"
+          />
         </div>
 
         <div className="w-1/2 shrink-0">
@@ -106,8 +163,17 @@ export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
             onZoom={(e: ViewStateChangeEvent) => setZoom(e.viewState.zoom)}
           >
             {markerPos && (
-              <Marker longitude={markerPos.lng} latitude={markerPos.lat} anchor="bottom">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+              <Marker
+                longitude={markerPos.lng}
+                latitude={markerPos.lat}
+                anchor="bottom"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                >
                   <path
                     fill="#e63946"
                     stroke="#fff"
@@ -123,8 +189,12 @@ export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
 
       {/* Actions */}
       <div className="flex justify-end gap-3 shrink-0">
-        <Button variant="outline" size="md" onClick={onCancel}>Fortryd</Button>
-        <Button variant="primary" size="md" onClick={onSubmit}>Gem</Button>
+        <Button variant="outline" size="md" onClick={onCancel}>
+          Fortryd
+        </Button>
+        <Button variant="primary" size="md" onClick={handleSubmit}>
+          Gem
+        </Button>
       </div>
     </div>
   );
