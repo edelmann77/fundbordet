@@ -33,5 +33,57 @@
       "title": "Metaldetektering",
       "description": "Placeholder — beskriv, hvad metaldetekteringsfund ser ud som i appen: placering, dybde, materiale, fotos og mere."
     }
+  },
+  "login": {
+    "subtitle": "Log ind for at registrere dine fund",
+    "email": "E-mailadresse",
+    "emailPlaceholder": "dig@eksempel.dk",
+    "password": "Adgangskode",
+    "passwordPlaceholder": "Indtast din adgangskode",
+    "forgotPassword": "Glemt adgangskode?",
+    "submit": "Log ind",
+    "or": "eller",
+    "google": "Fortsæt med Google",
+    "noAccount": "Har du ikke en konto?",
+    "signupFree": "Opret konto gratis",
+    "errors": {
+      "fillAll": "Udfyld venligst alle felter."
+    }
+  },
+  "home": {
+    "myFindings": "Mine fund",
+    "myFindingsDesc": "Se og administrer dine registrerede fund",
+    "createFinding": "Opret fund",
+    "createFindingDesc": "Registrer et nyt fund",
+    "mapTitle": "Fundspredning",
+    "tabs": {
+      "register": "Opret fund",
+      "import": "Importer fund"
+    }
+  },
+  "appShell": {
+    "nav": {
+      "myFindings": "Mine fund",
+      "createFinding": "Opret fund"
+    },
+    "mapTitle": "Fundspredning"
+  },
+  "registerFinding": {
+    "genstand": "Genstand",
+    "materiale": "Materiale",
+    "datering": "Datering",
+    "oest": "Øst",
+    "nord": "Nord",
+    "dimeId": "DimeId",
+    "cancel": "Fortryd",
+    "save": "Gem"
+  },
+  "myFindings": {
+    "empty": "Du har ingen registrerede fund.",
+    "unnamed": "Uden navn",
+    "dimeIdLabel": "DimeId"
+  },
+  "createFindingPage": {
+    "comingSoon": "Opret fund — kommer snart"
   }
 }

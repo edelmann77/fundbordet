@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { TextInput, Button } from "fundbrdet-ui";
 import { supabase } from "../lib/supabase";
 import Map, {
@@ -46,6 +47,7 @@ interface Props {
 }
 
 export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
+  const { t } = useTranslation();
   const [genstand, setGenstand] = useState("");
   const [materiale, setMateriale] = useState("");
   const [datering, setDatering] = useState("");
@@ -115,37 +117,37 @@ export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
       <div className="flex gap-6 flex-1">
         <div className="flex flex-col gap-4 flex-1">
           <TextInput
-            label="Genstand"
+            label={t("registerFinding.genstand")}
             value={genstand}
             onChange={(e) => setGenstand(e.target.value)}
             size="md"
           />
           <TextInput
-            label="Materiale"
+            label={t("registerFinding.materiale")}
             value={materiale}
             onChange={(e) => setMateriale(e.target.value)}
             size="md"
           />
           <TextInput
-            label="Datering"
+            label={t("registerFinding.datering")}
             value={datering}
             onChange={(e) => setDatering(e.target.value)}
             size="md"
           />
           <TextInput
-            label="Øst"
+            label={t("registerFinding.oest")}
             value={oest}
             onChange={(e) => setOest(e.target.value)}
             size="md"
           />
           <TextInput
-            label="Nord"
+            label={t("registerFinding.nord")}
             value={nord}
             onChange={(e) => setNord(e.target.value)}
             size="md"
           />
           <TextInput
-            label="DimeId"
+            label={t("registerFinding.dimeId")}
             value={dimeId}
             onChange={(e) => setDimeId(e.target.value)}
             size="md"
@@ -190,10 +192,10 @@ export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
       {/* Actions */}
       <div className="flex justify-end gap-3 shrink-0">
         <Button variant="outline" size="md" onClick={onCancel}>
-          Fortryd
+          {t("registerFinding.cancel")}
         </Button>
         <Button variant="primary" size="md" onClick={handleSubmit}>
-          Gem
+          {t("registerFinding.save")}
         </Button>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../lib/supabase";
 
 interface Finding {
@@ -13,6 +14,7 @@ interface Finding {
 }
 
 export default function MyFindingsPage() {
+  const { t } = useTranslation();
   const [findings, setFindings] = useState<Finding[]>([]);
 
   useEffect(() => {
@@ -51,7 +53,7 @@ export default function MyFindingsPage() {
 
   if (findings.length === 0) {
     return (
-      <p className="text-ink-muted text-sm">Du har ingen registrerede fund.</p>
+      <p className="text-ink-muted text-sm">{t("myFindings.empty")}</p>
     );
   }
 
@@ -64,7 +66,7 @@ export default function MyFindingsPage() {
         >
           <p className="font-semibold text-ink text-sm">
             {f.genstand || (
-              <span className="text-ink-muted italic">Uden navn</span>
+              <span className="text-ink-muted italic">{t("myFindings.unnamed")}</span>
             )}
           </p>
           <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-ink-muted">
@@ -75,7 +77,7 @@ export default function MyFindingsPage() {
                 {f.oest}E / {f.nord}N
               </span>
             )}
-            {f.dime_id && <span>DimeId: {f.dime_id}</span>}
+            {f.dime_id && <span>{t("myFindings.dimeIdLabel")}: {f.dime_id}</span>}
           </div>
         </div>
       ))}

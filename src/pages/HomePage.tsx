@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Modal, Tabs } from "fundbrdet-ui";
 import RegisterFindingForm from "../components/RegisterFindingForm";
@@ -12,6 +13,7 @@ const cardClass =
   "w-full max-w-sm text-left rounded-xl border border-edge bg-surface hover:bg-black/5 transition-colors px-6 py-4";
 
 export default function HomePage() {
+  const { t } = useTranslation();
   const [createOpen, setCreateOpen] = useState(false);
 
   return (
@@ -28,16 +30,16 @@ export default function HomePage() {
             to="/detector/my-findings"
             className={`${cardClass} no-underline`}
           >
-            <p className="font-semibold text-ink text-base">Mine fund</p>
+            <p className="font-semibold text-ink text-base">{t("home.myFindings")}</p>
             <p className="text-sm text-ink-muted mt-0.5">
-              Se og administrer dine registrerede fund
+              {t("home.myFindingsDesc")}
             </p>
           </Link>
 
           <button onClick={() => setCreateOpen(true)} className={cardClass}>
-            <p className="font-semibold text-ink text-base">Opret fund</p>
+            <p className="font-semibold text-ink text-base">{t("home.createFinding")}</p>
             <p className="text-sm text-ink-muted mt-0.5">
-              Registrer et nyt fund
+              {t("home.createFindingDesc")}
             </p>
           </button>
         </div>
@@ -46,7 +48,7 @@ export default function HomePage() {
         <div className="w-1/2 flex items-center justify-center p-8">
           <div className="w-full flex flex-col gap-3">
             <h2 className="text-lg font-semibold text-ink text-center">
-              Fundspredning
+              {t("home.mapTitle")}
             </h2>
             <div className="w-full" style={{ height: "60vh" }}>
               <Map
@@ -79,7 +81,7 @@ export default function HomePage() {
           tabs={[
             {
               value: "register",
-              label: "Opret fund",
+              label: t("home.tabs.register"),
               children: (
                 <RegisterFindingForm
                   key={String(createOpen)}
@@ -88,7 +90,7 @@ export default function HomePage() {
                 />
               ),
             },
-            { value: "import", label: "Importer fund", children: null },
+            { value: "import", label: t("home.tabs.import"), children: null },
           ]}
         />
       </Modal>

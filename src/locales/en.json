@@ -33,5 +33,57 @@
       "title": "Metal Detecting",
       "description": "Placeholder — describe what metal detecting findings look like in the app: location, depth, material, photos, and more."
     }
+  },
+  "login": {
+    "subtitle": "Sign in to log your findings",
+    "email": "Email address",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "Enter your password",
+    "forgotPassword": "Forgot password?",
+    "submit": "Sign in",
+    "or": "or",
+    "google": "Continue with Google",
+    "noAccount": "Don't have an account?",
+    "signupFree": "Sign up for free",
+    "errors": {
+      "fillAll": "Please fill in all fields."
+    }
+  },
+  "home": {
+    "myFindings": "My finds",
+    "myFindingsDesc": "View and manage your registered finds",
+    "createFinding": "Register find",
+    "createFindingDesc": "Register a new find",
+    "mapTitle": "Find distribution",
+    "tabs": {
+      "register": "Register find",
+      "import": "Import finds"
+    }
+  },
+  "appShell": {
+    "nav": {
+      "myFindings": "My finds",
+      "createFinding": "Register find"
+    },
+    "mapTitle": "Find distribution"
+  },
+  "registerFinding": {
+    "genstand": "Object",
+    "materiale": "Material",
+    "datering": "Dating",
+    "oest": "East",
+    "nord": "North",
+    "dimeId": "DimeId",
+    "cancel": "Cancel",
+    "save": "Save"
+  },
+  "myFindings": {
+    "empty": "You have no registered finds.",
+    "unnamed": "Unnamed",
+    "dimeIdLabel": "DimeId"
+  },
+  "createFindingPage": {
+    "comingSoon": "Register find — coming soon"
   }
 }

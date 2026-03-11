@@ -1,9 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, TextInput } from "fundbrdet-ui";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../lib/supabase";
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,7 +17,7 @@ export default function LoginPage() {
     setError("");
 
     if (!email || !password) {
-      setError("Please fill in all fields.");
+      setError(t("login.errors.fillAll"));
       return;
     }
 
@@ -46,7 +48,7 @@ export default function LoginPage() {
           <h1 className="text-2xl font-bold text-ink leading-tight mb-1">
             Hobbybordet
           </h1>
-          <p className="text-sm text-ink-muted">Sign in to log your findings</p>
+          <p className="text-sm text-ink-muted">{t("login.subtitle")}</p>
         </div>
 
         <Card variant="elevated" padding="p-8">
@@ -65,9 +67,9 @@ export default function LoginPage() {
             )}
 
             <TextInput
-              label="Email address"
+              label={t("login.email")}
               type="email"
-              placeholder="you@example.com"
+              placeholder={t("login.emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -77,9 +79,9 @@ export default function LoginPage() {
 
             <div>
               <TextInput
-                label="Password"
+                label={t("login.password")}
                 type="password"
-                placeholder="Enter your password"
+                placeholder={t("login.passwordPlaceholder")}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -91,7 +93,7 @@ export default function LoginPage() {
                 onClick={(e) => e.preventDefault()}
                 className="block text-right text-sm text-primary mt-2 no-underline hover:text-primary-dark hover:underline transition-colors"
               >
-                Forgot password?
+                {t("login.forgotPassword")}
               </a>
             </div>
 
@@ -102,13 +104,13 @@ export default function LoginPage() {
               fullWidth
               loading={loading}
             >
-              Sign in
+              {t("login.submit")}
             </Button>
 
             {/* Divider */}
             <div className="flex items-center gap-3 text-sm text-ink-faint">
               <hr className="flex-1 border-edge" />
-              or
+              {t("login.or")}
               <hr className="flex-1 border-edge" />
             </div>
 
@@ -119,18 +121,18 @@ export default function LoginPage() {
               fullWidth
               onClick={() => {}}
             >
-              Continue with Google
+              {t("login.google")}
             </Button>
           </form>
         </Card>
 
         <p className="text-center text-sm text-ink-muted mt-6">
-          Don't have an account?{" "}
+          {t("login.noAccount")}{" "}
           <Link
             to="/signup"
             className="text-primary font-semibold no-underline hover:text-primary-dark hover:underline transition-colors"
           >
-            Sign up for free
+            {t("login.signupFree")}
           </Link>
         </p>
       </div>
