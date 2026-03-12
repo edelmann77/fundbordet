@@ -1,25 +1,11 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { supabase } from "../lib/supabase";
 import { useMap } from "../components/AppShell";
 import proj4 from "proj4";
-
-interface Finding {
-  id: string;
-  genstand: string | null;
-  materiale: string | null;
-  datering: string | null;
-  // we store coordinates in the DB as `easting`/`northing` but keep the
-  // Danish field names in the UI for historical reasons
-  oest: number | null;
-  nord: number | null;
-  dime_id: string | null;
-  created_at: string;
-}
+import { useUserFindings } from "../hooks/useFindings";
 
 export default function MyFindingsPage() {
   const { t } = useTranslation();
-  const [findings, setFindings] = useState<Finding[]>([]);
+  const { findings } = useUserFindings();
   const { flyTo } = useMap();
 
   const WGS84 = "EPSG:4326";
@@ -28,48 +14,6 @@ export default function MyFindingsPage() {
     const [lng, lat] = proj4(UTM32N, WGS84, [easting, northing]);
     return [lng, lat];
   }
-
-  useEffect(() => {
-    const channel = supabase.channel("findings");
-
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) return;
-      const userId = user.id;
-
-      const fetchFindings = () =>
-        supabase
-          .schema("public")
-          .from("findings")
-          .select("*")
-          .eq("user_id", userId)
-          .order("created_at", { ascending: false })
-          .then(({ data }) => {
-            if (data) {
-              // convert DB shape to our Finding interface
-              const mapped = (data as any[]).map((row) => ({
-                ...row,
-                oest: row.easting,
-                nord: row.northing,
-              }));
-              setFindings(mapped as Finding[]);
-            }
-          });
-
-      fetchFindings();
-
-      channel
-        .on(
-          "postgres_changes",
-          { event: "*", schema: "public", table: "findings" },
-          fetchFindings,
-        )
-        .subscribe();
-    });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
 
   if (findings.length === 0) {
     return <p className="text-ink-muted text-sm">{t("myFindings.empty")}</p>;

@@ -2,19 +2,11 @@ import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Map, { Source, Layer, type MapRef } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
-import { useEffect, useState, useRef, createContext, useContext } from "react";
-import { supabase } from "../lib/supabase";
-import proj4 from "proj4";
+import { useRef, createContext, useContext } from "react";
+import { useAllFindingsHeatmap } from "../hooks/useFindings";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoibWVuNzciLCJhIjoiY21taHF0dWU4MHFnNzJwczZwajg0eGNxcCJ9.jbHXwO95T8UKk1vBHgccyw";
-
-const WGS84 = "EPSG:4326";
-const UTM32N = "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs";
-function utmToWGS84(easting: number, northing: number): [number, number] {
-  const [lng, lat] = proj4(UTM32N, WGS84, [easting, northing]);
-  return [lng, lat];
-}
 
 // context to allow children to request map movements
 interface MapContextType {
@@ -30,37 +22,8 @@ export const useMap = () => {
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
 
-  const [heatData, setHeatData] = useState<GeoJSON.FeatureCollection | null>(
-    null,
-  );
+  const heatData = useAllFindingsHeatmap();
   const mapRef = useRef<MapRef>(null);
-
-  useEffect(() => {
-    // load all findings coordinates for heatmap
-    supabase
-      .from("findings")
-      .select("easting,northing")
-      .not("easting", "is", null)
-      .not("northing", "is", null)
-      .then(({ data }) => {
-        if (data) {
-          const features = (data as any[])
-            .map((row) => {
-              const e = row.easting;
-              const n = row.northing;
-              if (e == null || n == null) return null;
-              const [lng, lat] = utmToWGS84(e, n);
-              return {
-                type: "Feature",
-                geometry: { type: "Point", coordinates: [lng, lat] },
-                properties: {},
-              };
-            })
-            .filter(Boolean) as GeoJSON.Feature[];
-          setHeatData({ type: "FeatureCollection", features });
-        }
-      });
-  }, []);
 
   const navItems = [
     { to: "/detector/my-findings", label: t("appShell.nav.myFindings") },
