@@ -1,14 +1,24 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Modal, Tabs } from "fundbrdet-ui";
 import RegisterFindingForm from "../components/RegisterFindingForm";
 import ImportFindingForm from "../components/ImportFindingForm";
-import Map from "react-map-gl/mapbox";
+import Map, { Source, Layer } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
+import { supabase } from "../lib/supabase";
+import proj4 from "proj4";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoibWVuNzciLCJhIjoiY21taHF0dWU4MHFnNzJwczZwajg0eGNxcCJ9.jbHXwO95T8UKk1vBHgccyw";
+
+const WGS84 = "EPSG:4326";
+const UTM32N = "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs";
+
+function utmToWGS84(easting: number, northing: number): [number, number] {
+  const [lng, lat] = proj4(UTM32N, WGS84, [easting, northing]);
+  return [lng, lat];
+}
 
 const cardClass =
   "w-full max-w-sm text-left rounded-xl border border-edge bg-surface hover:bg-black/5 transition-colors px-6 py-4";
@@ -16,6 +26,37 @@ const cardClass =
 export default function HomePage() {
   const { t } = useTranslation();
   const [createOpen, setCreateOpen] = useState(false);
+  const [heatData, setHeatData] = useState<GeoJSON.FeatureCollection | null>(
+    null,
+  );
+
+  useEffect(() => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data, error } = await supabase
+        .from("findings")
+        .select("easting,northing")
+        .not("easting", "is", null)
+        .not("northing", "is", null);
+      console.log(data);
+      if (data && !error) {
+        const features = (data as any[])
+          .map((row) => {
+            const e = row.easting;
+            const n = row.northing;
+            if (e == null || n == null) return null;
+            const [lng, lat] = utmToWGS84(e, n);
+            return {
+              type: "Feature",
+              geometry: { type: "Point", coordinates: [lng, lat] },
+              properties: {},
+            };
+          })
+          .filter(Boolean) as GeoJSON.Feature[];
+        setHeatData({ type: "FeatureCollection", features });
+      }
+    });
+  }, []);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -64,9 +105,43 @@ export default function HomePage() {
                   zoom: 6,
                 }}
                 style={{ width: "100%", height: "100%" }}
-                mapStyle="mapbox://styles/mapbox/outdoors-v12"
+                mapStyle="mapbox://styles/mapbox/satellite-streets-v12"
                 interactive={false}
-              />
+              >
+                {heatData && (
+                  <>
+                    <Source id="heat" type="geojson" data={heatData} />
+                    <Layer
+                      id="heatLayer"
+                      type="heatmap"
+                      source="heat"
+                      paint={{
+                        "heatmap-weight": 1,
+                        "heatmap-intensity": 1,
+                        "heatmap-color": [
+                          "interpolate",
+                          ["linear"],
+                          ["heatmap-density"],
+                          0,
+                          "rgba(33,102,172,0)",
+                          0.2,
+                          "rgb(103,169,207)",
+                          0.4,
+                          "rgb(209,229,240)",
+                          0.6,
+                          "rgb(253,219,199)",
+                          0.8,
+                          "rgb(239,138,98)",
+                          1,
+                          "rgb(178,24,43)",
+                        ],
+                        "heatmap-radius": 20,
+                        "heatmap-opacity": 0.6,
+                      }}
+                    />
+                  </>
+                )}
+              </Map>
             </div>
           </div>
         </div>
