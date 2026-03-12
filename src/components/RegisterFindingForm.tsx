@@ -112,7 +112,7 @@ export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
   };
 
   return (
-    <div className="flex flex-col gap-4 h-full">
+    <div className="flex flex-col gap-4">
       {/* Fields + Map */}
       <div className="flex gap-6 flex-1">
         <div className="flex flex-col gap-4 flex-1">
@@ -190,13 +190,16 @@ export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 shrink-0">
-        <Button variant="outline" size="md" onClick={onCancel}>
-          {t("registerFinding.cancel")}
-        </Button>
-        <Button variant="primary" size="md" onClick={handleSubmit}>
-          {t("registerFinding.save")}
-        </Button>
+      <div className="flex gap-6 shrink-0">
+        <div className="flex-1 flex justify-end gap-3">
+          <Button variant="outline" size="md" onClick={onCancel}>
+            {t("registerFinding.cancel")}
+          </Button>
+          <Button variant="primary" size="md" onClick={handleSubmit}>
+            {t("registerFinding.save")}
+          </Button>
+        </div>
+        <div className="w-1/2 shrink-0" />
       </div>
     </div>
   );

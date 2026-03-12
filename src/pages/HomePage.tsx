@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Modal, Tabs } from "fundbrdet-ui";
 import RegisterFindingForm from "../components/RegisterFindingForm";
+import ImportFindingForm from "../components/ImportFindingForm";
 import Map from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 
@@ -30,14 +31,18 @@ export default function HomePage() {
             to="/detector/my-findings"
             className={`${cardClass} no-underline`}
           >
-            <p className="font-semibold text-ink text-base">{t("home.myFindings")}</p>
+            <p className="font-semibold text-ink text-base">
+              {t("home.myFindings")}
+            </p>
             <p className="text-sm text-ink-muted mt-0.5">
               {t("home.myFindingsDesc")}
             </p>
           </Link>
 
           <button onClick={() => setCreateOpen(true)} className={cardClass}>
-            <p className="font-semibold text-ink text-base">{t("home.createFinding")}</p>
+            <p className="font-semibold text-ink text-base">
+              {t("home.createFinding")}
+            </p>
             <p className="text-sm text-ink-muted mt-0.5">
               {t("home.createFindingDesc")}
             </p>
@@ -78,6 +83,7 @@ export default function HomePage() {
           defaultValue="register"
           variant="line"
           size="md"
+          className="h-full"
           tabs={[
             {
               value: "register",
@@ -90,7 +96,16 @@ export default function HomePage() {
                 />
               ),
             },
-            { value: "import", label: t("home.tabs.import"), children: null },
+            {
+              value: "import",
+              label: t("home.tabs.import"),
+              children: (
+                <ImportFindingForm
+                  onCancel={() => setCreateOpen(false)}
+                  onSubmit={() => setCreateOpen(false)}
+                />
+              ),
+            },
           ]}
         />
       </Modal>

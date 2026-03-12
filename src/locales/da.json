@@ -85,5 +85,11 @@
   },
   "createFindingPage": {
     "comingSoon": "Opret fund — kommer snart"
+  },
+  "importFinding": {
+    "dropzone": "Træk en .xlsx-fil hertil, eller klik for at vælge",
+    "genstandColumn": "Genstand",
+    "noCoordinates": "Ingen koordinater fundet i filen",
+    "rowCount": "{{count}} fund indlæst"
   }
 }

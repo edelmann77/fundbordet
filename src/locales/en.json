@@ -85,5 +85,11 @@
   },
   "createFindingPage": {
     "comingSoon": "Register find — coming soon"
+  },
+  "importFinding": {
+    "dropzone": "Drag a .xlsx file here, or click to select",
+    "genstandColumn": "Object",
+    "noCoordinates": "No coordinates found in file",
+    "rowCount": "{{count}} finds loaded"
   }
 }
