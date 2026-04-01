@@ -2,7 +2,8 @@ import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button, Card, TextInput } from "fundbrdet-ui";
 import { useTranslation } from "react-i18next";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
+import "./LoginPage.css";
 
 export const LoginPage: React.FC = () => {
   const { t } = useTranslation();
@@ -36,32 +37,20 @@ export const LoginPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-page">
-      <div className="w-full max-w-[420px]">
-        {/* Brand header */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block no-underline">
-            <div className="w-14 h-14 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4 text-3xl">
-              🪙
-            </div>
+    <div className="login-page">
+      <div className="login-page__container">
+        <div className="login-page__header">
+          <Link to="/" className="login-page__logo-link">
+            <div className="login-page__logo">🪙</div>
           </Link>
-          <h1 className="text-2xl font-bold text-ink leading-tight mb-1">
-            Hobbybordet
-          </h1>
-          <p className="text-sm text-ink-muted">{t("login.subtitle")}</p>
+          <h1 className="login-page__title">Hobbybordet</h1>
+          <p className="login-page__subtitle">{t("login.subtitle")}</p>
         </div>
 
         <Card variant="elevated" padding="p-8">
-          <form
-            onSubmit={handleSubmit}
-            noValidate
-            className="flex flex-col gap-5"
-          >
+          <form onSubmit={handleSubmit} noValidate className="login-page__form">
             {error && (
-              <div
-                role="alert"
-                className="bg-error-soft border border-edge-error rounded-md px-4 py-3 text-sm text-error"
-              >
+              <div role="alert" className="login-page__error">
                 {error}
               </div>
             )}
@@ -77,7 +66,7 @@ export const LoginPage: React.FC = () => {
               size="md"
             />
 
-            <div>
+            <div className="login-page__password-field">
               <TextInput
                 label={t("login.password")}
                 type="password"
@@ -91,7 +80,7 @@ export const LoginPage: React.FC = () => {
               <a
                 href="#"
                 onClick={(e) => e.preventDefault()}
-                className="block text-right text-sm text-primary mt-2 no-underline hover:text-primary-dark hover:underline transition-colors"
+                className="login-page__forgot-link"
               >
                 {t("login.forgotPassword")}
               </a>
@@ -107,11 +96,10 @@ export const LoginPage: React.FC = () => {
               {t("login.submit")}
             </Button>
 
-            {/* Divider */}
-            <div className="flex items-center gap-3 text-sm text-ink-faint">
-              <hr className="flex-1 border-edge" />
+            <div className="login-page__divider">
+              <hr className="login-page__divider-line" />
               {t("login.or")}
-              <hr className="flex-1 border-edge" />
+              <hr className="login-page__divider-line" />
             </div>
 
             <Button
@@ -126,12 +114,9 @@ export const LoginPage: React.FC = () => {
           </form>
         </Card>
 
-        <p className="text-center text-sm text-ink-muted mt-6">
+        <p className="login-page__footer">
           {t("login.noAccount")}{" "}
-          <Link
-            to="/signup"
-            className="text-primary font-semibold no-underline hover:text-primary-dark hover:underline transition-colors"
-          >
+          <Link to="/signup" className="login-page__signup-link">
             {t("login.signupFree")}
           </Link>
         </p>

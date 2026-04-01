@@ -2,7 +2,8 @@ import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button, Card, TextInput } from "fundbrdet-ui";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
+import "./SignUpPage.css";
 
 export const SignUpPage: React.FC = () => {
   const { t } = useTranslation();
@@ -43,15 +44,13 @@ export const SignUpPage: React.FC = () => {
 
   if (success) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-page">
-        <div className="w-full max-w-[420px] text-center">
-          <div className="w-14 h-14 bg-primary rounded-lg flex items-center justify-center mx-auto mb-6 text-3xl">
-            🪙
-          </div>
-          <h1 className="text-2xl font-bold text-ink mb-2">
+      <div className="signup-page">
+        <div className="signup-page__success">
+          <div className="signup-page__logo">🪙</div>
+          <h1 className="signup-page__success-title">
             {t("signup.success.title")}
           </h1>
-          <p className="text-base text-ink-muted leading-relaxed">
+          <p className="signup-page__success-message">
             {t("signup.success.message", { email })}
           </p>
         </div>
@@ -60,32 +59,24 @@ export const SignUpPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-page">
-      <div className="w-full max-w-[420px]">
-        {/* Brand header */}
-        <div className="text-center mb-8">
-          <Link to="/" className="inline-block no-underline">
-            <div className="w-14 h-14 bg-primary rounded-lg flex items-center justify-center mx-auto mb-4 text-3xl">
-              🪙
-            </div>
+    <div className="signup-page">
+      <div className="signup-page__container">
+        <div className="signup-page__header">
+          <Link to="/" className="signup-page__logo-link">
+            <div className="signup-page__logo">🪙</div>
           </Link>
-          <h1 className="text-2xl font-bold text-ink leading-tight mb-1">
-            Hobbybordet
-          </h1>
-          <p className="text-sm text-ink-muted">{t("signup.subtitle")}</p>
+          <h1 className="signup-page__title">Hobbybordet</h1>
+          <p className="signup-page__subtitle">{t("signup.subtitle")}</p>
         </div>
 
         <Card variant="elevated" padding="p-8">
           <form
             onSubmit={handleSubmit}
             noValidate
-            className="flex flex-col gap-5"
+            className="signup-page__form"
           >
             {error && (
-              <div
-                role="alert"
-                className="bg-error-soft border border-edge-error rounded-md px-4 py-3 text-sm text-error"
-              >
+              <div role="alert" className="signup-page__error">
                 {error}
               </div>
             )}
@@ -135,12 +126,9 @@ export const SignUpPage: React.FC = () => {
           </form>
         </Card>
 
-        <p className="text-center text-sm text-ink-muted mt-6">
+        <p className="signup-page__footer">
           {t("signup.haveAccount")}{" "}
-          <Link
-            to="/"
-            className="text-primary font-semibold no-underline hover:text-primary-dark hover:underline transition-colors"
-          >
+          <Link to="/" className="signup-page__back-link">
             {t("signup.backHome")}
           </Link>
         </p>

@@ -1,7 +1,8 @@
 import { useTranslation } from "react-i18next";
-import { useMap } from "../components/AppShell";
+import { useMap } from "../../components/AppShell/AppShell";
 import proj4 from "proj4";
-import { useUserFindings } from "../hooks/useFindings";
+import { useUserFindings } from "../../hooks/useFindings";
+import "./MyFindingsPage.css";
 
 export const MyFindingsPage: React.FC = () => {
   const { t } = useTranslation();
@@ -17,15 +18,12 @@ export const MyFindingsPage: React.FC = () => {
   };
 
   if (findings.length === 0) {
-    return <p className="text-ink-muted text-sm">{t("myFindings.empty")}</p>;
+    return <p className="my-findings__empty">{t("myFindings.empty")}</p>;
   }
 
   return (
-    <div
-      className="w-full flex flex-col gap-2"
-      style={{ maxHeight: "calc(100vh - 5rem)" }}
-    >
-      <div className="flex-1 overflow-auto">
+    <div className="my-findings">
+      <div className="my-findings__list">
         {findings.map((f) => (
           <div
             key={f.id}
@@ -35,16 +33,16 @@ export const MyFindingsPage: React.FC = () => {
                 flyTo(lng, lat);
               }
             }}
-            className="rounded-xl border border-edge bg-surface px-5 py-4 flex flex-col gap-1 cursor-pointer"
+            className="my-findings__card"
           >
-            <p className="font-semibold text-ink text-sm">
+            <p className="my-findings__card-title">
               {f.genstand || (f as any).written_name || (
-                <span className="text-ink-muted italic">
+                <span className="my-findings__card-title--unnamed">
                   {t("myFindings.unnamed")}
                 </span>
               )}
             </p>
-            <div className="flex flex-wrap gap-x-4 gap-y-0.5 text-xs text-ink-muted">
+            <div className="my-findings__card-meta">
               {f.materiale && <span>{f.materiale}</span>}
               {f.datering && <span>{f.datering}</span>}
               {f.oest != null && f.nord != null && (

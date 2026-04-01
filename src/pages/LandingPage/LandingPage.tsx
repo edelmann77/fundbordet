@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "fundbrdet-ui";
+import "./LandingPage.css";
 
 type Language = "da" | "en";
 
@@ -30,19 +31,19 @@ const LanguageMenu: React.FC = () => {
     languages.find((l) => l.value === i18n.language) ?? languages[0];
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="language-menu">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         aria-label={t("landing.selectLanguage")}
         aria-expanded={open}
-        className="flex items-center justify-center w-9 h-9 rounded-md text-xl hover:bg-white/10 transition-colors duration-150 cursor-pointer border-none bg-transparent"
+        className="language-menu__trigger"
       >
         {current.flag}
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 bg-surface rounded-lg shadow-outdoor-md border border-edge overflow-hidden z-20 min-w-32.5">
+        <div className="language-menu__dropdown">
           {languages.map((lang) => (
             <button
               key={lang.value}
@@ -52,13 +53,13 @@ const LanguageMenu: React.FC = () => {
                 setOpen(false);
               }}
               className={[
-                "flex items-center gap-2 w-full px-3 py-2 text-sm text-left border-none cursor-pointer transition-colors duration-100",
+                "language-menu__option",
                 i18n.language === lang.value
-                  ? "bg-primary/10 text-primary font-semibold"
-                  : "bg-transparent text-ink hover:bg-black/5",
+                  ? "language-menu__option--active"
+                  : "language-menu__option--inactive",
               ].join(" ")}
             >
-              <span className="text-base">{lang.flag}</span>
+              <span className="language-menu__flag">{lang.flag}</span>
               {lang.label}
             </button>
           ))}
@@ -72,16 +73,13 @@ export const LandingPage: React.FC = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* Nav */}
-      <nav className="sticky top-0 z-10 flex items-center justify-between px-8 py-3 bg-ink shadow-md">
-        <Link to="/" className="flex items-center gap-3 no-underline">
-          <span className="text-2xl">🪙</span>
-          <span className="text-xl font-bold text-ink-inverse tracking-tight">
-            Hobbybordet
-          </span>
+    <div className="landing-page">
+      <nav className="landing-page__nav">
+        <Link to="/" className="landing-page__logo-link">
+          <span className="landing-page__logo-icon">🪙</span>
+          <span className="landing-page__logo-text">Hobbybordet</span>
         </Link>
-        <div className="flex items-center gap-3">
+        <div className="landing-page__nav-actions">
           <LanguageMenu />
           <Link to="/login">
             <Button variant="ghost" size="sm">
@@ -96,13 +94,11 @@ export const LandingPage: React.FC = () => {
         </div>
       </nav>
 
-      {/* Main info */}
-      <main className="flex-1 flex flex-col items-center justify-center text-center py-16 px-8">
-        <h1 className="text-2xl lg:text-3xl font-bold text-ink mb-4">
+      <main className="landing-page__main">
+        <h1 className="landing-page__title">
           {t("landing.title", "Welcome to Hobbybordet")}
         </h1>
-        <p className="text-base lg:text-lg text-ink-muted leading-relaxed max-w-lg">
-          {/* informational content about the site will be added here later */}
+        <p className="landing-page__info">
           {t(
             "landing.info",
             "This page will provide information about the site. Text will be added later.",

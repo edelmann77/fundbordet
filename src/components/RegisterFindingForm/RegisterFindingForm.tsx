@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { TextInput, Button } from "fundbrdet-ui";
-import { supabase } from "../lib/supabase";
+import { supabase } from "../../lib/supabase";
 import Map, {
   Marker,
   type MapRef,
@@ -10,6 +10,7 @@ import Map, {
 } from "react-map-gl/mapbox";
 import "mapbox-gl/dist/mapbox-gl.css";
 import proj4 from "proj4";
+import "./RegisterFindingForm.css";
 
 const MAPBOX_TOKEN =
   "pk.eyJ1IjoibWVuNzciLCJhIjoiY21taHF0dWU4MHFnNzJwczZwajg0eGNxcCJ9.jbHXwO95T8UKk1vBHgccyw";
@@ -19,27 +20,27 @@ const PLACE_MARKER_ZOOM = 14;
 const WGS84 = "EPSG:4326";
 const UTM32N = "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs";
 
-function toUTM(
+const toUTM = (
   lng: number,
   lat: number,
-): { easting: number; northing: number } {
+): { easting: number; northing: number } => {
   const [easting, northing] = proj4(WGS84, UTM32N, [lng, lat]);
   return { easting: Math.round(easting), northing: Math.round(northing) };
-}
+};
 
-function utmToWGS84(easting: number, northing: number): [number, number] {
+const utmToWGS84 = (easting: number, northing: number): [number, number] => {
   const [lng, lat] = proj4(UTM32N, WGS84, [easting, northing]);
   return [lng, lat];
-}
+};
 
-function isValidUTM(easting: number, northing: number): boolean {
+const isValidUTM = (easting: number, northing: number): boolean => {
   return (
     easting >= 400000 &&
     easting <= 900000 &&
     northing >= 6000000 &&
     northing <= 6800000
   );
-}
+};
 
 export const RegisterFindingForm: React.FC<{
   onCancel?: () => void;
@@ -110,10 +111,9 @@ export const RegisterFindingForm: React.FC<{
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      {/* Fields + Map */}
-      <div className="flex gap-6 flex-1">
-        <div className="flex flex-col gap-4 flex-1">
+    <div className="register-finding-form">
+      <div className="register-finding-form__body">
+        <div className="register-finding-form__fields">
           <TextInput
             label={t("registerFinding.genstand")}
             value={genstand}
@@ -152,44 +152,45 @@ export const RegisterFindingForm: React.FC<{
           />
         </div>
 
-        <div className="w-1/2 shrink-0">
-          <Map
-            ref={mapRef}
-            mapboxAccessToken={MAPBOX_TOKEN}
-            initialViewState={{ longitude: 11.5, latitude: 56.2, zoom: 5.5 }}
-            style={{ width: "100%", height: "100%" }}
-            mapStyle="mapbox://styles/mapbox/satellite-streets-v12"
-            onClick={handleMapClick}
-            onZoom={(e: ViewStateChangeEvent) => setZoom(e.viewState.zoom)}
-          >
-            {markerPos && (
-              <Marker
-                longitude={markerPos.lng}
-                latitude={markerPos.lat}
-                anchor="bottom"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
+        <div className="register-finding-form__map">
+          <div className="register-finding-form__map-canvas">
+            <Map
+              ref={mapRef}
+              mapboxAccessToken={MAPBOX_TOKEN}
+              initialViewState={{ longitude: 11.5, latitude: 56.2, zoom: 5.5 }}
+              style={{ width: "100%", height: "100%" }}
+              mapStyle="mapbox://styles/mapbox/satellite-streets-v12"
+              onClick={handleMapClick}
+              onZoom={(e: ViewStateChangeEvent) => setZoom(e.viewState.zoom)}
+            >
+              {markerPos && (
+                <Marker
+                  longitude={markerPos.lng}
+                  latitude={markerPos.lat}
+                  anchor="bottom"
                 >
-                  <path
-                    fill="#e63946"
-                    stroke="#fff"
-                    strokeWidth="1"
-                    d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-                  />
-                </svg>
-              </Marker>
-            )}
-          </Map>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      fill="#e63946"
+                      stroke="#fff"
+                      strokeWidth="1"
+                      d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                    />
+                  </svg>
+                </Marker>
+              )}
+            </Map>
+          </div>
         </div>
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-6 shrink-0">
-        <div className="flex-1 flex justify-end gap-3">
+      <div className="register-finding-form__actions">
+        <div className="register-finding-form__actions-group">
           <Button variant="outline" size="md" onClick={onCancel}>
             {t("registerFinding.cancel")}
           </Button>
@@ -197,7 +198,7 @@ export const RegisterFindingForm: React.FC<{
             {t("registerFinding.save")}
           </Button>
         </div>
-        <div className="w-1/2 shrink-0" />
+        <div className="register-finding-form__map-spacer" />
       </div>
     </div>
   );

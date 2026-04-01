@@ -1,0 +1,108 @@
+.signup-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: var(--color-page);
+}
+
+.signup-page__container {
+  width: 100%;
+  max-width: 420px;
+}
+
+.signup-page__header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.signup-page__logo-link {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.signup-page__logo {
+  width: 3.5rem;
+  height: 3.5rem;
+  background-color: var(--color-primary);
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline: auto;
+  margin-bottom: 1rem;
+  font-size: 1.875rem;
+  line-height: 2.25rem;
+}
+
+.signup-page__title {
+  font-size: 1.5rem;
+  line-height: 1.25;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-bottom: 0.25rem;
+}
+
+.signup-page__subtitle {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-ink-muted);
+}
+
+.signup-page__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.signup-page__error {
+  background-color: var(--color-error-soft);
+  border: 1px solid var(--color-edge-error);
+  border-radius: 0.375rem;
+  padding-inline: 1rem;
+  padding-block: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-error);
+}
+
+.signup-page__footer {
+  text-align: center;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--color-ink-muted);
+  margin-top: 1.5rem;
+}
+
+.signup-page__back-link {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 150ms;
+}
+
+.signup-page__back-link:hover {
+  color: var(--color-primary-dark);
+  text-decoration: underline;
+}
+
+.signup-page__success {
+  width: 100%;
+  text-align: center;
+  max-width: 420px;
+}
+
+.signup-page__success-title {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 700;
+  color: var(--color-ink);
+  margin-bottom: 0.5rem;
+}
+
+.signup-page__success-message {
+  font-size: 1rem;
+  line-height: 1.625;
+  color: var(--color-ink-muted);
+}

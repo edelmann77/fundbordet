@@ -1,6 +1,4 @@
-@import "tailwindcss";
-
-@theme {
+:root {
   /* Fonts */
   --font-sans: "Nunito", "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-mono: "JetBrains Mono", "Consolas", "Courier New", monospace;
@@ -41,18 +39,16 @@
   --color-success-soft: #d5edd8;
 }
 
-@layer base {
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
-  body {
-    font-family: var(--font-sans);
-    background-color: var(--color-page);
-    color: var(--color-ink);
-    min-height: 100dvh;
-    -webkit-font-smoothing: antialiased;
-  }
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-page);
+  color: var(--color-ink);
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
 }
