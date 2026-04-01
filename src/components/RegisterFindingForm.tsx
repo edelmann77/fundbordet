@@ -41,12 +41,10 @@ function isValidUTM(easting: number, northing: number): boolean {
   );
 }
 
-interface Props {
+export const RegisterFindingForm: React.FC<{
   onCancel?: () => void;
   onSubmit?: () => void;
-}
-
-export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
+}> = ({ onCancel, onSubmit }) => {
   const { t } = useTranslation();
   const [genstand, setGenstand] = useState("");
   const [materiale, setMateriale] = useState("");
@@ -203,4 +201,6 @@ export default function RegisterFindingForm({ onCancel, onSubmit }: Props) {
       </div>
     </div>
   );
-}
+};
+
+export default RegisterFindingForm;

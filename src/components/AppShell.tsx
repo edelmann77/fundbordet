@@ -19,7 +19,9 @@ export const useMap = () => {
   return ctx;
 };
 
-export default function AppShell({ children }: { children: React.ReactNode }) {
+export const AppShell: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const { t } = useTranslation();
 
   const heatData = useAllFindingsHeatmap();
@@ -130,4 +132,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </main>
     </div>
   );
-}
+};
+
+export default AppShell;

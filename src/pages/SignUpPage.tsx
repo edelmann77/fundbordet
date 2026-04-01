@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Button, Card, TextInput } from "fundbrdet-ui";
 import { supabase } from "../lib/supabase";
 
-export default function SignUpPage() {
+export const SignUpPage: React.FC = () => {
   const { t } = useTranslation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -147,4 +147,6 @@ export default function SignUpPage() {
       </div>
     </div>
   );
-}
+};
+
+export default SignUpPage;

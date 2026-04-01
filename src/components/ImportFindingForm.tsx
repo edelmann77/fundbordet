@@ -47,12 +47,10 @@ interface Row {
   dimeId: string;
 }
 
-interface Props {
+export const ImportFindingForm: React.FC<{
   onCancel?: () => void;
   onSubmit?: () => void;
-}
-
-export default function ImportFindingForm({ onCancel, onSubmit }: Props) {
+}> = ({ onCancel, onSubmit }) => {
   const { t } = useTranslation();
   const [rows, setRows] = useState<Row[]>([]);
   const [dragging, setDragging] = useState(false);
@@ -401,4 +399,6 @@ export default function ImportFindingForm({ onCancel, onSubmit }: Props) {
       </div> */}
     </div>
   );
-}
+};
+
+export default ImportFindingForm;

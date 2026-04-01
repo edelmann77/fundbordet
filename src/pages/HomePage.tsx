@@ -14,7 +14,7 @@ const MAPBOX_TOKEN =
 const cardClass =
   "w-full max-w-sm text-left rounded-xl border border-edge bg-surface hover:bg-black/5 transition-colors px-6 py-4";
 
-export default function HomePage() {
+export const HomePage: React.FC = () => {
   const { t } = useTranslation();
   const [createOpen, setCreateOpen] = useState(false);
   const heatData = useAllFindingsHeatmap();
@@ -147,4 +147,6 @@ export default function HomePage() {
       </Modal>
     </div>
   );
-}
+};
+
+export default HomePage;

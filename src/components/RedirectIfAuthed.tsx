@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 
-export default function RedirectIfAuthed({
+export const RedirectIfAuthed: React.FC<{ children: React.ReactNode }> = ({
   children,
-}: {
-  children: React.ReactNode;
-}) {
+}) => {
   const [authed, setAuthed] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -18,4 +16,6 @@ export default function RedirectIfAuthed({
   if (authed === null) return null;
   if (authed) return <Navigate to="/detector/home" replace />;
   return <>{children}</>;
-}
+};
+
+export default RedirectIfAuthed;

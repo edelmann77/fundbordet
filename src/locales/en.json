@@ -83,6 +83,11 @@
     "unnamed": "Unnamed",
     "dimeIdLabel": "DimeId"
   },
+  "landing": {
+    "selectLanguage": "Select language",
+    "title": "Welcome to Hobbybordet",
+    "info": "This page will provide information about the site. Text will be added later."
+  },
   "createFindingPage": {
     "comingSoon": "Register find — coming soon"
   },

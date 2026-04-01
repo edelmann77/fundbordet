@@ -4,7 +4,9 @@ import { supabase } from "../lib/supabase";
 
 type State = "loading" | "authed" | "no-session" | "deleted";
 
-export default function RequireAuth({ children }: { children: React.ReactNode }) {
+export const RequireAuth: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [state, setState] = useState<State>("loading");
 
   useEffect(() => {
@@ -28,4 +30,6 @@ export default function RequireAuth({ children }: { children: React.ReactNode })
   if (state === "no-session") return <Navigate to="/login" replace />;
   if (state === "deleted") return <Navigate to="/" replace />;
   return <>{children}</>;
-}
+};
+
+export default RequireAuth;

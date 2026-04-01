@@ -3,24 +3,24 @@ import { useMap } from "../components/AppShell";
 import proj4 from "proj4";
 import { useUserFindings } from "../hooks/useFindings";
 
-export default function MyFindingsPage() {
+export const MyFindingsPage: React.FC = () => {
   const { t } = useTranslation();
   const { findings } = useUserFindings();
   const { flyTo } = useMap();
 
   const WGS84 = "EPSG:4326";
   const UTM32N = "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs";
-  function utmToWGS84(easting: number, northing: number): [number, number] {
+
+  const utmToWGS84 = (easting: number, northing: number): [number, number] => {
     const [lng, lat] = proj4(UTM32N, WGS84, [easting, northing]);
     return [lng, lat];
-  }
+  };
 
   if (findings.length === 0) {
     return <p className="text-ink-muted text-sm">{t("myFindings.empty")}</p>;
   }
 
   return (
-    // limit height relative to viewport to avoid spilling outside AppShell
     <div
       className="w-full flex flex-col gap-2"
       style={{ maxHeight: "calc(100vh - 5rem)" }}
@@ -63,4 +63,6 @@ export default function MyFindingsPage() {
       </div>
     </div>
   );
-}
+};
+
+export default MyFindingsPage;

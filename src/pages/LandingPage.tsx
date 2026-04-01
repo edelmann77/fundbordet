@@ -10,8 +10,8 @@ const languages: { value: Language; flag: string; label: string }[] = [
   { value: "en", flag: "🇬🇧", label: "English" },
 ];
 
-function LanguageMenu() {
-  const { i18n } = useTranslation();
+const LanguageMenu: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -34,7 +34,7 @@ function LanguageMenu() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        aria-label="Select language"
+        aria-label={t("landing.selectLanguage")}
         aria-expanded={open}
         className="flex items-center justify-center w-9 h-9 rounded-md text-xl hover:bg-white/10 transition-colors duration-150 cursor-pointer border-none bg-transparent"
       >
@@ -66,9 +66,9 @@ function LanguageMenu() {
       )}
     </div>
   );
-}
+};
 
-export default function LandingPage() {
+export const LandingPage: React.FC = () => {
   const { t } = useTranslation();
 
   return (
@@ -111,4 +111,6 @@ export default function LandingPage() {
       </main>
     </div>
   );
-}
+};
+
+export default LandingPage;
