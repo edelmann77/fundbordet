@@ -8,11 +8,12 @@ import Map, {
   type MapMouseEvent,
   type ViewStateChangeEvent,
 } from "react-map-gl/maplibre";
+import type { StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import proj4 from "proj4";
 import "./RegisterFindingForm.css";
 
-const SATELLITE_STYLE = {
+const SATELLITE_STYLE: StyleSpecification = {
   version: 8,
   sources: {
     satellite: {

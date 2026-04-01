@@ -2,13 +2,14 @@ import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
 import Map, { Marker, type MapRef } from "react-map-gl/maplibre";
+import type { StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import proj4 from "proj4";
 import { Button } from "fundbrdet-ui";
 import { supabase } from "../../lib/supabase";
 import "./ImportFindingForm.css";
 
-const SATELLITE_STYLE = {
+const SATELLITE_STYLE: StyleSpecification = {
   version: 8,
   sources: {
     satellite: {

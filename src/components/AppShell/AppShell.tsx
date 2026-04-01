@@ -1,12 +1,13 @@
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Map, { Source, Layer, type MapRef } from "react-map-gl/maplibre";
+import type { StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useRef, createContext, useContext } from "react";
 import { useAllFindingsHeatmap } from "../../hooks/useFindings";
 import "./AppShell.css";
 
-const SATELLITE_STYLE = {
+const SATELLITE_STYLE: StyleSpecification = {
   version: 8,
   sources: {
     satellite: {

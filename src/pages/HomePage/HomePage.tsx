@@ -5,11 +5,12 @@ import { Modal, Tabs } from "fundbrdet-ui";
 import RegisterFindingForm from "../../components/RegisterFindingForm/RegisterFindingForm";
 import ImportFindingForm from "../../components/ImportFindingForm/ImportFindingForm";
 import Map, { Source, Layer } from "react-map-gl/maplibre";
+import type { StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useAllFindingsHeatmap } from "../../hooks/useFindings";
 import "./HomePage.css";
 
-const SATELLITE_STYLE = {
+const SATELLITE_STYLE: StyleSpecification = {
   version: 8,
   sources: {
     satellite: {
