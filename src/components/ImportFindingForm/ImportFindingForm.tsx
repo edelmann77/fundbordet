@@ -1,15 +1,32 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as XLSX from "xlsx";
-import Map, { Marker, type MapRef } from "react-map-gl/mapbox";
-import "mapbox-gl/dist/mapbox-gl.css";
+import Map, { Marker, type MapRef } from "react-map-gl/maplibre";
+import "maplibre-gl/dist/maplibre-gl.css";
 import proj4 from "proj4";
 import { Button } from "fundbrdet-ui";
 import { supabase } from "../../lib/supabase";
 import "./ImportFindingForm.css";
 
-const MAPBOX_TOKEN =
-  "pk.eyJ1IjoibWVuNzciLCJhIjoiY21taHF0dWU4MHFnNzJwczZwajg0eGNxcCJ9.jbHXwO95T8UKk1vBHgccyw";
+const SATELLITE_STYLE = {
+  version: 8,
+  sources: {
+    satellite: {
+      type: "raster",
+      tiles: [
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      ],
+      tileSize: 256,
+    },
+  },
+  layers: [
+    {
+      id: "satellite",
+      type: "raster",
+      source: "satellite",
+    },
+  ],
+};
 
 const WGS84 = "EPSG:4326";
 const UTM32N = "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs";
@@ -233,10 +250,9 @@ export const ImportFindingForm: React.FC<{
         <div className="import-finding-form__map">
           <Map
             ref={mapRef}
-            mapboxAccessToken={MAPBOX_TOKEN}
             initialViewState={{ longitude: 11.5, latitude: 56.2, zoom: 5.5 }}
             style={{ width: "100%", height: "100%" }}
-            mapStyle="mapbox://styles/mapbox/satellite-streets-v12"
+            mapStyle={SATELLITE_STYLE}
             interactive={false}
           >
             {withCoords.map((row, i) => (

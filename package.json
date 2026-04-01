@@ -12,7 +12,7 @@
     "@supabase/supabase-js": "^2.98.0",
     "fundbrdet-ui": "file:../fundbrdet-ui",
     "i18next": "^25.8.13",
-    "mapbox-gl": "^3.19.1",
+    "maplibre-gl": "^4.0.0",
     "proj4": "^2.20.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

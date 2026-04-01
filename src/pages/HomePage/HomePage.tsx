@@ -4,13 +4,30 @@ import { Link } from "react-router-dom";
 import { Modal, Tabs } from "fundbrdet-ui";
 import RegisterFindingForm from "../../components/RegisterFindingForm/RegisterFindingForm";
 import ImportFindingForm from "../../components/ImportFindingForm/ImportFindingForm";
-import Map, { Source, Layer } from "react-map-gl/mapbox";
-import "mapbox-gl/dist/mapbox-gl.css";
+import Map, { Source, Layer } from "react-map-gl/maplibre";
+import "maplibre-gl/dist/maplibre-gl.css";
 import { useAllFindingsHeatmap } from "../../hooks/useFindings";
 import "./HomePage.css";
 
-const MAPBOX_TOKEN =
-  "pk.eyJ1IjoibWVuNzciLCJhIjoiY21taHF0dWU4MHFnNzJwczZwajg0eGNxcCJ9.jbHXwO95T8UKk1vBHgccyw";
+const SATELLITE_STYLE = {
+  version: 8,
+  sources: {
+    satellite: {
+      type: "raster",
+      tiles: [
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      ],
+      tileSize: 256,
+    },
+  },
+  layers: [
+    {
+      id: "satellite",
+      type: "raster",
+      source: "satellite",
+    },
+  ],
+};
 
 export const HomePage: React.FC = () => {
   const { t } = useTranslation();
@@ -50,14 +67,13 @@ export const HomePage: React.FC = () => {
             <div className="home-page__map">
               <div className="home-page__map-canvas">
                 <Map
-                  mapboxAccessToken={MAPBOX_TOKEN}
                   initialViewState={{
                     longitude: 11.5,
                     latitude: 56.2,
                     zoom: 6,
                   }}
                   style={{ width: "100%", height: "100%" }}
-                  mapStyle="mapbox://styles/mapbox/satellite-streets-v12"
+                  mapStyle={SATELLITE_STYLE}
                   interactive={false}
                 >
                   {heatData && (
