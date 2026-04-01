@@ -1,4 +1,3 @@
-import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Map, { Source, Layer, type MapRef } from "react-map-gl/maplibre";
 import type { StyleSpecification } from "maplibre-gl";
@@ -45,31 +44,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({
   const heatData = useAllFindingsHeatmap();
   const mapRef = useRef<MapRef>(null);
 
-  const navItems = [
-    { to: "/detector/my-findings", label: t("appShell.nav.myFindings") },
-    { to: "/detector/create-finding", label: t("appShell.nav.createFinding") },
-  ];
-
   return (
     <div className="app-shell">
       <header className="app-shell__header">
         <span className="app-shell__logo">🪙</span>
-        <nav className="app-shell__nav">
-          {navItems.map(({ to, label }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                [
-                  "app-shell__nav-link",
-                  isActive ? "app-shell__nav-link--active" : "",
-                ].join(" ")
-              }
-            >
-              {label}
-            </NavLink>
-          ))}
-        </nav>
       </header>
 
       <main className="app-shell__main">

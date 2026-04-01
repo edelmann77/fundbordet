@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import { Breadcrumb } from "fundbrdet-ui";
 import { useMap } from "../../components/AppShell/AppShell";
 import proj4 from "proj4";
 import { useUserFindings } from "../../hooks/useFindings";
@@ -17,12 +18,28 @@ export const MyFindingsPage: React.FC = () => {
     return [lng, lat];
   };
 
+  const breadcrumb = (
+    <Breadcrumb
+      className="page-breadcrumb"
+      items={[
+        { label: t("breadcrumb.home"), href: "/detector/home" },
+        { label: t("breadcrumb.myFindings"), current: true },
+      ]}
+    />
+  );
+
   if (findings.length === 0) {
-    return <p className="my-findings__empty">{t("myFindings.empty")}</p>;
+    return (
+      <div className="my-findings">
+        {breadcrumb}
+        <p className="my-findings__empty">{t("myFindings.empty")}</p>
+      </div>
+    );
   }
 
   return (
     <div className="my-findings">
+      {breadcrumb}
       <div className="my-findings__list">
         {findings.map((f) => (
           <div

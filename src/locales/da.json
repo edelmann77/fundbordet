@@ -91,6 +91,13 @@
   "createFindingPage": {
     "comingSoon": "Opret fund — kommer snart"
   },
+  "breadcrumb": {
+    "home": "Hjem",
+    "login": "Log ind",
+    "signup": "Opret konto",
+    "myFindings": "Mine fund",
+    "createFinding": "Opret fund"
+  },
   "importFinding": {
     "dropzone": "Træk en .xlsx-fil hertil, eller klik for at vælge",
     "genstandColumn": "Genstand",

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button } from "fundbrdet-ui";
+import { Breadcrumb, Button } from "fundbrdet-ui";
 import "./LandingPage.css";
 
 type Language = "da" | "en";
@@ -94,6 +94,10 @@ export const LandingPage: React.FC = () => {
         </div>
       </nav>
 
+      <Breadcrumb
+        className="page-breadcrumb"
+        items={[{ label: t("breadcrumb.home"), current: true }]}
+      />
       <main className="landing-page__main">
         <h1 className="landing-page__title">
           {t("landing.title", "Welcome to Hobbybordet")}

@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Button, Card, TextInput } from "fundbrdet-ui";
+import { Breadcrumb, Button, Card, TextInput } from "fundbrdet-ui";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../../lib/supabase";
 import "./LoginPage.css";
@@ -38,6 +38,13 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div className="login-page">
+      <Breadcrumb
+        className="page-breadcrumb"
+        items={[
+          { label: t("breadcrumb.home"), href: "/" },
+          { label: t("breadcrumb.login"), current: true },
+        ]}
+      />
       <div className="login-page__container">
         <div className="login-page__header">
           <Link to="/" className="login-page__logo-link">
@@ -47,7 +54,7 @@ export const LoginPage: React.FC = () => {
           <p className="login-page__subtitle">{t("login.subtitle")}</p>
         </div>
 
-        <Card variant="elevated" padding="p-8">
+        <Card variant="elevated">
           <form onSubmit={handleSubmit} noValidate className="login-page__form">
             {error && (
               <div role="alert" className="login-page__error">

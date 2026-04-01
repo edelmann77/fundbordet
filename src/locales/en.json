@@ -91,6 +91,13 @@
   "createFindingPage": {
     "comingSoon": "Register find — coming soon"
   },
+  "breadcrumb": {
+    "home": "Home",
+    "login": "Log in",
+    "signup": "Sign up",
+    "myFindings": "My finds",
+    "createFinding": "Register find"
+  },
   "importFinding": {
     "dropzone": "Drag a .xlsx file here, or click to select",
     "genstandColumn": "Object",

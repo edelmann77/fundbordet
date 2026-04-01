@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button, Card, TextInput } from "fundbrdet-ui";
+import { Breadcrumb, Button, Card, TextInput } from "fundbrdet-ui";
 import { supabase } from "../../lib/supabase";
 import "./SignUpPage.css";
 
@@ -60,6 +60,13 @@ export const SignUpPage: React.FC = () => {
 
   return (
     <div className="signup-page">
+      <Breadcrumb
+        className="page-breadcrumb"
+        items={[
+          { label: t("breadcrumb.home"), href: "/" },
+          { label: t("breadcrumb.signup"), current: true },
+        ]}
+      />
       <div className="signup-page__container">
         <div className="signup-page__header">
           <Link to="/" className="signup-page__logo-link">
@@ -69,7 +76,7 @@ export const SignUpPage: React.FC = () => {
           <p className="signup-page__subtitle">{t("signup.subtitle")}</p>
         </div>
 
-        <Card variant="elevated" padding="p-8">
+        <Card variant="elevated">
           <form
             onSubmit={handleSubmit}
             noValidate
