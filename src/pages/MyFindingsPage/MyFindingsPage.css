@@ -1,52 +1,241 @@
 .my-findings {
-  width: 100%;
+  flex: 1 1 0%;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  max-height: calc(100vh - 5rem);
+  overflow: hidden;
 }
+
+/* ── Count summary ─────────────────────────────────────────── */
+
+.my-findings__count {
+  padding-inline: 1.5rem;
+  padding-block: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-ink-faint);
+  border-bottom: 1px solid var(--color-edge);
+  flex-shrink: 0;
+}
+
+/* ── Scrollable list ───────────────────────────────────────── */
 
 .my-findings__list {
   flex: 1 1 0%;
-  overflow: auto;
-}
-
-.my-findings__card {
-  border-radius: 0.75rem;
-  border: 1px solid var(--color-edge);
-  background-color: var(--color-surface);
-  padding-inline: 1.25rem;
-  padding-block: 1rem;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+/* ── Card ──────────────────────────────────────────────────── */
+
+.my-findings__card {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-edge);
+  background-color: var(--color-surface-raised);
+  padding: 0.875rem 1rem 0.75rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
   cursor: pointer;
+  overflow: hidden;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease,
+    border-color 0.15s ease;
+}
+
+/* Green left accent bar */
+.my-findings__card::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 3px;
+  background: var(--color-primary);
+  border-radius: 3px 0 0 3px;
+}
+
+.my-findings__card:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+  border-color: var(--color-primary-light);
+}
+
+/* Top row: title + chevron */
+.my-findings__card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
 .my-findings__card-title {
+  flex: 1 1 0%;
+  min-width: 0;
   font-weight: 600;
+  font-size: 0.9375rem;
+  line-height: 1.4;
   color: var(--color-ink);
-  font-size: 0.875rem;
-  line-height: 1.25rem;
+  margin: 0;
 }
 
 .my-findings__card-title--unnamed {
-  color: var(--color-ink-muted);
+  color: var(--color-ink-faint);
   font-style: italic;
+  font-weight: 400;
 }
 
-.my-findings__card-meta {
+.my-findings__card-chevron {
+  font-size: 1.375rem;
+  line-height: 1;
+  color: var(--color-ink-faint);
+  flex-shrink: 0;
+  transition:
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.my-findings__card:hover .my-findings__card-chevron {
+  color: var(--color-primary);
+  transform: translateX(2px);
+}
+
+/* Bottom row: badges + date */
+.my-findings__card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.my-findings__card-badges {
   display: flex;
   flex-wrap: wrap;
-  column-gap: 1rem;
-  row-gap: 0.125rem;
-  font-size: 0.75rem;
-  line-height: 1rem;
+  gap: 0.375rem;
+}
+
+.my-findings__badge {
+  display: inline-block;
+  padding: 0.1875rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: nowrap;
+}
+
+.my-findings__badge--material {
+  background-color: rgba(74, 124, 89, 0.12);
+  color: var(--color-primary-dark);
+}
+
+.my-findings__badge--dating {
+  background-color: rgba(139, 99, 71, 0.12);
+  color: var(--color-secondary-dark);
+}
+
+.my-findings__badge--location {
+  background-color: rgba(74, 133, 196, 0.12);
+  color: #2d5a8e;
+}
+
+.my-findings__badge--dime {
+  background-color: rgba(160, 149, 133, 0.15);
   color: var(--color-ink-muted);
 }
 
+.my-findings__card-date {
+  font-size: 0.75rem;
+  color: var(--color-ink-faint);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+/* ── Empty state ───────────────────────────────────────────── */
+
 .my-findings__empty {
-  color: var(--color-ink-muted);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  gap: 0.625rem;
+}
+
+.my-findings__empty-icon {
+  width: 3rem;
+  height: 3rem;
+  color: var(--color-ink-faint);
+  margin-bottom: 0.375rem;
+}
+
+.my-findings__empty-title {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-ink);
+}
+
+.my-findings__empty-text {
+  margin: 0;
   font-size: 0.875rem;
-  line-height: 1.25rem;
+  color: var(--color-ink-muted);
+  max-width: 20rem;
+}
+
+.my-findings__empty-cta {
+  margin-top: 0.625rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1.25rem;
+  background-color: var(--color-primary);
+  color: var(--color-ink-inverse);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.my-findings__empty-cta:hover {
+  background-color: var(--color-primary-dark);
+}
+
+/* ── Skeleton loading ──────────────────────────────────────── */
+
+.my-findings__card--skeleton {
+  min-height: 5rem;
+  background: linear-gradient(
+    90deg,
+    var(--color-surface) 25%,
+    var(--color-page) 50%,
+    var(--color-surface) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+  cursor: default;
+  pointer-events: none;
+}
+
+.my-findings__card--skeleton::before {
+  background: var(--color-edge);
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

@@ -79,9 +79,14 @@
     "save": "Save"
   },
   "myFindings": {
-    "empty": "You have no registered finds.",
+    "empty": "You have no registered finds yet.",
+    "emptyTitle": "No finds yet",
+    "registerFirst": "Register your first find",
     "unnamed": "Unnamed",
-    "dimeIdLabel": "DimeId"
+    "dimeIdLabel": "DimeId",
+    "locationRecorded": "Location",
+    "count_one": "1 find registered",
+    "count_other": "{{count}} finds registered"
   },
   "landing": {
     "selectLanguage": "Select language",

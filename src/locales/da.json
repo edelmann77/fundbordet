@@ -79,9 +79,14 @@
     "save": "Gem"
   },
   "myFindings": {
-    "empty": "Du har ingen registrerede fund.",
+    "empty": "Du har endnu ingen registrerede fund.",
+    "emptyTitle": "Ingen fund endnu",
+    "registerFirst": "Registrer dit første fund",
     "unnamed": "Uden navn",
-    "dimeIdLabel": "DimeId"
+    "dimeIdLabel": "DimeId",
+    "locationRecorded": "Placering",
+    "count_one": "1 fund registreret",
+    "count_other": "{{count}} fund registreret"
   },
   "landing": {
     "selectLanguage": "Vælg sprog",

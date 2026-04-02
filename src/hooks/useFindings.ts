@@ -63,6 +63,9 @@ export function useUserFindings() {
               // convert DB shape to our Finding interface
               const mapped = (data as any[]).map((row) => ({
                 ...row,
+                genstand: row.written_name,
+                materiale: row.material,
+                datering: row.dating,
                 oest: row.easting,
                 nord: row.northing,
               }));
