@@ -29,6 +29,76 @@ export interface Finding {
   created_at: string;
 }
 
+function mapRowToFinding(row: any): Finding {
+  return {
+    ...row,
+    genstand: row.written_name,
+    materiale: row.material,
+    datering: row.dating,
+    oest: row.easting,
+    nord: row.northing,
+  } as Finding;
+}
+
+function toNullableNumber(value: unknown): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+export async function updateCurrentUserFinding(
+  findingId: string,
+  values: Partial<Finding>,
+): Promise<void> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Not authenticated");
+  }
+
+  const updatePayload = {
+    written_name: values.genstand ?? null,
+    material: values.materiale ?? null,
+    dating: values.datering ?? null,
+    easting: toNullableNumber(values.oest),
+    northing: toNullableNumber(values.nord),
+    dime_id: values.dime_id ?? null,
+  };
+
+  const { data: updatedRowsStrict, error: strictError } = await supabase
+    .schema("public")
+    .from("findings")
+    .update(updatePayload)
+    .eq("id", findingId)
+    .eq("user_id", user.id)
+    .select("id");
+
+  if (strictError) {
+    throw strictError;
+  }
+
+  if (!updatedRowsStrict || updatedRowsStrict.length !== 1) {
+    // Fallback: rely on RLS and match only by id in case user_id data is inconsistent.
+    const { data: updatedRowsById, error: fallbackError } = await supabase
+      .schema("public")
+      .from("findings")
+      .update(updatePayload)
+      .eq("id", findingId)
+      .select("id");
+
+    if (fallbackError) {
+      throw fallbackError;
+    }
+
+    if (!updatedRowsById || updatedRowsById.length !== 1) {
+      throw new Error("No finding was updated");
+    }
+  }
+}
+
 /**
  * Hook to fetch findings for the current user with real-time subscriptions
  */
@@ -38,55 +108,98 @@ export function useUserFindings() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const channel = supabase.channel("findings");
+    let isMounted = true;
+    let channel: ReturnType<typeof supabase.channel> | null = null;
 
-    supabase.auth.getUser().then(({ data: { user } }) => {
+    const setup = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
       if (!user) {
-        setError("Not authenticated");
-        setLoading(false);
+        if (isMounted) {
+          setError("Not authenticated");
+          setLoading(false);
+        }
         return;
       }
+
       const userId = user.id;
 
-      const fetchFindings = () =>
-        supabase
-          .schema("public")
-          .from("findings")
-          .select("*")
-          .eq("user_id", userId)
-          .order("created_at", { ascending: false })
-          .then(({ data, error: queryError }) => {
-            setLoading(false);
-            if (queryError) {
-              setError(queryError.message);
-            } else if (data) {
-              // convert DB shape to our Finding interface
-              const mapped = (data as any[]).map((row) => ({
-                ...row,
-                genstand: row.written_name,
-                materiale: row.material,
-                datering: row.dating,
-                oest: row.easting,
-                nord: row.northing,
-              }));
-              setFindings(mapped as Finding[]);
-              setError(null);
-            }
-          });
+      const { data, error: queryError } = await supabase
+        .schema("public")
+        .from("findings")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
 
-      fetchFindings();
+      if (!isMounted) return;
 
-      channel
+      if (queryError) {
+        setError(queryError.message);
+      } else {
+        setFindings(((data as any[]) ?? []).map(mapRowToFinding));
+        setError(null);
+      }
+      setLoading(false);
+
+      channel = supabase
+        .channel(`findings:${userId}`)
         .on(
           "postgres_changes",
-          { event: "*", schema: "public", table: "findings" },
-          fetchFindings,
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "findings",
+            filter: `user_id=eq.${userId}`,
+          },
+          (payload) => {
+            const inserted = mapRowToFinding(payload.new);
+            setFindings((prev) => [
+              inserted,
+              ...prev.filter((f) => f.id !== inserted.id),
+            ]);
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE",
+            schema: "public",
+            table: "findings",
+            filter: `user_id=eq.${userId}`,
+          },
+          (payload) => {
+            const updated = mapRowToFinding(payload.new);
+            setFindings((prev) =>
+              prev.map((f) => (f.id === updated.id ? updated : f)),
+            );
+          },
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "findings",
+            filter: `user_id=eq.${userId}`,
+          },
+          (payload) => {
+            const deletedId = String((payload.old as { id?: string }).id ?? "");
+            if (!deletedId) return;
+            setFindings((prev) => prev.filter((f) => f.id !== deletedId));
+          },
         )
         .subscribe();
-    });
+    };
+
+    void setup();
 
     return () => {
-      supabase.removeChannel(channel);
+      isMounted = false;
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 

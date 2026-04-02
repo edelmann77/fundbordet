@@ -1,10 +1,13 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb, TextInput, Button } from "fundbrdet-ui";
-import { supabase } from "../../lib/supabase";
 import proj4 from "proj4";
-import { useUserFindings, type Finding } from "../../hooks/useFindings";
+import {
+  useUserFindings,
+  type Finding,
+  updateCurrentUserFinding,
+} from "../../hooks/useFindings";
 import Map, {
   Marker,
   type MapRef,
@@ -197,21 +200,11 @@ export const MyFindingsPage: React.FC = () => {
 
     setSaving(true);
     try {
-      const { error } = await supabase
-        .from("findings")
-        .update({
-          written_name: editValues.genstand,
-          material: editValues.materiale,
-          dating: editValues.datering,
-          easting: editValues.oest ? Number(editValues.oest) : null,
-          northing: editValues.nord ? Number(editValues.nord) : null,
-          dime_id: editValues.dime_id || null,
-        })
-        .eq("id", selectedFinding.id);
+      await updateCurrentUserFinding(selectedFinding.id, editValues);
 
-      if (!error) {
-        setIsEditing(false);
-      }
+      setIsEditing(false);
+    } catch (err) {
+      console.error("Failed to update finding", err);
     } finally {
       setSaving(false);
     }
@@ -224,14 +217,74 @@ export const MyFindingsPage: React.FC = () => {
     }
   };
 
-  const handleMapClick = (e: MapMouseEvent) => {
-    const { lng, lat } = e.lngLat;
-    if (zoom >= PLACE_MARKER_ZOOM && editValues) {
+  const handleMapClick = useCallback(
+    (e: MapMouseEvent) => {
+      if (!isEditing || zoom < PLACE_MARKER_ZOOM) return;
+      const { lng, lat } = e.lngLat;
       const { easting, northing } = wgs84ToUTM(lng, lat);
-      handleEditChange("oest", easting);
-      handleEditChange("nord", northing);
+      setEditValues((prev) =>
+        prev ? { ...prev, oest: easting, nord: northing } : prev,
+      );
+    },
+    [isEditing, zoom],
+  );
+
+  const handleMapZoom = useCallback((e: ViewStateChangeEvent) => {
+    setZoom(e.viewState.zoom);
+  }, []);
+
+  const findingsWithCoords = useMemo(
+    () => getFindingsWithCoordinates(findings),
+    [findings],
+  );
+
+  const selectedWithCoords = useMemo(() => {
+    if (
+      !selectedFinding ||
+      selectedFinding.oest == null ||
+      selectedFinding.nord == null ||
+      !isValidUTM(Number(selectedFinding.oest), Number(selectedFinding.nord))
+    ) {
+      return undefined;
     }
-  };
+
+    const [lng, lat] = utmToWGS84(
+      Number(selectedFinding.oest),
+      Number(selectedFinding.nord),
+    );
+
+    return { ...selectedFinding, lng, lat };
+  }, [selectedFinding]);
+
+  const mapBounds = useMemo(
+    () => calculateMapBounds(findingsWithCoords, selectedWithCoords),
+    [findingsWithCoords, selectedWithCoords],
+  );
+
+  const mapMarkers = useMemo(
+    () =>
+      findingsWithCoords.map((f) => {
+        const isSelected = f.id === selectedFinding?.id;
+        return (
+          <Marker key={f.id} longitude={f.lng} latitude={f.lat} anchor="bottom">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width={isSelected ? 28 : 20}
+              height={isSelected ? 28 : 20}
+              viewBox="0 0 24 24"
+            >
+              <path
+                fill={isSelected ? "#e63946" : "#888"}
+                stroke="#fff"
+                strokeWidth="1"
+                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+              />
+            </svg>
+          </Marker>
+        );
+      }),
+    [findingsWithCoords, selectedFinding?.id],
+  );
 
   useEffect(() => {
     if (
@@ -504,76 +557,22 @@ export const MyFindingsPage: React.FC = () => {
                   ) && (
                     <div className="my-findings__detail-map-container">
                       <div className="my-findings__detail-map">
-                        {(() => {
-                          const findingsWithCoords =
-                            getFindingsWithCoordinates(findings);
-                          const selectedWithCoords =
-                            selectedFinding &&
-                            selectedFinding.oest != null &&
-                            selectedFinding.nord != null &&
-                            isValidUTM(
-                              Number(selectedFinding.oest),
-                              Number(selectedFinding.nord),
-                            )
-                              ? {
-                                  ...selectedFinding,
-                                  lng: utmToWGS84(
-                                    Number(selectedFinding.oest),
-                                    Number(selectedFinding.nord),
-                                  )[0],
-                                  lat: utmToWGS84(
-                                    Number(selectedFinding.oest),
-                                    Number(selectedFinding.nord),
-                                  )[1],
-                                }
-                              : undefined;
-                          const bounds = calculateMapBounds(
-                            findingsWithCoords,
-                            selectedWithCoords,
-                          );
-                          return (
-                            <Map
-                              ref={isEditing ? undefined : mapRef}
-                              initialViewState={{
-                                longitude: bounds.center[0],
-                                latitude: bounds.center[1],
-                                zoom: bounds.zoom,
-                              }}
-                              style={{ width: "100%", height: "100%" }}
-                              mapStyle={SATELLITE_STYLE}
-                              interactive
-                              dragRotate={false}
-                              pitchWithRotate={false}
-                              maxPitch={0}
-                            >
-                              {findingsWithCoords.map((f) => {
-                                const isSelected = f.id === selectedFinding?.id;
-                                return (
-                                  <Marker
-                                    key={f.id}
-                                    longitude={f.lng}
-                                    latitude={f.lat}
-                                    anchor="bottom"
-                                  >
-                                    <svg
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      width={isSelected ? 28 : 20}
-                                      height={isSelected ? 28 : 20}
-                                      viewBox="0 0 24 24"
-                                    >
-                                      <path
-                                        fill={isSelected ? "#e63946" : "#888"}
-                                        stroke="#fff"
-                                        strokeWidth="1"
-                                        d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-                                      />
-                                    </svg>
-                                  </Marker>
-                                );
-                              })}
-                            </Map>
-                          );
-                        })()}
+                        <Map
+                          ref={isEditing ? undefined : mapRef}
+                          initialViewState={{
+                            longitude: mapBounds.center[0],
+                            latitude: mapBounds.center[1],
+                            zoom: mapBounds.zoom,
+                          }}
+                          style={{ width: "100%", height: "100%" }}
+                          mapStyle={SATELLITE_STYLE}
+                          interactive
+                          dragRotate={false}
+                          pitchWithRotate={false}
+                          maxPitch={0}
+                        >
+                          {mapMarkers}
+                        </Map>
                       </div>
                     </div>
                   )}
@@ -665,81 +664,24 @@ export const MyFindingsPage: React.FC = () => {
 
                       <div className="my-findings__detail-map-container">
                         <div className="my-findings__detail-map">
-                          {(() => {
-                            const findingsWithCoords =
-                              getFindingsWithCoordinates(findings);
-                            const selectedWithCoords =
-                              selectedFinding &&
-                              selectedFinding.oest != null &&
-                              selectedFinding.nord != null &&
-                              isValidUTM(
-                                Number(selectedFinding.oest),
-                                Number(selectedFinding.nord),
-                              )
-                                ? {
-                                    ...selectedFinding,
-                                    lng: utmToWGS84(
-                                      Number(selectedFinding.oest),
-                                      Number(selectedFinding.nord),
-                                    )[0],
-                                    lat: utmToWGS84(
-                                      Number(selectedFinding.oest),
-                                      Number(selectedFinding.nord),
-                                    )[1],
-                                  }
-                                : undefined;
-                            const bounds = calculateMapBounds(
-                              findingsWithCoords,
-                              selectedWithCoords,
-                            );
-                            return (
-                              <Map
-                                ref={mapRef}
-                                initialViewState={{
-                                  longitude: bounds.center[0],
-                                  latitude: bounds.center[1],
-                                  zoom: bounds.zoom,
-                                }}
-                                style={{ width: "100%", height: "100%" }}
-                                mapStyle={SATELLITE_STYLE}
-                                interactive
-                                dragRotate={false}
-                                pitchWithRotate={false}
-                                maxPitch={0}
-                                onClick={handleMapClick}
-                                onZoom={(e: ViewStateChangeEvent) =>
-                                  setZoom(e.viewState.zoom)
-                                }
-                              >
-                                {findingsWithCoords.map((f) => {
-                                  const isSelected =
-                                    f.id === selectedFinding?.id;
-                                  return (
-                                    <Marker
-                                      key={f.id}
-                                      longitude={f.lng}
-                                      latitude={f.lat}
-                                      anchor="bottom"
-                                    >
-                                      <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        width={isSelected ? 28 : 20}
-                                        height={isSelected ? 28 : 20}
-                                        viewBox="0 0 24 24"
-                                      >
-                                        <path
-                                          fill={isSelected ? "#e63946" : "#888"}
-                                          stroke="#fff"
-                                          strokeWidth="1"
-                                          d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-                                        />
-                                      </svg>
-                                    </Marker>
-                                  );
-                                })}
-                              </Map>
-                            );
-                          })()}
+                          <Map
+                            ref={mapRef}
+                            initialViewState={{
+                              longitude: mapBounds.center[0],
+                              latitude: mapBounds.center[1],
+                              zoom: mapBounds.zoom,
+                            }}
+                            style={{ width: "100%", height: "100%" }}
+                            mapStyle={SATELLITE_STYLE}
+                            interactive
+                            dragRotate={false}
+                            pitchWithRotate={false}
+                            maxPitch={0}
+                            onClick={handleMapClick}
+                            onZoom={handleMapZoom}
+                          >
+                            {mapMarkers}
+                          </Map>
                         </div>
                       </div>
 
