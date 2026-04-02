@@ -85,6 +85,9 @@
     "unnamed": "Uden navn",
     "dimeIdLabel": "DimeId",
     "locationRecorded": "Placering",
+    "searchPlaceholder": "Søg på genstand, datering eller DimeId…",
+    "searchResults_one": "1 resultat",
+    "searchResults_other": "{{count}} resultater",
     "count_one": "1 fund registreret",
     "count_other": "{{count}} fund registreret"
   },

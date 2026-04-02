@@ -5,6 +5,63 @@
   overflow: hidden;
 }
 
+/* ── Search ────────────────────────────────────────────────── */
+
+.my-findings__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem 0.5rem;
+  flex-shrink: 0;
+}
+
+.my-findings__search-icon {
+  position: absolute;
+  left: 1.75rem;
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-ink-faint);
+  pointer-events: none;
+}
+
+.my-findings__search-input {
+  width: 50%;
+  flex: 0 0 50%;
+  padding: 0.5rem 0.75rem 0.5rem 2.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-edge);
+  background-color: var(--color-surface-raised);
+  font-family: inherit;
+  font-size: 0.875rem;
+  color: var(--color-ink);
+  outline: none;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.my-findings__search-input::placeholder {
+  color: var(--color-ink-faint);
+}
+
+.my-findings__search-input:focus {
+  border-color: var(--color-edge-focus);
+  box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.15);
+}
+
+/* hide the native clear (×) button in WebKit */
+.my-findings__search-input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+.my-findings__search-results {
+  flex-shrink: 0;
+  font-size: 0.75rem;
+  color: var(--color-ink-muted);
+  white-space: nowrap;
+  padding-left: 0.75rem;
+}
+
 /* ── Count summary ─────────────────────────────────────────── */
 
 .my-findings__count {

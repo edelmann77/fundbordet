@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { Breadcrumb } from "fundbrdet-ui";
@@ -26,6 +27,17 @@ export const MyFindingsPage: React.FC = () => {
   const { t } = useTranslation();
   const { findings, loading } = useUserFindings();
   const { flyTo } = useMap();
+  const [query, setQuery] = useState("");
+
+  const needle = query.toLowerCase();
+  const filteredFindings = needle
+    ? findings.filter(
+        (f) =>
+          f.genstand?.toLowerCase().startsWith(needle) ||
+          f.datering?.toLowerCase().startsWith(needle) ||
+          f.dime_id?.toLowerCase().startsWith(needle),
+      )
+    : findings;
 
   const breadcrumb = (
     <Breadcrumb
@@ -94,8 +106,35 @@ export const MyFindingsPage: React.FC = () => {
       <p className="my-findings__count">
         {t("myFindings.count", { count: findings.length })}
       </p>
+      <div className="my-findings__search">
+        <svg
+          className="my-findings__search-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="11" cy="11" r="7" />
+          <path d="m20 20-3.5-3.5" />
+        </svg>
+        <input
+          className="my-findings__search-input"
+          type="search"
+          placeholder={t("myFindings.searchPlaceholder")}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+        />
+        {query && (
+          <span className="my-findings__search-results">
+            {t("myFindings.searchResults", { count: filteredFindings.length })}
+          </span>
+        )}
+      </div>
       <div className="my-findings__list">
-        {findings.map((f) => {
+        {filteredFindings.map((f) => {
           const name = f.genstand || (f as any).written_name;
           const hasLocation = f.oest != null && f.nord != null;
           return (
