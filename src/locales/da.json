@@ -89,7 +89,8 @@
     "searchResults_one": "1 resultat",
     "searchResults_other": "{{count}} resultater",
     "count_one": "1 fund registreret",
-    "count_other": "{{count}} fund registreret"
+    "count_other": "{{count}} fund registreret",
+    "selectToView": "Klik på et fund for at se og redigere dets detaljer"
   },
   "landing": {
     "selectLanguage": "Vælg sprog",

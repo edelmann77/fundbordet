@@ -89,7 +89,8 @@
     "searchResults_one": "1 result",
     "searchResults_other": "{{count}} results",
     "count_one": "1 find registered",
-    "count_other": "{{count}} finds registered"
+    "count_other": "{{count}} finds registered",
+    "selectToView": "Click on a find to view and edit its details"
   },
   "landing": {
     "selectLanguage": "Select language",

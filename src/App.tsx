@@ -59,6 +59,16 @@ function App() {
             }
           />
           <Route
+            path="/detector/my-findings/:id"
+            element={
+              <RequireAuth>
+                <AppShell>
+                  <MyFindingsPage />
+                </AppShell>
+              </RequireAuth>
+            }
+          />
+          <Route
             path="/detector/create-finding"
             element={
               <RequireAuth>
