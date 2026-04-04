@@ -20,10 +20,12 @@ export const MyFindingsDetail: React.FC<{
   mapRef: RefObject<MapRef | null>;
   mapFindings: FindingWithCoordinates[];
   mapBounds: { center: [number, number]; zoom: number };
+  selectedImages: File[];
   onStartEditing: () => void;
   onCancel: () => void;
   onSave: () => void;
   onEditChange: (field: keyof Finding, value: string) => void;
+  onImagesChange: (images: File[]) => void;
   onMapClick: (event: MapMouseEvent) => void;
   onMapZoom: (event: ViewStateChangeEvent) => void;
 }> = ({
@@ -34,10 +36,12 @@ export const MyFindingsDetail: React.FC<{
   mapRef,
   mapFindings,
   mapBounds,
+  selectedImages,
   onStartEditing,
   onCancel,
   onSave,
   onEditChange,
+  onImagesChange,
   onMapClick,
   onMapZoom,
 }) => {
@@ -167,10 +171,12 @@ export const MyFindingsDetail: React.FC<{
           mapRef={mapRef}
           mapFindings={mapFindings}
           mapBounds={mapBounds}
+          selectedImages={selectedImages}
           selectedFindingId={selectedFinding.id}
           onCancel={onCancel}
           onSave={onSave}
           onEditChange={onEditChange}
+          onImagesChange={onImagesChange}
           onMapClick={onMapClick}
           onMapZoom={onMapZoom}
         />

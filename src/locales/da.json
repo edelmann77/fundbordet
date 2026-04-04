@@ -103,8 +103,9 @@
     "imagesHeading": "Billeder",
     "imagesDescription": "Det nye panel reserverer plads til et forsidebillede og flere galleribilleder.",
     "addImagesSoon": "UI klar",
-    "imagesDropzoneTitle": "Område til billedupload",
-    "imagesDropzoneCopy": "Upload-kontrollerne er ikke koblet på endnu, men det er her brugeren senere skal kunne tilføje et eller flere fotos.",
+    "clearImages": "Ryd",
+    "imagesDropzoneTitle": "Vælg billeder",
+    "imagesDropzoneCopy": "Vælg op til {{count}} billeder, som skal uploades sammen med fundet.",
     "coverImage": "Forsidebillede",
     "galleryImage": "Galleribillede",
     "imagesFootnote": "Layoutet understøtter allerede flere billeder med ét større hovedbillede og plads til ekstra miniaturevisninger."

@@ -5,6 +5,7 @@ import { Breadcrumb } from "fundbrdet-ui";
 import {
   useUserFindings,
   type Finding,
+  uploadFindingImages,
   updateCurrentUserFinding,
 } from "../../hooks/useFindings";
 import type {
@@ -35,6 +36,7 @@ export const MyFindingsPage: React.FC = () => {
   );
   const [isEditing, setIsEditing] = useState(false);
   const [editValues, setEditValues] = useState<Partial<Finding> | null>(null);
+  const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
   const [zoom, setZoom] = useState(6);
   const mapRef = useRef<MapRef>(null);
@@ -75,7 +77,9 @@ export const MyFindingsPage: React.FC = () => {
     setSaving(true);
     try {
       await updateCurrentUserFinding(selectedFinding.id, editValues);
+      await uploadFindingImages(selectedImages);
 
+      setSelectedImages([]);
       setIsEditing(false);
     } catch (err) {
       console.error("Failed to update finding", err);
@@ -86,10 +90,15 @@ export const MyFindingsPage: React.FC = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
+    setSelectedImages([]);
     if (selectedFinding) {
       setEditValues({ ...selectedFinding });
     }
   };
+
+  const handleImagesChange = useCallback((images: File[]) => {
+    setSelectedImages(images);
+  }, []);
 
   const handleMapClick = useCallback(
     (e: MapMouseEvent) => {
@@ -164,6 +173,7 @@ export const MyFindingsPage: React.FC = () => {
     if (!routeFindingId) {
       setSelectedFindingId(null);
       setEditValues(null);
+      setSelectedImages([]);
       setIsEditing(false);
       return;
     }
@@ -173,6 +183,7 @@ export const MyFindingsPage: React.FC = () => {
 
     setSelectedFindingId(findingFromRoute.id);
     setEditValues({ ...findingFromRoute });
+    setSelectedImages([]);
     setIsEditing(false);
   }, [routeFindingId, findings]);
 
@@ -268,10 +279,15 @@ export const MyFindingsPage: React.FC = () => {
             mapRef={mapRef}
             mapFindings={mapFindings}
             mapBounds={mapBounds}
-            onStartEditing={() => setIsEditing(true)}
+            selectedImages={selectedImages}
+            onStartEditing={() => {
+              setSelectedImages([]);
+              setIsEditing(true);
+            }}
             onCancel={handleCancel}
             onSave={handleSave}
             onEditChange={handleEditChange}
+            onImagesChange={handleImagesChange}
             onMapClick={handleMapClick}
             onMapZoom={handleMapZoom}
           />

@@ -1,5 +1,6 @@
 import { Button, TextInput } from "fundbrdet-ui";
 import { useTranslation } from "react-i18next";
+import { useEffect, useMemo } from "react";
 import type {
   MapMouseEvent,
   MapRef,
@@ -22,10 +23,12 @@ export const MyFindingsEditModal: React.FC<{
   mapRef: RefObject<MapRef | null>;
   mapFindings: FindingWithCoordinates[];
   mapBounds: { center: [number, number]; zoom: number };
+  selectedImages: File[];
   selectedFindingId: string;
   onCancel: () => void;
   onSave: () => void;
   onEditChange: (field: keyof Finding, value: string) => void;
+  onImagesChange: (images: File[]) => void;
   onMapClick: (event: MapMouseEvent) => void;
   onMapZoom: (event: ViewStateChangeEvent) => void;
 }> = ({
@@ -34,16 +37,49 @@ export const MyFindingsEditModal: React.FC<{
   mapRef,
   mapFindings,
   mapBounds,
+  selectedImages,
   selectedFindingId,
   onCancel,
   onSave,
   onEditChange,
+  onImagesChange,
   onMapClick,
   onMapZoom,
 }) => {
   const { t } = useTranslation();
   const modalTitle =
     editValues.genstand || editValues.materiale || t("myFindings.unnamed");
+  const previewImages = useMemo(
+    () =>
+      selectedImages.map((image) => ({
+        file: image,
+        url: URL.createObjectURL(image),
+      })),
+    [selectedImages],
+  );
+
+  useEffect(() => {
+    return () => {
+      for (const previewImage of previewImages) {
+        URL.revokeObjectURL(previewImage.url);
+      }
+    };
+  }, [previewImages]);
+
+  const handleImageInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const files = Array.from(event.target.files ?? []);
+
+    if (files.length === 0) {
+      return;
+    }
+
+    onImagesChange(
+      [...selectedImages, ...files].slice(0, imageSlotLabels.length),
+    );
+    event.target.value = "";
+  };
 
   return (
     <div className="my-findings__modal" role="dialog" aria-modal="true">
@@ -171,49 +207,65 @@ export const MyFindingsEditModal: React.FC<{
               <aside className="my-findings__modal-sidepanel">
                 <section className="my-findings__modal-panel my-findings__modal-panel--media">
                   <div className="my-findings__modal-panel-header">
-                    <div>
-                      <h4 className="my-findings__modal-panel-title">
-                        {t("myFindings.imagesHeading")}
-                      </h4>
-                    </div>
-                    <span className="my-findings__modal-soon-badge">
-                      {t("myFindings.addImagesSoon")}
-                    </span>
+                    <h4 className="my-findings__modal-panel-title">
+                      {t("myFindings.imagesHeading")}
+                    </h4>
+                    {selectedImages.length > 0 && (
+                      <button
+                        type="button"
+                        className="my-findings__modal-link-button"
+                        onClick={() => onImagesChange([])}
+                      >
+                        {t("myFindings.clearImages")}
+                      </button>
+                    )}
                   </div>
 
-                  <div className="my-findings__image-dropzone" aria-hidden="true">
+                  <label className="my-findings__image-dropzone">
+                    <input
+                      className="my-findings__image-input"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageInputChange}
+                    />
                     <div className="my-findings__image-dropzone-icon">+</div>
                     <p className="my-findings__image-dropzone-title">
                       {t("myFindings.imagesDropzoneTitle")}
                     </p>
                     <p className="my-findings__image-dropzone-copy">
-                      {t("myFindings.imagesDropzoneCopy")}
+                      {t("myFindings.imagesDropzoneCopy", {
+                        count: imageSlotLabels.length,
+                      })}
                     </p>
-                  </div>
+                  </label>
 
-                  <div className="my-findings__image-grid" aria-hidden="true">
+                  <div className="my-findings__image-grid">
                     {imageSlotLabels.map((labelKey, index) => (
                       <div
                         key={`${labelKey}-${index}`}
                         className={
                           index === 0
-                            ? "my-findings__image-slot my-findings__image-slot--feature"
-                            : "my-findings__image-slot"
+                            ? `my-findings__image-slot my-findings__image-slot--feature${previewImages[index] ? " my-findings__image-slot--filled" : ""}`
+                            : `my-findings__image-slot${previewImages[index] ? " my-findings__image-slot--filled" : ""}`
                         }
                       >
+                        {previewImages[index] && (
+                          <img
+                            className="my-findings__image-slot-preview"
+                            src={previewImages[index].url}
+                            alt={previewImages[index].file.name}
+                          />
+                        )}
                         <span className="my-findings__image-slot-badge">
                           {index + 1}
                         </span>
                         <span className="my-findings__image-slot-label">
-                          {t(labelKey)}
+                          {previewImages[index]?.file.name ?? t(labelKey)}
                         </span>
                       </div>
                     ))}
                   </div>
-
-                  <p className="my-findings__modal-footnote">
-                    {t("myFindings.imagesFootnote")}
-                  </p>
 
                 </section>
               </aside>

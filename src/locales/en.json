@@ -103,8 +103,9 @@
     "imagesHeading": "Images",
     "imagesDescription": "This new panel reserves room for a cover image and additional gallery shots.",
     "addImagesSoon": "UI ready",
-    "imagesDropzoneTitle": "Image upload area",
-    "imagesDropzoneCopy": "Upload controls are not wired yet, but this is where users will add one or more photos.",
+    "clearImages": "Clear",
+    "imagesDropzoneTitle": "Choose images",
+    "imagesDropzoneCopy": "Select up to {{count}} images to upload with this finding.",
     "coverImage": "Cover image",
     "galleryImage": "Gallery image",
     "imagesFootnote": "The layout already supports multiple images, with one larger lead image and room for additional thumbnails."

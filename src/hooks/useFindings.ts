@@ -46,6 +46,31 @@ function toNullableNumber(value: unknown): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+const imageUploadBaseUrl =
+  (import.meta.env.VITE_IMAGE_UPLOAD_BASE_URL as string | undefined) ??
+  "http://localhost:3000";
+
+export async function uploadFindingImages(images: File[]): Promise<void> {
+  if (images.length === 0) {
+    return;
+  }
+
+  const formData = new FormData();
+
+  for (const image of images) {
+    formData.append("images", image);
+  }
+
+  const response = await fetch(`${imageUploadBaseUrl}/images`, {
+    method: "POST",
+    body: formData,
+  });
+
+  if (!response.ok) {
+    throw new Error(`Image upload failed with status ${response.status}`);
+  }
+}
+
 export async function updateCurrentUserFinding(
   findingId: string,
   values: Partial<Finding>,
