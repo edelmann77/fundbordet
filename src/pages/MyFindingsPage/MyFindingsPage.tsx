@@ -77,7 +77,7 @@ export const MyFindingsPage: React.FC = () => {
     setSaving(true);
     try {
       await updateCurrentUserFinding(selectedFinding.id, editValues);
-      await uploadFindingImages(selectedImages);
+      await uploadFindingImages(selectedFinding.id, selectedImages);
 
       setSelectedImages([]);
       setIsEditing(false);

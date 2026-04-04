@@ -50,12 +50,16 @@ const imageUploadBaseUrl =
   (import.meta.env.VITE_IMAGE_UPLOAD_BASE_URL as string | undefined) ??
   "http://localhost:3000";
 
-export async function uploadFindingImages(images: File[]): Promise<void> {
+export async function uploadFindingImages(
+  findingId: string,
+  images: File[],
+): Promise<void> {
   if (images.length === 0) {
     return;
   }
 
   const formData = new FormData();
+  formData.append("findingId", findingId);
 
   for (const image of images) {
     formData.append("images", image);

@@ -266,7 +266,6 @@ export const MyFindingsEditModal: React.FC<{
                       </div>
                     ))}
                   </div>
-
                 </section>
               </aside>
             </div>
