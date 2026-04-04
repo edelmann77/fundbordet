@@ -93,7 +93,21 @@
     "searchResults_other": "{{count}} results",
     "count_one": "1 find registered",
     "count_other": "{{count}} finds registered",
-    "selectToView": "Click on a find to view and edit its details"
+    "selectToView": "Click on a find to view and edit its details",
+    "editIntro": "Update your finding details now and keep space reserved for one or more images when media support is added.",
+    "detailsSection": "Finding details",
+    "detailsDescription": "Core details are grouped together so the media area can stay visible while you edit.",
+    "locationSection": "Location",
+    "locationDescription": "Adjust coordinates here or place the marker directly on the map.",
+    "mapHint": "Tip: zoom in and click the map to update the location.",
+    "imagesHeading": "Images",
+    "imagesDescription": "This new panel reserves room for a cover image and additional gallery shots.",
+    "addImagesSoon": "UI ready",
+    "imagesDropzoneTitle": "Image upload area",
+    "imagesDropzoneCopy": "Upload controls are not wired yet, but this is where users will add one or more photos.",
+    "coverImage": "Cover image",
+    "galleryImage": "Gallery image",
+    "imagesFootnote": "The layout already supports multiple images, with one larger lead image and room for additional thumbnails."
   },
   "landing": {
     "selectLanguage": "Select language",

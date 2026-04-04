@@ -93,7 +93,21 @@
     "searchResults_other": "{{count}} resultater",
     "count_one": "1 fund registreret",
     "count_other": "{{count}} fund registreret",
-    "selectToView": "Klik på et fund for at se og redigere dets detaljer"
+    "selectToView": "Klik på et fund for at se og redigere dets detaljer",
+    "editIntro": "Opdater fundets oplysninger nu, mens der allerede er reserveret plads til et eller flere billeder, når mediestøtte bliver tilføjet.",
+    "detailsSection": "Fundoplysninger",
+    "detailsDescription": "De vigtigste felter er samlet, så billedområdet kan forblive synligt under redigering.",
+    "locationSection": "Placering",
+    "locationDescription": "Juster koordinaterne her, eller placer markøren direkte på kortet.",
+    "mapHint": "Tip: zoom ind og klik på kortet for at opdatere placeringen.",
+    "imagesHeading": "Billeder",
+    "imagesDescription": "Det nye panel reserverer plads til et forsidebillede og flere galleribilleder.",
+    "addImagesSoon": "UI klar",
+    "imagesDropzoneTitle": "Område til billedupload",
+    "imagesDropzoneCopy": "Upload-kontrollerne er ikke koblet på endnu, men det er her brugeren senere skal kunne tilføje et eller flere fotos.",
+    "coverImage": "Forsidebillede",
+    "galleryImage": "Galleribillede",
+    "imagesFootnote": "Layoutet understøtter allerede flere billeder med ét større hovedbillede og plads til ekstra miniaturevisninger."
   },
   "landing": {
     "selectLanguage": "Vælg sprog",
