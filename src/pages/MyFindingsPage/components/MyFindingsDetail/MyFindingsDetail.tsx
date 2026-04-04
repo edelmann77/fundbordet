@@ -1,12 +1,16 @@
 import { Button } from "fundbrdet-ui";
 import { useTranslation } from "react-i18next";
-import type { RefObject } from "react";
+import { useEffect, useState, type RefObject } from "react";
 import type {
   MapMouseEvent,
   MapRef,
   ViewStateChangeEvent,
 } from "react-map-gl/maplibre";
-import type { Finding } from "../../../../hooks/useFindings";
+import {
+  getFindingImageUrl,
+  type Finding,
+  useFindingImageUids,
+} from "../../../../hooks/useFindings";
 import type { FindingWithCoordinates } from "../../myFindingsUtils";
 import { isValidUTM } from "../../myFindingsUtils";
 import { MyFindingsEditModal } from "../MyFindingsEditModal/MyFindingsEditModal";
@@ -46,6 +50,78 @@ export const MyFindingsDetail: React.FC<{
   onMapZoom,
 }) => {
   const { t } = useTranslation();
+  const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
+  const { imageUids } = useFindingImageUids(
+    selectedFinding?.id ?? null,
+    isEditing ? "editing" : "view",
+  );
+  const detailValues: Partial<Finding> = editValues ?? {};
+
+  const hasValidCoordinates =
+    detailValues.oest != null &&
+    detailValues.nord != null &&
+    isValidUTM(Number(detailValues.oest), Number(detailValues.nord));
+  const imageUrls = imageUids.map((uid) => ({
+    uid,
+    url: getFindingImageUrl(uid),
+  }));
+  const selectedFindingTitle =
+    detailValues.genstand ||
+    detailValues.materiale ||
+    t("myFindings.unnamed");
+  const hasImages = imageUrls.length > 0;
+  const hasMedia = hasValidCoordinates || hasImages;
+  const activeImage =
+    activeImageIndex != null ? imageUrls[activeImageIndex] ?? null : null;
+  const activeImageNumber = activeImageIndex != null ? activeImageIndex + 1 : 1;
+
+  useEffect(() => {
+    if (activeImageIndex == null) {
+      return;
+    }
+
+    if (activeImageIndex >= imageUrls.length) {
+      setActiveImageIndex(imageUrls.length > 0 ? 0 : null);
+    }
+  }, [activeImageIndex, imageUrls.length]);
+
+  useEffect(() => {
+    if (activeImage == null) {
+      return;
+    }
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setActiveImageIndex(null);
+      }
+
+      if (imageUrls.length > 1 && event.key === "ArrowRight") {
+        setActiveImageIndex((currentIndex) => {
+          if (currentIndex == null) {
+            return 0;
+          }
+
+          return (currentIndex + 1) % imageUrls.length;
+        });
+      }
+
+      if (imageUrls.length > 1 && event.key === "ArrowLeft") {
+        setActiveImageIndex((currentIndex) => {
+          if (currentIndex == null) {
+            return imageUrls.length - 1;
+          }
+
+          return (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+        });
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeImage, imageUrls.length]);
 
   if (!selectedFinding || !editValues) {
     return (
@@ -69,91 +145,144 @@ export const MyFindingsDetail: React.FC<{
     );
   }
 
-  const hasValidCoordinates =
-    editValues.oest != null &&
-    editValues.nord != null &&
-    isValidUTM(Number(editValues.oest), Number(editValues.nord));
-
   return (
     <div className="my-findings__detail-content">
       <div className="my-findings__detail-header">
         <h2 className="my-findings__detail-title">
-          {editValues.genstand ||
-            editValues.materiale ||
-            t("myFindings.unnamed")}
+          {selectedFindingTitle}
         </h2>
       </div>
 
       <div className="my-findings__detail-view">
-        <div className="my-findings__detail-fields">
-          <div className="my-findings__detail-field">
+        <section className="my-findings__detail-meta-section">
+          <div className="my-findings__detail-images-header">
             <span className="my-findings__detail-label">
-              {t("registerFinding.genstand")}
-            </span>
-            <span className="my-findings__detail-value">
-              {editValues.genstand || "—"}
+              {t("myFindings.detailsSection")}
             </span>
           </div>
-          <div className="my-findings__detail-field">
-            <span className="my-findings__detail-label">
-              {t("registerFinding.materiale")}
-            </span>
-            <span className="my-findings__detail-value">
-              {editValues.materiale || "—"}
-            </span>
-          </div>
-          <div className="my-findings__detail-field">
-            <span className="my-findings__detail-label">
-              {t("registerFinding.datering")}
-            </span>
-            <span className="my-findings__detail-value">
-              {editValues.datering || "—"}
-            </span>
-          </div>
-          {(editValues.oest || editValues.nord) && (
-            <>
-              <div className="my-findings__detail-field">
-                <span className="my-findings__detail-label">
-                  {t("registerFinding.oest")}
-                </span>
-                <span className="my-findings__detail-value">
-                  {editValues.oest || "—"}
-                </span>
-              </div>
-              <div className="my-findings__detail-field">
-                <span className="my-findings__detail-label">
-                  {t("registerFinding.nord")}
-                </span>
-                <span className="my-findings__detail-value">
-                  {editValues.nord || "—"}
-                </span>
-              </div>
-            </>
-          )}
-          {editValues.dime_id && (
+          <div className="my-findings__detail-fields">
             <div className="my-findings__detail-field">
               <span className="my-findings__detail-label">
-                {t("registerFinding.dimeId")}
+                {t("registerFinding.genstand")}
               </span>
               <span className="my-findings__detail-value">
-                {editValues.dime_id}
+                {detailValues.genstand || "—"}
               </span>
             </div>
-          )}
-        </div>
-
-        {hasValidCoordinates && (
-          <div className="my-findings__detail-map-container">
-            <div className="my-findings__detail-map">
-              <MyFindingsMap
-                mapRef={mapRef}
-                findings={mapFindings}
-                selectedFindingId={selectedFinding.id}
-                center={mapBounds.center}
-                zoom={mapBounds.zoom}
-                interactive
-              />
+            <div className="my-findings__detail-field">
+              <span className="my-findings__detail-label">
+                {t("registerFinding.materiale")}
+              </span>
+              <span className="my-findings__detail-value">
+                {detailValues.materiale || "—"}
+              </span>
             </div>
+            <div className="my-findings__detail-field">
+              <span className="my-findings__detail-label">
+                {t("registerFinding.datering")}
+              </span>
+              <span className="my-findings__detail-value">
+                {detailValues.datering || "—"}
+              </span>
+            </div>
+            {(detailValues.oest || detailValues.nord) && (
+              <>
+                <div className="my-findings__detail-field">
+                  <span className="my-findings__detail-label">
+                    {t("registerFinding.oest")}
+                  </span>
+                  <span className="my-findings__detail-value">
+                    {detailValues.oest || "—"}
+                  </span>
+                </div>
+                <div className="my-findings__detail-field">
+                  <span className="my-findings__detail-label">
+                    {t("registerFinding.nord")}
+                  </span>
+                  <span className="my-findings__detail-value">
+                    {detailValues.nord || "—"}
+                  </span>
+                </div>
+              </>
+            )}
+            {detailValues.dime_id && (
+              <div className="my-findings__detail-field">
+                <span className="my-findings__detail-label">
+                  {t("registerFinding.dimeId")}
+                </span>
+                <span className="my-findings__detail-value">
+                  {detailValues.dime_id}
+                </span>
+              </div>
+            )}
+          </div>
+        </section>
+
+        {hasMedia && (
+          <div
+            className={
+              hasValidCoordinates && hasImages
+                ? "my-findings__detail-media"
+                : "my-findings__detail-media my-findings__detail-media--single"
+            }
+          >
+            {hasValidCoordinates && (
+              <section className="my-findings__detail-map-section">
+                <div className="my-findings__detail-images-header">
+                  <span className="my-findings__detail-label">
+                    {t("myFindings.locationSection")}
+                  </span>
+                </div>
+                <div className="my-findings__detail-map-container">
+                  <div className="my-findings__detail-map">
+                    <MyFindingsMap
+                      mapRef={mapRef}
+                      findings={mapFindings}
+                      selectedFindingId={selectedFinding.id}
+                      center={mapBounds.center}
+                      zoom={mapBounds.zoom}
+                      interactive
+                    />
+                  </div>
+                </div>
+              </section>
+            )}
+
+            {hasImages && (
+              <section className="my-findings__detail-images-section">
+                <div className="my-findings__detail-images-header">
+                  <span className="my-findings__detail-label">
+                    {t("myFindings.imagesHeading")}
+                  </span>
+                  <span className="my-findings__detail-images-count">
+                    {imageUrls.length}
+                  </span>
+                </div>
+                <p className="my-findings__detail-images-hint">
+                  {t("myFindings.openImageHint")}
+                </p>
+                <div className="my-findings__detail-images-grid" role="list">
+                  {imageUrls.map(({ uid, url }, index) => (
+                    <button
+                      key={uid}
+                      type="button"
+                      className="my-findings__detail-image-card"
+                      onClick={() => setActiveImageIndex(index)}
+                      aria-label={t("myFindings.openImage", {
+                        index: index + 1,
+                      })}
+                    >
+                      <img
+                        className="my-findings__detail-image"
+                        src={url}
+                        alt={`${selectedFindingTitle} ${index + 1}`}
+                        loading="lazy"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </section>
+            )}
           </div>
         )}
 
@@ -171,6 +300,7 @@ export const MyFindingsDetail: React.FC<{
           mapRef={mapRef}
           mapFindings={mapFindings}
           mapBounds={mapBounds}
+          existingImageUids={imageUids}
           selectedImages={selectedImages}
           selectedFindingId={selectedFinding.id}
           onCancel={onCancel}
@@ -180,6 +310,75 @@ export const MyFindingsDetail: React.FC<{
           onMapClick={onMapClick}
           onMapZoom={onMapZoom}
         />
+      )}
+
+      {activeImage && (
+        <div
+          className="my-findings__detail-lightbox"
+          role="dialog"
+          aria-modal="true"
+          aria-label={t("myFindings.imagesHeading")}
+          onClick={() => setActiveImageIndex(null)}
+        >
+          <button
+            type="button"
+            className="my-findings__detail-lightbox-close"
+            onClick={() => setActiveImageIndex(null)}
+            aria-label={t("myFindings.closeImageViewer")}
+          >
+            ×
+          </button>
+
+          {imageUrls.length > 1 && (
+            <>
+              <button
+                type="button"
+                className="my-findings__detail-lightbox-nav my-findings__detail-lightbox-nav--prev"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setActiveImageIndex((currentIndex) => {
+                    if (currentIndex == null) {
+                      return imageUrls.length - 1;
+                    }
+
+                    return (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+                  });
+                }}
+                aria-label={t("myFindings.previousImage")}
+              >
+                ‹
+              </button>
+              <button
+                type="button"
+                className="my-findings__detail-lightbox-nav my-findings__detail-lightbox-nav--next"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setActiveImageIndex((currentIndex) => {
+                    if (currentIndex == null) {
+                      return 0;
+                    }
+
+                    return (currentIndex + 1) % imageUrls.length;
+                  });
+                }}
+                aria-label={t("myFindings.nextImage")}
+              >
+                ›
+              </button>
+            </>
+          )}
+
+          <div
+            className="my-findings__detail-lightbox-stage"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <img
+              className="my-findings__detail-lightbox-image"
+              src={activeImage.url}
+              alt={`${selectedFindingTitle} ${activeImageNumber}`}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

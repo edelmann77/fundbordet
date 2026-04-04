@@ -108,7 +108,12 @@
     "imagesDropzoneCopy": "Select up to {{count}} images to upload with this finding.",
     "coverImage": "Cover image",
     "galleryImage": "Gallery image",
-    "imagesFootnote": "The layout already supports multiple images, with one larger lead image and room for additional thumbnails."
+    "imagesFootnote": "The layout already supports multiple images, with one larger lead image and room for additional thumbnails.",
+    "openImageHint": "Click a thumbnail to open the image in full size.",
+    "openImage": "Open image {{index}}",
+    "closeImageViewer": "Close image viewer",
+    "previousImage": "Previous image",
+    "nextImage": "Next image"
   },
   "landing": {
     "selectLanguage": "Select language",

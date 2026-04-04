@@ -26,7 +26,84 @@ export interface Finding {
   oest: number | null;
   nord: number | null;
   dime_id: string | null;
+  image_uids?: string[] | null;
   created_at: string;
+}
+
+function extractImageUid(value: unknown): string | null {
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+    return trimmed || null;
+  }
+
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const record = value as Record<string, unknown>;
+  const candidates = [
+    record.uid,
+    record.id,
+    record.image_uid,
+    record.imageUid,
+    record.image_id,
+    record.imageId,
+  ];
+
+  for (const candidate of candidates) {
+    if (typeof candidate === "string" && candidate.trim()) {
+      return candidate.trim();
+    }
+  }
+
+  return null;
+}
+
+function normalizeImageUids(value: unknown): string[] | null {
+  if (!value) {
+    return null;
+  }
+
+  if (Array.isArray(value)) {
+    const normalized = value
+      .map(extractImageUid)
+      .filter((item): item is string => Boolean(item));
+
+    return normalized.length > 0 ? normalized : null;
+  }
+
+  if (typeof value === "string") {
+    const trimmed = value.trim();
+
+    if (!trimmed) {
+      return null;
+    }
+
+    try {
+      const parsed = JSON.parse(trimmed);
+      if (Array.isArray(parsed)) {
+        const normalized = parsed
+          .map(extractImageUid)
+          .filter((item): item is string => Boolean(item));
+
+        return normalized.length > 0 ? normalized : null;
+      }
+    } catch {
+      const normalized = trimmed
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+
+      return normalized.length > 0 ? normalized : null;
+    }
+  }
+
+  const objectUid = extractImageUid(value);
+  if (objectUid) {
+    return [objectUid];
+  }
+
+  return null;
 }
 
 function mapRowToFinding(row: any): Finding {
@@ -37,6 +114,13 @@ function mapRowToFinding(row: any): Finding {
     datering: row.dating,
     oest: row.easting,
     nord: row.northing,
+    image_uids: normalizeImageUids(
+      row.image_uids ??
+        row.imageUids ??
+        row.image_ids ??
+        row.imageIds ??
+        row.images,
+    ),
   } as Finding;
 }
 
@@ -49,6 +133,66 @@ function toNullableNumber(value: unknown): number | null {
 const imageUploadBaseUrl =
   (import.meta.env.VITE_IMAGE_UPLOAD_BASE_URL as string | undefined) ??
   "http://localhost:3000";
+
+export function getFindingImageUrl(uid: string): string {
+  return `${imageUploadBaseUrl}/images/${uid}`;
+}
+
+export function useFindingImageUids(
+  findingId: string | null,
+  refreshKey?: unknown,
+) {
+  const [imageUids, setImageUids] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (!findingId) {
+      setImageUids([]);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
+    const load = async () => {
+      setLoading(true);
+
+      const { data, error: queryError } = await supabase
+        .schema("public")
+        .from("imageLinks")
+        .select("*")
+        .eq("finding_id", findingId);
+
+      if (!isMounted) {
+        return;
+      }
+
+      if (queryError) {
+        setError(queryError.message);
+        setImageUids([]);
+      } else {
+        const normalized = ((data as any[]) ?? [])
+          .map((row) => extractImageUid(row))
+          .filter((uid): uid is string => Boolean(uid));
+
+        setImageUids(normalized);
+        setError(null);
+      }
+
+      setLoading(false);
+    };
+
+    void load();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [findingId, refreshKey]);
+
+  return { imageUids, loading, error };
+}
 
 export async function uploadFindingImages(
   findingId: string,

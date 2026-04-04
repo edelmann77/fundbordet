@@ -7,7 +7,7 @@ import type {
   ViewStateChangeEvent,
 } from "react-map-gl/maplibre";
 import type { RefObject } from "react";
-import type { Finding } from "../../../../hooks/useFindings";
+import { getFindingImageUrl, type Finding } from "../../../../hooks/useFindings";
 import type { FindingWithCoordinates } from "../../myFindingsUtils";
 import { MyFindingsMap } from "../MyFindingsMap/MyFindingsMap";
 
@@ -23,6 +23,7 @@ export const MyFindingsEditModal: React.FC<{
   mapRef: RefObject<MapRef | null>;
   mapFindings: FindingWithCoordinates[];
   mapBounds: { center: [number, number]; zoom: number };
+  existingImageUids: string[];
   selectedImages: File[];
   selectedFindingId: string;
   onCancel: () => void;
@@ -37,6 +38,7 @@ export const MyFindingsEditModal: React.FC<{
   mapRef,
   mapFindings,
   mapBounds,
+  existingImageUids,
   selectedImages,
   selectedFindingId,
   onCancel,
@@ -49,13 +51,28 @@ export const MyFindingsEditModal: React.FC<{
   const { t } = useTranslation();
   const modalTitle =
     editValues.genstand || editValues.materiale || t("myFindings.unnamed");
+  const existingImages = useMemo(
+    () =>
+      existingImageUids.map((uid) => ({
+        id: uid,
+        label: uid,
+        url: getFindingImageUrl(uid),
+      })),
+    [existingImageUids],
+  );
   const previewImages = useMemo(
     () =>
       selectedImages.map((image) => ({
+        id: `${image.name}-${image.lastModified}`,
         file: image,
+        label: image.name,
         url: URL.createObjectURL(image),
       })),
     [selectedImages],
+  );
+  const displayImages = useMemo(
+    () => [...existingImages, ...previewImages].slice(0, imageSlotLabels.length),
+    [existingImages, previewImages],
   );
 
   useEffect(() => {
@@ -243,25 +260,25 @@ export const MyFindingsEditModal: React.FC<{
                   <div className="my-findings__image-grid">
                     {imageSlotLabels.map((labelKey, index) => (
                       <div
-                        key={`${labelKey}-${index}`}
+                        key={displayImages[index]?.id ?? `${labelKey}-${index}`}
                         className={
                           index === 0
-                            ? `my-findings__image-slot my-findings__image-slot--feature${previewImages[index] ? " my-findings__image-slot--filled" : ""}`
-                            : `my-findings__image-slot${previewImages[index] ? " my-findings__image-slot--filled" : ""}`
+                            ? `my-findings__image-slot my-findings__image-slot--feature${displayImages[index] ? " my-findings__image-slot--filled" : ""}`
+                            : `my-findings__image-slot${displayImages[index] ? " my-findings__image-slot--filled" : ""}`
                         }
                       >
-                        {previewImages[index] && (
+                        {displayImages[index] && (
                           <img
                             className="my-findings__image-slot-preview"
-                            src={previewImages[index].url}
-                            alt={previewImages[index].file.name}
+                            src={displayImages[index].url}
+                            alt={displayImages[index].label}
                           />
                         )}
                         <span className="my-findings__image-slot-badge">
                           {index + 1}
                         </span>
                         <span className="my-findings__image-slot-label">
-                          {previewImages[index]?.file.name ?? t(labelKey)}
+                          {displayImages[index]?.label ?? t(labelKey)}
                         </span>
                       </div>
                     ))}

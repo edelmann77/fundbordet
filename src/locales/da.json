@@ -108,7 +108,12 @@
     "imagesDropzoneCopy": "Vælg op til {{count}} billeder, som skal uploades sammen med fundet.",
     "coverImage": "Forsidebillede",
     "galleryImage": "Galleribillede",
-    "imagesFootnote": "Layoutet understøtter allerede flere billeder med ét større hovedbillede og plads til ekstra miniaturevisninger."
+    "imagesFootnote": "Layoutet understøtter allerede flere billeder med ét større hovedbillede og plads til ekstra miniaturevisninger.",
+    "openImageHint": "Klik på en miniature for at åbne billedet i fuld størrelse.",
+    "openImage": "Åbn billede {{index}}",
+    "closeImageViewer": "Luk billedviser",
+    "previousImage": "Forrige billede",
+    "nextImage": "Næste billede"
   },
   "landing": {
     "selectLanguage": "Vælg sprog",
