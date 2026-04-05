@@ -3,6 +3,12 @@
     "login": "Log ind",
     "signup": "Opret konto"
   },
+  "account": {
+    "openMenu": "Åbn kontomenu",
+    "settings": "Indstillinger",
+    "logout": "Log ud",
+    "loggingOut": "Logger ud..."
+  },
   "hero": {
     "eyebrow": "Dit udendørs fundjournal",
     "headline": "Hvert fund fortæller en historie. Begynd at registrere dine.",
@@ -128,7 +134,23 @@
     "login": "Log ind",
     "signup": "Opret konto",
     "myFindings": "Mine fund",
-    "createFinding": "Opret fund"
+    "createFinding": "Opret fund",
+    "settings": "Indstillinger"
+  },
+  "settingsPage": {
+    "eyebrow": "Konto",
+    "title": "Indstillinger",
+    "description": "Opdater dit navn her. Din e-mailadresse vises som reference og kan ikke ændres fra denne side.",
+    "email": "E-mailadresse",
+    "firstName": "Fornavn",
+    "lastName": "Efternavn",
+    "loading": "Indlæser...",
+    "save": "Gem ændringer",
+    "success": "Dine indstillinger er gemt.",
+    "errors": {
+      "load": "Dine indstillinger kunne ikke indlæses.",
+      "save": "Dine indstillinger kunne ikke gemmes."
+    }
   },
   "importFinding": {
     "dropzone": "Træk en .xlsx-fil hertil, eller klik for at vælge",

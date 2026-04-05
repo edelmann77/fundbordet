@@ -3,6 +3,12 @@
     "login": "Log in",
     "signup": "Sign up"
   },
+  "account": {
+    "openMenu": "Open account menu",
+    "settings": "Settings",
+    "logout": "Log out",
+    "loggingOut": "Logging out..."
+  },
   "hero": {
     "eyebrow": "Your outdoor finding journal",
     "headline": "Every find tells a story. Start recording yours.",
@@ -128,7 +134,23 @@
     "login": "Log in",
     "signup": "Sign up",
     "myFindings": "My finds",
-    "createFinding": "Register find"
+    "createFinding": "Register find",
+    "settings": "Settings"
+  },
+  "settingsPage": {
+    "eyebrow": "Account",
+    "title": "Settings",
+    "description": "Update your name here. Your email address is shown for reference and cannot be changed from this page.",
+    "email": "Email address",
+    "firstName": "First name",
+    "lastName": "Last name",
+    "loading": "Loading...",
+    "save": "Save changes",
+    "success": "Your settings have been saved.",
+    "errors": {
+      "load": "Unable to load your settings.",
+      "save": "Unable to save your settings."
+    }
   },
   "importFinding": {
     "dropzone": "Drag a .xlsx file here, or click to select",

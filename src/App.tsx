@@ -7,6 +7,7 @@ import SignUpPage from "./pages/SignUpPage/SignUpPage";
 import HomePage from "./pages/HomePage/HomePage";
 import MyFindingsPage from "./pages/MyFindingsPage/MyFindingsPage";
 import CreateFindingPage from "./pages/CreateFindingPage/CreateFindingPage";
+import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import RequireAuth from "./components/RequireAuth/RequireAuth";
 import RedirectIfAuthed from "./components/RedirectIfAuthed/RedirectIfAuthed";
 import AppShell from "./components/AppShell/AppShell";
@@ -74,6 +75,16 @@ function App() {
               <RequireAuth>
                 <AppShell>
                   <CreateFindingPage />
+                </AppShell>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/detector/settings"
+            element={
+              <RequireAuth>
+                <AppShell>
+                  <SettingsPage />
                 </AppShell>
               </RequireAuth>
             }
