@@ -7,7 +7,10 @@ import type {
   ViewStateChangeEvent,
 } from "react-map-gl/maplibre";
 import type { RefObject } from "react";
-import { getFindingImageUrl, type Finding } from "../../../../hooks/useFindings";
+import {
+  getFindingImageUrl,
+  type Finding,
+} from "../../../../hooks/useFindings";
 import type { FindingWithCoordinates } from "../../myFindingsUtils";
 import { MyFindingsMap } from "../MyFindingsMap/MyFindingsMap";
 
@@ -71,7 +74,8 @@ export const MyFindingsEditModal: React.FC<{
     [selectedImages],
   );
   const displayImages = useMemo(
-    () => [...existingImages, ...previewImages].slice(0, imageSlotLabels.length),
+    () =>
+      [...existingImages, ...previewImages].slice(0, imageSlotLabels.length),
     [existingImages, previewImages],
   );
 

@@ -66,13 +66,11 @@ export const MyFindingsDetail: React.FC<{
     url: getFindingImageUrl(uid),
   }));
   const selectedFindingTitle =
-    detailValues.genstand ||
-    detailValues.materiale ||
-    t("myFindings.unnamed");
+    detailValues.genstand || detailValues.materiale || t("myFindings.unnamed");
   const hasImages = imageUrls.length > 0;
   const hasMedia = hasValidCoordinates || hasImages;
   const activeImage =
-    activeImageIndex != null ? imageUrls[activeImageIndex] ?? null : null;
+    activeImageIndex != null ? (imageUrls[activeImageIndex] ?? null) : null;
   const activeImageNumber = activeImageIndex != null ? activeImageIndex + 1 : 1;
 
   useEffect(() => {
@@ -148,9 +146,7 @@ export const MyFindingsDetail: React.FC<{
   return (
     <div className="my-findings__detail-content">
       <div className="my-findings__detail-header">
-        <h2 className="my-findings__detail-title">
-          {selectedFindingTitle}
-        </h2>
+        <h2 className="my-findings__detail-title">{selectedFindingTitle}</h2>
       </div>
 
       <div className="my-findings__detail-view">
@@ -341,7 +337,9 @@ export const MyFindingsDetail: React.FC<{
                       return imageUrls.length - 1;
                     }
 
-                    return (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+                    return (
+                      (currentIndex - 1 + imageUrls.length) % imageUrls.length
+                    );
                   });
                 }}
                 aria-label={t("myFindings.previousImage")}
