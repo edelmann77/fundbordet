@@ -85,6 +85,7 @@
     "save": "Save"
   },
   "myFindings": {
+    "loading": "Loading your finds...",
     "empty": "You have no registered finds yet.",
     "emptyTitle": "No finds yet",
     "registerFirst": "Register your first find",

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Breadcrumb } from "fundbrdet-ui";
+import { Breadcrumb, ProgressSpinner } from "fundbrdet-ui";
 import {
   useUserFindings,
   type Finding,
@@ -208,15 +208,13 @@ export const MyFindingsPage: React.FC = () => {
     return (
       <div className="my-findings">
         {breadcrumb}
-        <div className="my-findings__container">
-          <div className="my-findings__list">
-            {[1, 2, 3].map((i) => (
-              <div
-                key={i}
-                className="my-findings__card my-findings__card--skeleton"
-              />
-            ))}
-          </div>
+        <div className="my-findings__loading">
+          <ProgressSpinner
+            size="lg"
+            tone="forest"
+            label={t("myFindings.loading")}
+            showLabel
+          />
         </div>
       </div>
     );

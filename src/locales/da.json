@@ -85,6 +85,7 @@
     "save": "Gem"
   },
   "myFindings": {
+    "loading": "Indlæser dine fund...",
     "empty": "Du har endnu ingen registrerede fund.",
     "emptyTitle": "Ingen fund endnu",
     "registerFirst": "Registrer dit første fund",
