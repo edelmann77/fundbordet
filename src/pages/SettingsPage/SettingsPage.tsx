@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from "react";
-import { Breadcrumb, Button, TextInput } from "fundbrdet-ui";
+import { Breadcrumb, Button, ProgressSpinner, TextInput } from "fundbrdet-ui";
 import { useTranslation } from "react-i18next";
 import {
   getCurrentUserProfile,
@@ -103,58 +103,70 @@ export const SettingsPage: React.FC = () => {
             {t("settingsPage.description")}
           </p>
 
-          <form
-            className="settings-page__form"
-            onSubmit={handleSubmit}
-            noValidate
-          >
-            {error && (
-              <div role="alert" className="settings-page__error">
-                {error}
+          {loading ? (
+            <div className="settings-page__loading">
+              <ProgressSpinner
+                size="lg"
+                tone="forest"
+                label={t("settingsPage.loading")}
+                showLabel
+              />
+            </div>
+          ) : (
+            <form
+              className="settings-page__form"
+              onSubmit={handleSubmit}
+              noValidate
+            >
+              {error && (
+                <div role="alert" className="settings-page__error">
+                  {error}
+                </div>
+              )}
+
+              {success && (
+                <div className="settings-page__success">{success}</div>
+              )}
+
+              <div className="settings-page__fields">
+                <TextInput
+                  label={t("settingsPage.email")}
+                  type="email"
+                  value={email}
+                  disabled
+                  readOnly
+                  size="md"
+                />
+                <TextInput
+                  label={t("settingsPage.firstName")}
+                  value={firstName}
+                  onChange={(event) => setFirstName(event.target.value)}
+                  autoComplete="given-name"
+                  size="md"
+                  disabled={saving}
+                />
+                <TextInput
+                  label={t("settingsPage.lastName")}
+                  value={lastName}
+                  onChange={(event) => setLastName(event.target.value)}
+                  autoComplete="family-name"
+                  size="md"
+                  disabled={saving}
+                />
               </div>
-            )}
 
-            {success && <div className="settings-page__success">{success}</div>}
-
-            <div className="settings-page__fields">
-              <TextInput
-                label={t("settingsPage.email")}
-                type="email"
-                value={email}
-                disabled
-                readOnly
-                size="md"
-              />
-              <TextInput
-                label={t("settingsPage.firstName")}
-                value={firstName}
-                onChange={(event) => setFirstName(event.target.value)}
-                autoComplete="given-name"
-                size="md"
-                disabled={loading || saving}
-              />
-              <TextInput
-                label={t("settingsPage.lastName")}
-                value={lastName}
-                onChange={(event) => setLastName(event.target.value)}
-                autoComplete="family-name"
-                size="md"
-                disabled={loading || saving}
-              />
-            </div>
-
-            <div className="settings-page__actions">
-              <Button
-                type="submit"
-                variant="primary"
-                size="md"
-                loading={saving}
-                disabled={loading}
-              >
-                {loading ? t("settingsPage.loading") : t("settingsPage.save")}
-              </Button>
-            </div>
-          </form>
+              <div className="settings-page__actions">
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="md"
+                  loading={saving}
+                >
+                  {t("settingsPage.save")}
+                </Button>
+              </div>
+            </form>
+          )}
         </section>
       </main>
     </div>

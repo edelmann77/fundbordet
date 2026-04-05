@@ -47,6 +47,16 @@
   margin-top: 1.5rem;
 }
 
+.settings-page__loading {
+  display: flex;
+  justify-content: center;
+  padding: 2.5rem 1rem 1.5rem;
+}
+
+.settings-page__loading .progress-spinner {
+  gap: 1rem;
+}
+
 .settings-page__fields {
   display: grid;
   gap: 1rem;
