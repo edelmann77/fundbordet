@@ -59,6 +59,11 @@ export const AccountMenu: React.FC = () => {
     navigate("/detector/settings");
   };
 
+  const handleFriendsClick = () => {
+    setOpen(false);
+    navigate("/detector/friends");
+  };
+
   const handleLogoutClick = async () => {
     try {
       setLoggingOut(true);
@@ -85,6 +90,14 @@ export const AccountMenu: React.FC = () => {
 
       {open && (
         <div className="account-menu__dropdown" role="menu">
+          <button
+            type="button"
+            className="account-menu__item"
+            onClick={handleFriendsClick}
+            role="menuitem"
+          >
+            {t("account.friends")}
+          </button>
           <button
             type="button"
             className="account-menu__item"

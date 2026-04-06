@@ -8,6 +8,7 @@ import HomePage from "./pages/HomePage/HomePage";
 import MyFindingsPage from "./pages/MyFindingsPage/MyFindingsPage";
 import CreateFindingPage from "./pages/CreateFindingPage/CreateFindingPage";
 import SettingsPage from "./pages/SettingsPage/SettingsPage";
+import FriendsPage from "./pages/FriendsPage/FriendsPage";
 import RequireAuth from "./components/RequireAuth/RequireAuth";
 import RedirectIfAuthed from "./components/RedirectIfAuthed/RedirectIfAuthed";
 import AppShell from "./components/AppShell/AppShell";
@@ -85,6 +86,16 @@ function App() {
               <RequireAuth>
                 <AppShell>
                   <SettingsPage />
+                </AppShell>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/detector/friends"
+            element={
+              <RequireAuth>
+                <AppShell>
+                  <FriendsPage />
                 </AppShell>
               </RequireAuth>
             }

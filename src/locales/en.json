@@ -5,6 +5,7 @@
   },
   "account": {
     "openMenu": "Open account menu",
+    "friends": "Friends",
     "settings": "Settings",
     "logout": "Log out",
     "loggingOut": "Logging out..."
@@ -136,7 +137,34 @@
     "signup": "Sign up",
     "myFindings": "My finds",
     "createFinding": "Register find",
+    "friends": "Friends",
     "settings": "Settings"
+  },
+  "friendsPage": {
+    "eyebrow": "Network",
+    "title": "Friends",
+    "description": "Add friends by email address by searching for existing users in Supabase. The friends list on this page is still local and is not saved yet.",
+    "searchTitle": "Add a friend",
+    "searchDescription": "Enter an email address to look up an existing user and add them to the local list.",
+    "searchLabel": "Email address",
+    "searchPlaceholder": "friend@example.com",
+    "searchButton": "Add friend",
+    "searchHint": "Only users that already exist in Supabase can be added. You cannot add yourself as a friend.",
+    "invalidEmail": "Enter a valid email address to add a friend.",
+    "alreadyFriend": "Already on your friends list",
+    "cannotAddSelf": "You cannot add yourself as a friend.",
+    "notFound": "No user with that email address was found.",
+    "searchFailed": "The search could not be completed. Please try again.",
+    "friendsTitle": "Your friends",
+    "friendsDescription": "The list below is local to this page and resets on reload.",
+    "friendsCount_one": "1 friend shown",
+    "friendsCount_other": "{{count}} friends shown",
+    "emptyTitle": "No friends yet",
+    "emptyDescription": "Search for an existing user's email address and add a friend to populate the list.",
+    "remove": "Remove",
+    "previewBadge": "Prototype",
+    "searchIdleTitle": "Ready to search",
+    "searchIdleDescription": "Once you search for an email address, a local preview result will appear here."
   },
   "settingsPage": {
     "eyebrow": "Account",

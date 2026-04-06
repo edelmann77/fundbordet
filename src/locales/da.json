@@ -5,6 +5,7 @@
   },
   "account": {
     "openMenu": "Åbn kontomenu",
+    "friends": "Venner",
     "settings": "Indstillinger",
     "logout": "Log ud",
     "loggingOut": "Logger ud..."
@@ -136,7 +137,34 @@
     "signup": "Opret konto",
     "myFindings": "Mine fund",
     "createFinding": "Opret fund",
+    "friends": "Venner",
     "settings": "Indstillinger"
+  },
+  "friendsPage": {
+    "eyebrow": "Netværk",
+    "title": "Venner",
+    "description": "Tilføj venner via e-mailadresse ved at søge efter eksisterende brugere i Supabase. Vennelisten på siden er stadig lokal og gemmes ikke endnu.",
+    "searchTitle": "Tilføj en ven",
+    "searchDescription": "Indtast en e-mailadresse for at slå en eksisterende bruger op og tilføje vedkommende til den lokale liste.",
+    "searchLabel": "E-mailadresse",
+    "searchPlaceholder": "ven@eksempel.dk",
+    "searchButton": "Tilføj ven",
+    "searchHint": "Kun brugere, der allerede findes i Supabase, kan tilføjes. Du kan ikke tilføje dig selv som ven.",
+    "invalidEmail": "Indtast en gyldig e-mailadresse for at tilføje en ven.",
+    "alreadyFriend": "Allerede på din venneliste",
+    "cannotAddSelf": "Du kan ikke tilføje dig selv som ven.",
+    "notFound": "Ingen bruger med den e-mailadresse blev fundet.",
+    "searchFailed": "Søgningen kunne ikke gennemføres. Prøv igen.",
+    "friendsTitle": "Dine venner",
+    "friendsDescription": "Listen nedenfor er lokal for denne side og nulstilles ved genindlæsning.",
+    "friendsCount_one": "1 ven vist",
+    "friendsCount_other": "{{count}} venner vist",
+    "emptyTitle": "Ingen venner endnu",
+    "emptyDescription": "Søg efter en eksisterende brugers e-mailadresse og tilføj en ven for at se listen udfyldt.",
+    "remove": "Fjern",
+    "previewBadge": "Prototype",
+    "searchIdleTitle": "Klar til søgning",
+    "searchIdleDescription": "Når du søger på en e-mailadresse, vises et lokalt preview-resultat her."
   },
   "settingsPage": {
     "eyebrow": "Konto",
