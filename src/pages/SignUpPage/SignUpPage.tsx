@@ -44,7 +44,7 @@ export const SignUpPage: React.FC = () => {
 
   if (success) {
     return (
-      <div className="signup-page">
+      <div className="signup-page signup-page--success">
         <div className="signup-page__success">
           <div className="signup-page__logo">🪙</div>
           <h1 className="signup-page__success-title">

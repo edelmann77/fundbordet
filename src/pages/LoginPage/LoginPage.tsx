@@ -102,22 +102,6 @@ export const LoginPage: React.FC = () => {
             >
               {t("login.submit")}
             </Button>
-
-            <div className="login-page__divider">
-              <hr className="login-page__divider-line" />
-              {t("login.or")}
-              <hr className="login-page__divider-line" />
-            </div>
-
-            <Button
-              type="button"
-              variant="outline"
-              size="lg"
-              fullWidth
-              onClick={() => {}}
-            >
-              {t("login.google")}
-            </Button>
           </form>
         </Card>
 

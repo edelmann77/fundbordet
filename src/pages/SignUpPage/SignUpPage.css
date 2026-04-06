@@ -6,6 +6,12 @@
   background-color: var(--color-page);
 }
 
+.signup-page--success {
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
 .signup-page__container {
   width: 100%;
   max-width: 420px;

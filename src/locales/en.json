@@ -49,8 +49,6 @@
     "passwordPlaceholder": "Enter your password",
     "forgotPassword": "Forgot password?",
     "submit": "Sign in",
-    "or": "or",
-    "google": "Continue with Google",
     "noAccount": "Don't have an account?",
     "signupFree": "Sign up for free",
     "errors": {
