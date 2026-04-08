@@ -1,13 +1,16 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Breadcrumb, Button, TextInput } from "fundbrdet-ui";
 import { useTranslation } from "react-i18next";
-import { useFriendSearch } from "../../hooks/useFriendSearch";
+import {
+  addFriend,
+  CONFIRMED_FRIEND_STATUS,
+  confirmFriend,
+  deleteFriend,
+  listCurrentUserFriends,
+  type FriendRecord,
+  useFriendSearch,
+} from "../../hooks/useFriendSearch";
 import "./FriendsPage.css";
-
-const INITIAL_FRIENDS = [
-  { id: "anne", email: "anne@fundbordet.dk" },
-  { id: "mikkel", email: "mikkel@fundbordet.dk" },
-];
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -30,10 +33,28 @@ const getInitials = (email: string) => {
 export const FriendsPage: React.FC = () => {
   const { t } = useTranslation();
   const { findFriendByEmail } = useFriendSearch();
-  const [friends, setFriends] = useState(INITIAL_FRIENDS);
+  const [friends, setFriends] = useState<FriendRecord[]>([]);
   const [searchInput, setSearchInput] = useState("");
   const [error, setError] = useState("");
+  const [friendsLoading, setFriendsLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [activeFriendId, setActiveFriendId] = useState<string | null>(null);
+
+  const loadFriends = async () => {
+    try {
+      setFriendsLoading(true);
+      const nextFriends = await listCurrentUserFriends();
+      setFriends(nextFriends);
+    } catch {
+      setError(t("friendsPage.loadFailed"));
+    } finally {
+      setFriendsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadFriends();
+  }, [t]);
 
   const handleSearchSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -61,13 +82,8 @@ export const FriendsPage: React.FC = () => {
         return;
       }
 
-      setFriends((current) => [
-        {
-          id: match.userId,
-          email: match.email,
-        },
-        ...current,
-      ]);
+      await addFriend(match.userId);
+      await loadFriends();
       setSearchInput("");
     } catch (searchError) {
       if (
@@ -78,14 +94,45 @@ export const FriendsPage: React.FC = () => {
         return;
       }
 
-      setError(t("friendsPage.searchFailed"));
+      if (
+        searchError instanceof Error &&
+        searchError.message === "FRIEND_EXISTS"
+      ) {
+        setError(t("friendsPage.alreadyFriend"));
+        void loadFriends();
+        return;
+      }
+
+      setError(t("friendsPage.saveFailed"));
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRemoveFriend = (friendId: string) => {
-    setFriends((current) => current.filter((friend) => friend.id !== friendId));
+  const handleConfirmFriend = async (friendId: string) => {
+    try {
+      setActiveFriendId(friendId);
+      setError("");
+      await confirmFriend(friendId);
+      await loadFriends();
+    } catch {
+      setError(t("friendsPage.updateFailed"));
+    } finally {
+      setActiveFriendId(null);
+    }
+  };
+
+  const handleRemoveFriend = async (friendId: string) => {
+    try {
+      setActiveFriendId(friendId);
+      setError("");
+      await deleteFriend(friendId);
+      await loadFriends();
+    } catch {
+      setError(t("friendsPage.removeFailed"));
+    } finally {
+      setActiveFriendId(null);
+    }
   };
 
   return (
@@ -174,11 +221,13 @@ export const FriendsPage: React.FC = () => {
                 </p>
               </div>
               <p className="friends-page__count">
-                {t("friendsPage.friendsCount", { count: friends.length })}
+                {friendsLoading
+                  ? t("friendsPage.loadingList")
+                  : t("friendsPage.friendsCount", { count: friends.length })}
               </p>
             </div>
 
-            {friends.length === 0 ? (
+            {!friendsLoading && friends.length === 0 ? (
               <div className="friends-page__empty-state">
                 <p className="friends-page__empty-title">
                   {t("friendsPage.emptyTitle")}
@@ -195,24 +244,62 @@ export const FriendsPage: React.FC = () => {
                       <div className="friends-page__avatar" aria-hidden="true">
                         {getInitials(friend.email)}
                       </div>
-                      <div>
+                      <div className="friends-page__friend-copy">
                         <p className="friends-page__friend-name">
                           {getFriendLabel(friend.email)}
                         </p>
                         <p className="friends-page__friend-email">
                           {friend.email}
                         </p>
+                        <div className="friends-page__friend-status-row">
+                          <span
+                            className={
+                              friend.status === CONFIRMED_FRIEND_STATUS
+                                ? "friends-page__status-badge friends-page__status-badge--confirmed"
+                                : "friends-page__status-badge friends-page__status-badge--pending"
+                            }
+                          >
+                            {friend.status === CONFIRMED_FRIEND_STATUS
+                              ? t("friendsPage.statusConfirmed")
+                              : t("friendsPage.statusPending")}
+                          </span>
+                          {friend.status !== CONFIRMED_FRIEND_STATUS && (
+                            <span className="friends-page__friend-status-text">
+                              {friend.isIncoming
+                                ? t("friendsPage.pendingIncoming")
+                                : t("friendsPage.pendingOutgoing")}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
 
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="md"
-                      onClick={() => handleRemoveFriend(friend.id)}
-                    >
-                      {t("friendsPage.remove")}
-                    </Button>
+                    <div className="friends-page__friend-actions">
+                      {friend.status !== CONFIRMED_FRIEND_STATUS &&
+                        friend.isIncoming && (
+                          <Button
+                            type="button"
+                            variant="primary"
+                            size="md"
+                            loading={activeFriendId === friend.id}
+                            disabled={activeFriendId !== null}
+                            onClick={() => handleConfirmFriend(friend.id)}
+                          >
+                            {t("friendsPage.confirm")}
+                          </Button>
+                        )}
+
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="md"
+                        loading={activeFriendId === friend.id}
+                        disabled={activeFriendId !== null}
+                        onClick={() => handleRemoveFriend(friend.id)}
+                      >
+                        {t("friendsPage.remove")}
+                      </Button>
+                    </div>
                   </li>
                 ))}
               </ul>

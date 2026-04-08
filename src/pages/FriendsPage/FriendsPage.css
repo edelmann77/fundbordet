@@ -174,6 +174,10 @@
   min-width: 0;
 }
 
+.friends-page__friend-copy {
+  min-width: 0;
+}
+
 .friends-page__avatar {
   display: inline-flex;
   align-items: center;
@@ -185,6 +189,44 @@
   color: var(--color-primary-dark);
   font-weight: 700;
   flex-shrink: 0;
+}
+
+.friends-page__friend-status-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.friends-page__status-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.friends-page__status-badge--confirmed {
+  background: color-mix(in srgb, var(--color-success-soft) 70%, white);
+  color: var(--color-success);
+}
+
+.friends-page__status-badge--pending {
+  background: color-mix(in srgb, var(--color-primary-light) 28%, white);
+  color: var(--color-primary-dark);
+}
+
+.friends-page__friend-status-text {
+  font-size: 0.875rem;
+  color: var(--color-ink-muted);
+}
+
+.friends-page__friend-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 @media (max-width: 900px) {
