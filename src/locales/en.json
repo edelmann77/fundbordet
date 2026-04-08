@@ -10,6 +10,19 @@
     "logout": "Log out",
     "loggingOut": "Logging out..."
   },
+  "notifications": {
+    "openMenu": "Open notifications",
+    "title": "Notifications",
+    "loading": "Loading...",
+    "loadFailed": "Notifications could not be loaded. Please try again.",
+    "count_one": "1 notification",
+    "count_other": "{{count}} notifications",
+    "emptyTitle": "No notifications",
+    "emptyDescription": "Friend requests sent to you will appear here.",
+    "friendRequestTitle": "Friend request",
+    "friendRequestDescription": "{{email}} sent you a friend request.",
+    "viewFriends": "Open friends"
+  },
   "hero": {
     "eyebrow": "Your outdoor finding journal",
     "headline": "Every find tells a story. Start recording yours.",

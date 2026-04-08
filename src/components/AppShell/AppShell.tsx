@@ -1,5 +1,6 @@
 import "./AppShell.css";
 import AccountMenu from "../AccountMenu/AccountMenu";
+import NotificationsMenu from "../NotificationsMenu/NotificationsMenu";
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -8,7 +9,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({
     <div className="app-shell">
       <header className="app-shell__header">
         <span className="app-shell__logo">🪙</span>
-        <AccountMenu />
+        <div className="app-shell__actions">
+          <NotificationsMenu />
+          <AccountMenu />
+        </div>
       </header>
 
       <main className="app-shell__main">

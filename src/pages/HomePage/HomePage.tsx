@@ -5,6 +5,7 @@ import { Breadcrumb, Modal, Tabs } from "fundbrdet-ui";
 import RegisterFindingForm from "../../components/RegisterFindingForm/RegisterFindingForm";
 import ImportFindingForm from "../../components/ImportFindingForm/ImportFindingForm";
 import AccountMenu from "../../components/AccountMenu/AccountMenu";
+import NotificationsMenu from "../../components/NotificationsMenu/NotificationsMenu";
 import Map, { Source, Layer } from "react-map-gl/maplibre";
 import type { StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -40,7 +41,10 @@ export const HomePage: React.FC = () => {
     <div className="home-page">
       <header className="home-page__header">
         <span className="home-page__header-icon">🪙</span>
-        <AccountMenu />
+        <div className="home-page__header-actions">
+          <NotificationsMenu />
+          <AccountMenu />
+        </div>
       </header>
 
       <main className="home-page__main">

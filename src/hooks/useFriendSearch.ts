@@ -22,6 +22,13 @@ export interface FriendLookupResult {
   email: string;
 }
 
+export interface AppNotification {
+  id: string;
+  kind: "friend-request";
+  friendId: string;
+  senderEmail: string;
+}
+
 interface FriendLookupRow {
   user_id: string;
   email: string;
@@ -73,6 +80,21 @@ export async function listCurrentUserFriends(): Promise<FriendRecord[]> {
   return ((data ?? []) as FriendRow[]).map((row) =>
     mapRowToFriend(row, currentUserId),
   );
+}
+
+export async function listPendingFriendRequests(): Promise<AppNotification[]> {
+  const friends = await listCurrentUserFriends();
+
+  return friends
+    .filter(
+      (friend) => friend.status === PENDING_FRIEND_STATUS && friend.isIncoming,
+    )
+    .map((friend) => ({
+      id: `friend-request:${friend.id}`,
+      kind: "friend-request" as const,
+      friendId: friend.id,
+      senderEmail: friend.email,
+    }));
 }
 
 export async function addFriend(inviteeUserId: string): Promise<void> {

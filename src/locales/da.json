@@ -10,6 +10,19 @@
     "logout": "Log ud",
     "loggingOut": "Logger ud..."
   },
+  "notifications": {
+    "openMenu": "Åbn notifikationer",
+    "title": "Notifikationer",
+    "loading": "Indlæser...",
+    "loadFailed": "Notifikationerne kunne ikke indlæses. Prøv igen.",
+    "count_one": "1 notifikation",
+    "count_other": "{{count}} notifikationer",
+    "emptyTitle": "Ingen notifikationer",
+    "emptyDescription": "Venneanmodninger sendt til dig vises her.",
+    "friendRequestTitle": "Venneanmodning",
+    "friendRequestDescription": "{{email}} har sendt dig en venneanmodning.",
+    "viewFriends": "Åbn venner"
+  },
   "hero": {
     "eyebrow": "Dit udendørs fundjournal",
     "headline": "Hvert fund fortæller en historie. Begynd at registrere dine.",
