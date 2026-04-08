@@ -132,7 +132,16 @@
     "openImage": "Open image {{index}}",
     "closeImageViewer": "Close image viewer",
     "previousImage": "Previous image",
-    "nextImage": "Next image"
+    "nextImage": "Next image",
+    "sharedBadge": "Shared",
+    "sharedBy": "Shared with you by {{email}}",
+    "shareAction": "Share finding",
+    "shareTitle": "Share with friends",
+    "shareSave": "Save sharing",
+    "shareLoading": "Loading shares...",
+    "shareEmpty": "You do not have any confirmed friends to share with yet.",
+    "shareLoadFailed": "The current sharing settings could not be loaded. Please try again.",
+    "shareSaveFailed": "The sharing settings could not be saved. Please try again."
   },
   "landing": {
     "selectLanguage": "Select language",

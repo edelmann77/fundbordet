@@ -80,6 +80,11 @@ export const MyFindingsSidebar: React.FC<{
               </div>
               <div className="my-findings__card-footer">
                 <div className="my-findings__card-badges">
+                  {finding.accessLevel === "shared" && (
+                    <span className="my-findings__badge my-findings__badge--shared">
+                      {t("myFindings.sharedBadge")}
+                    </span>
+                  )}
                   {finding.materiale && (
                     <span className="my-findings__badge my-findings__badge--material">
                       {finding.materiale}

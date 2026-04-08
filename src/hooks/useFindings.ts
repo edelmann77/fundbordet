@@ -28,6 +28,15 @@ export interface Finding {
   dime_id: string | null;
   image_uids?: string[] | null;
   created_at: string;
+  accessLevel: "owner" | "shared";
+  ownerUserId: string | null;
+  sharedAt: string | null;
+  sharedByEmail: string | null;
+}
+
+export interface FindingShare {
+  findingId: string;
+  sharedWithUserId: string;
 }
 
 function extractImageUid(value: unknown): string | null {
@@ -121,7 +130,19 @@ function mapRowToFinding(row: any): Finding {
         row.imageIds ??
         row.images,
     ),
+    accessLevel: row.access_level === "shared" ? "shared" : "owner",
+    ownerUserId: row.owner_user_id ?? row.user_id ?? null,
+    sharedAt: row.shared_at ?? null,
+    sharedByEmail: row.shared_by_email ?? null,
   } as Finding;
+}
+
+function sortFindings(findings: Finding[]): Finding[] {
+  return [...findings].sort(
+    (left, right) =>
+      new Date(right.created_at).getTime() -
+      new Date(left.created_at).getTime(),
+  );
 }
 
 function toNullableNumber(value: unknown): number | null {
@@ -272,6 +293,74 @@ export async function updateCurrentUserFinding(
   }
 }
 
+export async function listFindingShares(findingId: string): Promise<string[]> {
+  const { data, error } = await supabase
+    .schema("public")
+    .from("finding_shares")
+    .select("shared_with_user_id")
+    .eq("finding_id", findingId);
+
+  if (error) {
+    throw error;
+  }
+
+  return ((data as Array<{ shared_with_user_id: string }> | null) ?? []).map(
+    (row) => row.shared_with_user_id,
+  );
+}
+
+export async function updateFindingShares(
+  findingId: string,
+  sharedWithUserIds: string[],
+): Promise<void> {
+  const {
+    data: { user },
+    error: authError,
+  } = await supabase.auth.getUser();
+
+  if (authError || !user) {
+    throw new Error("Not authenticated");
+  }
+
+  const normalizedNextIds = [...new Set(sharedWithUserIds)].filter(Boolean);
+  const existingIds = await listFindingShares(findingId);
+  const idsToAdd = normalizedNextIds.filter((id) => !existingIds.includes(id));
+  const idsToRemove = existingIds.filter(
+    (id) => !normalizedNextIds.includes(id),
+  );
+
+  if (idsToRemove.length > 0) {
+    const { error: deleteError } = await supabase
+      .schema("public")
+      .from("finding_shares")
+      .delete()
+      .eq("finding_id", findingId)
+      .eq("owner_user_id", user.id)
+      .in("shared_with_user_id", idsToRemove);
+
+    if (deleteError) {
+      throw deleteError;
+    }
+  }
+
+  if (idsToAdd.length > 0) {
+    const { error: insertError } = await supabase
+      .schema("public")
+      .from("finding_shares")
+      .insert(
+        idsToAdd.map((sharedWithUserId) => ({
+          finding_id: findingId,
+          owner_user_id: user.id,
+          shared_with_user_id: sharedWithUserId,
+        })),
+      );
+
+    if (insertError) {
+      throw insertError;
+    }
+  }
+}
+
 /**
  * Hook to fetch findings for the current user with real-time subscriptions
  */
@@ -282,7 +371,60 @@ export function useUserFindings() {
 
   useEffect(() => {
     let isMounted = true;
-    let channel: ReturnType<typeof supabase.channel> | null = null;
+    let findingsChannel: ReturnType<typeof supabase.channel> | null = null;
+    let ownerSharesChannel: ReturnType<typeof supabase.channel> | null = null;
+    let recipientSharesChannel: ReturnType<typeof supabase.channel> | null =
+      null;
+
+    const loadOwnFindings = async (userId: string): Promise<Finding[]> => {
+      const { data, error: queryError } = await supabase
+        .schema("public")
+        .from("findings")
+        .select("*")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false });
+
+      if (queryError) {
+        throw queryError;
+      }
+
+      return ((data as any[]) ?? []).map((row) =>
+        mapRowToFinding({ ...row, access_level: "owner" }),
+      );
+    };
+
+    const loadSharedFindings = async (): Promise<Finding[]> => {
+      const { data, error: queryError } = await supabase.rpc(
+        "get_my_shared_findings",
+      );
+
+      if (queryError) {
+        throw queryError;
+      }
+
+      return ((data as any[]) ?? []).map(mapRowToFinding);
+    };
+
+    const refreshSharedFindings = async () => {
+      try {
+        const sharedFindings = await loadSharedFindings();
+
+        if (!isMounted) {
+          return;
+        }
+
+        setFindings((prev) =>
+          sortFindings([
+            ...prev.filter((finding) => finding.accessLevel !== "shared"),
+            ...sharedFindings,
+          ]),
+        );
+      } catch (refreshError) {
+        if (isMounted && refreshError instanceof Error) {
+          setError(refreshError.message);
+        }
+      }
+    };
 
     const setup = async () => {
       const {
@@ -299,24 +441,37 @@ export function useUserFindings() {
 
       const userId = user.id;
 
-      const { data, error: queryError } = await supabase
-        .schema("public")
-        .from("findings")
-        .select("*")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false });
+      try {
+        const [ownFindings, sharedFindings] = await Promise.all([
+          loadOwnFindings(userId),
+          loadSharedFindings(),
+        ]);
 
-      if (!isMounted) return;
+        if (!isMounted) {
+          return;
+        }
 
-      if (queryError) {
-        setError(queryError.message);
-      } else {
-        setFindings(((data as any[]) ?? []).map(mapRowToFinding));
+        setFindings(sortFindings([...ownFindings, ...sharedFindings]));
         setError(null);
+      } catch (queryError) {
+        if (!isMounted) {
+          return;
+        }
+
+        setError(
+          queryError instanceof Error
+            ? queryError.message
+            : "Unable to load findings",
+        );
       }
+
+      if (!isMounted) {
+        return;
+      }
+
       setLoading(false);
 
-      channel = supabase
+      findingsChannel = supabase
         .channel(`findings:${userId}`)
         .on(
           "postgres_changes",
@@ -327,11 +482,16 @@ export function useUserFindings() {
             filter: `user_id=eq.${userId}`,
           },
           (payload) => {
-            const inserted = mapRowToFinding(payload.new);
-            setFindings((prev) => [
-              inserted,
-              ...prev.filter((f) => f.id !== inserted.id),
-            ]);
+            const inserted = mapRowToFinding({
+              ...payload.new,
+              access_level: "owner",
+            });
+            setFindings((prev) =>
+              sortFindings([
+                inserted,
+                ...prev.filter((finding) => finding.id !== inserted.id),
+              ]),
+            );
           },
         )
         .on(
@@ -343,9 +503,16 @@ export function useUserFindings() {
             filter: `user_id=eq.${userId}`,
           },
           (payload) => {
-            const updated = mapRowToFinding(payload.new);
+            const updated = mapRowToFinding({
+              ...payload.new,
+              access_level: "owner",
+            });
             setFindings((prev) =>
-              prev.map((f) => (f.id === updated.id ? updated : f)),
+              sortFindings(
+                prev.map((finding) =>
+                  finding.id === updated.id ? updated : finding,
+                ),
+              ),
             );
           },
         )
@@ -364,14 +531,52 @@ export function useUserFindings() {
           },
         )
         .subscribe();
+
+      ownerSharesChannel = supabase
+        .channel(`finding-shares-owner:${userId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "finding_shares",
+            filter: `owner_user_id=eq.${userId}`,
+          },
+          () => {
+            void refreshSharedFindings();
+          },
+        )
+        .subscribe();
+
+      recipientSharesChannel = supabase
+        .channel(`finding-shares-recipient:${userId}`)
+        .on(
+          "postgres_changes",
+          {
+            event: "*",
+            schema: "public",
+            table: "finding_shares",
+            filter: `shared_with_user_id=eq.${userId}`,
+          },
+          () => {
+            void refreshSharedFindings();
+          },
+        )
+        .subscribe();
     };
 
     void setup();
 
     return () => {
       isMounted = false;
-      if (channel) {
-        supabase.removeChannel(channel);
+      if (findingsChannel) {
+        supabase.removeChannel(findingsChannel);
+      }
+      if (ownerSharesChannel) {
+        supabase.removeChannel(ownerSharesChannel);
+      }
+      if (recipientSharesChannel) {
+        supabase.removeChannel(recipientSharesChannel);
       }
     };
   }, []);

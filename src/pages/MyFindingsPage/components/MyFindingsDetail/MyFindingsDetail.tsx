@@ -1,11 +1,12 @@
 import { Button } from "fundbrdet-ui";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState, type RefObject } from "react";
+import { useEffect, useRef, useState, type RefObject } from "react";
 import type {
   MapMouseEvent,
   MapRef,
   ViewStateChangeEvent,
 } from "react-map-gl/maplibre";
+import type { FriendRecord } from "../../../../hooks/useFriendSearch";
 import {
   getFindingImageUrl,
   type Finding,
@@ -21,13 +22,19 @@ export const MyFindingsDetail: React.FC<{
   editValues: Partial<Finding> | null;
   isEditing: boolean;
   saving: boolean;
+  confirmedFriends: FriendRecord[];
   mapRef: RefObject<MapRef | null>;
   mapFindings: FindingWithCoordinates[];
   mapBounds: { center: [number, number]; zoom: number };
+  shareError: string | null;
+  sharedFriendIds: string[];
+  sharesLoading: boolean;
+  sharesSaving: boolean;
   selectedImages: File[];
   onStartEditing: () => void;
   onCancel: () => void;
   onSave: () => void;
+  onShareChange: (friendIds: string[]) => Promise<void>;
   onEditChange: (field: keyof Finding, value: string) => void;
   onImagesChange: (images: File[]) => void;
   onMapClick: (event: MapMouseEvent) => void;
@@ -37,13 +44,19 @@ export const MyFindingsDetail: React.FC<{
   editValues,
   isEditing,
   saving,
+  confirmedFriends,
   mapRef,
   mapFindings,
   mapBounds,
+  shareError,
+  sharedFriendIds,
+  sharesLoading,
+  sharesSaving,
   selectedImages,
   onStartEditing,
   onCancel,
   onSave,
+  onShareChange,
   onEditChange,
   onImagesChange,
   onMapClick,
@@ -51,11 +64,16 @@ export const MyFindingsDetail: React.FC<{
 }) => {
   const { t } = useTranslation();
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
+  const [shareMenuOpen, setShareMenuOpen] = useState(false);
+  const [shareSelection, setShareSelection] =
+    useState<string[]>(sharedFriendIds);
+  const shareMenuRef = useRef<HTMLDivElement | null>(null);
   const { imageUids } = useFindingImageUids(
     selectedFinding?.id ?? null,
     isEditing ? "editing" : "view",
   );
   const detailValues: Partial<Finding> = editValues ?? {};
+  const isOwnerFinding = selectedFinding?.accessLevel !== "shared";
 
   const hasValidCoordinates =
     detailValues.oest != null &&
@@ -72,6 +90,32 @@ export const MyFindingsDetail: React.FC<{
   const activeImage =
     activeImageIndex != null ? (imageUrls[activeImageIndex] ?? null) : null;
   const activeImageNumber = activeImageIndex != null ? activeImageIndex + 1 : 1;
+
+  useEffect(() => {
+    setShareSelection(sharedFriendIds);
+  }, [sharedFriendIds, selectedFinding?.id]);
+
+  useEffect(() => {
+    if (!shareMenuOpen) {
+      return;
+    }
+
+    const handlePointerDown = (event: MouseEvent) => {
+      if (
+        shareMenuRef.current &&
+        !shareMenuRef.current.contains(event.target as Node)
+      ) {
+        setShareMenuOpen(false);
+        setShareSelection(sharedFriendIds);
+      }
+    };
+
+    window.addEventListener("mousedown", handlePointerDown);
+
+    return () => {
+      window.removeEventListener("mousedown", handlePointerDown);
+    };
+  }, [shareMenuOpen, sharedFriendIds]);
 
   useEffect(() => {
     if (activeImageIndex == null) {
@@ -146,7 +190,153 @@ export const MyFindingsDetail: React.FC<{
   return (
     <div className="my-findings__detail-content">
       <div className="my-findings__detail-header">
-        <h2 className="my-findings__detail-title">{selectedFindingTitle}</h2>
+        <div className="my-findings__detail-heading">
+          <h2 className="my-findings__detail-title">{selectedFindingTitle}</h2>
+          {selectedFinding.accessLevel === "shared" &&
+            selectedFinding.sharedByEmail && (
+              <p className="my-findings__detail-subtitle">
+                {t("myFindings.sharedBy", {
+                  email: selectedFinding.sharedByEmail,
+                })}
+              </p>
+            )}
+        </div>
+
+        {isOwnerFinding && (
+          <div className="my-findings__detail-share" ref={shareMenuRef}>
+            <button
+              type="button"
+              className="my-findings__detail-share-trigger"
+              aria-expanded={shareMenuOpen}
+              aria-haspopup="dialog"
+              aria-label={t("myFindings.shareAction")}
+              onClick={() => {
+                setShareSelection(sharedFriendIds);
+                setShareMenuOpen((currentOpen) => !currentOpen);
+              }}
+            >
+              <svg
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden="true"
+              >
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <path d="m8.6 13.5 6.8 4" />
+                <path d="m15.4 6.5-6.8 4" />
+              </svg>
+            </button>
+
+            {shareMenuOpen && (
+              <div className="my-findings__detail-share-menu" role="dialog">
+                <div className="my-findings__detail-share-menu-header">
+                  <span className="my-findings__detail-label">
+                    {t("myFindings.shareTitle")}
+                  </span>
+                  <span className="my-findings__detail-images-count">
+                    {shareSelection.length}
+                  </span>
+                </div>
+
+                {sharesLoading ? (
+                  <p className="my-findings__detail-share-empty">
+                    {t("myFindings.shareLoading")}
+                  </p>
+                ) : confirmedFriends.length === 0 ? (
+                  <p className="my-findings__detail-share-empty">
+                    {t("myFindings.shareEmpty")}
+                  </p>
+                ) : (
+                  <div className="my-findings__detail-share-list">
+                    {confirmedFriends.map((friend) => {
+                      const isSelected = shareSelection.includes(
+                        friend.counterpartUserId,
+                      );
+
+                      return (
+                        <label
+                          key={friend.counterpartUserId}
+                          className="my-findings__detail-share-option"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => {
+                              setShareSelection((currentSelection) => {
+                                if (
+                                  currentSelection.includes(
+                                    friend.counterpartUserId,
+                                  )
+                                ) {
+                                  return currentSelection.filter(
+                                    (userId) =>
+                                      userId !== friend.counterpartUserId,
+                                  );
+                                }
+
+                                return [
+                                  ...currentSelection,
+                                  friend.counterpartUserId,
+                                ];
+                              });
+                            }}
+                          />
+                          <span className="my-findings__detail-share-option-copy">
+                            <span className="my-findings__detail-share-option-email">
+                              {friend.email}
+                            </span>
+                          </span>
+                        </label>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {shareError && (
+                  <p className="my-findings__detail-share-error" role="alert">
+                    {shareError}
+                  </p>
+                )}
+
+                <div className="my-findings__detail-share-actions">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setShareSelection(sharedFriendIds);
+                      setShareMenuOpen(false);
+                    }}
+                  >
+                    {t("registerFinding.cancel")}
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="primary"
+                    loading={sharesSaving}
+                    disabled={sharesLoading}
+                    onClick={() => {
+                      void (async () => {
+                        try {
+                          await onShareChange(shareSelection);
+                          setShareMenuOpen(false);
+                        } catch {
+                          // keep the menu open so the user can correct the selection
+                        }
+                      })();
+                    }}
+                  >
+                    {t("myFindings.shareSave")}
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       <div className="my-findings__detail-view">
@@ -282,11 +472,13 @@ export const MyFindingsDetail: React.FC<{
           </div>
         )}
 
-        <div className="my-findings__detail-actions">
-          <Button onClick={onStartEditing} variant="primary">
-            {t("myFindings.edit")}
-          </Button>
-        </div>
+        {isOwnerFinding && (
+          <div className="my-findings__detail-actions">
+            <Button onClick={onStartEditing} variant="primary">
+              {t("myFindings.edit")}
+            </Button>
+          </div>
+        )}
       </div>
 
       {isEditing && (

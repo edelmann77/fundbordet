@@ -82,6 +82,12 @@ export async function listCurrentUserFriends(): Promise<FriendRecord[]> {
   );
 }
 
+export async function listConfirmedFriends(): Promise<FriendRecord[]> {
+  const friends = await listCurrentUserFriends();
+
+  return friends.filter((friend) => friend.status === CONFIRMED_FRIEND_STATUS);
+}
+
 export async function listPendingFriendRequests(): Promise<AppNotification[]> {
   const friends = await listCurrentUserFriends();
 

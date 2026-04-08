@@ -3,11 +3,17 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Breadcrumb, ProgressSpinner } from "fundbrdet-ui";
 import {
+  listFindingShares,
   useUserFindings,
   type Finding,
   uploadFindingImages,
+  updateFindingShares,
   updateCurrentUserFinding,
 } from "../../hooks/useFindings";
+import {
+  listConfirmedFriends,
+  type FriendRecord,
+} from "../../hooks/useFriendSearch";
 import type {
   MapMouseEvent,
   MapRef,
@@ -39,6 +45,11 @@ export const MyFindingsPage: React.FC = () => {
   const [selectedImages, setSelectedImages] = useState<File[]>([]);
   const [saving, setSaving] = useState(false);
   const [zoom, setZoom] = useState(6);
+  const [confirmedFriends, setConfirmedFriends] = useState<FriendRecord[]>([]);
+  const [sharingLoading, setSharingLoading] = useState(false);
+  const [sharingSaving, setSharingSaving] = useState(false);
+  const [sharedFriendIds, setSharedFriendIds] = useState<string[]>([]);
+  const [shareError, setShareError] = useState<string | null>(null);
   const mapRef = useRef<MapRef>(null);
 
   const needle = query.toLowerCase();
@@ -153,6 +164,30 @@ export const MyFindingsPage: React.FC = () => {
   }, [findingsWithCoords, selectedWithCoords]);
 
   useEffect(() => {
+    let isMounted = true;
+
+    const loadConfirmed = async () => {
+      try {
+        const nextFriends = await listConfirmedFriends();
+
+        if (isMounted) {
+          setConfirmedFriends(nextFriends);
+        }
+      } catch {
+        if (isMounted) {
+          setConfirmedFriends([]);
+        }
+      }
+    };
+
+    void loadConfirmed();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
     if (
       selectedFinding &&
       selectedFinding.oest != null &&
@@ -170,11 +205,53 @@ export const MyFindingsPage: React.FC = () => {
   }, [selectedFindingId, selectedFinding]);
 
   useEffect(() => {
+    let isMounted = true;
+
+    if (!selectedFinding || selectedFinding.accessLevel !== "owner") {
+      setSharedFriendIds([]);
+      setShareError(null);
+      setSharingLoading(false);
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    const loadShares = async () => {
+      try {
+        setSharingLoading(true);
+        setShareError(null);
+
+        const nextSharedFriendIds = await listFindingShares(selectedFinding.id);
+
+        if (isMounted) {
+          setSharedFriendIds(nextSharedFriendIds);
+        }
+      } catch {
+        if (isMounted) {
+          setSharedFriendIds([]);
+          setShareError(t("myFindings.shareLoadFailed"));
+        }
+      } finally {
+        if (isMounted) {
+          setSharingLoading(false);
+        }
+      }
+    };
+
+    void loadShares();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedFinding, t]);
+
+  useEffect(() => {
     if (!routeFindingId) {
       setSelectedFindingId(null);
       setEditValues(null);
       setSelectedImages([]);
       setIsEditing(false);
+      setShareError(null);
       return;
     }
 
@@ -274,9 +351,14 @@ export const MyFindingsPage: React.FC = () => {
             editValues={editValues}
             isEditing={isEditing}
             saving={saving}
+            confirmedFriends={confirmedFriends}
             mapRef={mapRef}
             mapFindings={mapFindings}
             mapBounds={mapBounds}
+            shareError={shareError}
+            sharedFriendIds={sharedFriendIds}
+            sharesLoading={sharingLoading}
+            sharesSaving={sharingSaving}
             selectedImages={selectedImages}
             onStartEditing={() => {
               setSelectedImages([]);
@@ -284,6 +366,26 @@ export const MyFindingsPage: React.FC = () => {
             }}
             onCancel={handleCancel}
             onSave={handleSave}
+            onShareChange={async (nextSharedFriendIds) => {
+              if (!selectedFinding || selectedFinding.accessLevel !== "owner") {
+                return;
+              }
+
+              try {
+                setSharingSaving(true);
+                setShareError(null);
+                await updateFindingShares(
+                  selectedFinding.id,
+                  nextSharedFriendIds,
+                );
+                setSharedFriendIds(nextSharedFriendIds);
+              } catch (error) {
+                setShareError(t("myFindings.shareSaveFailed"));
+                throw error;
+              } finally {
+                setSharingSaving(false);
+              }
+            }}
             onEditChange={handleEditChange}
             onImagesChange={handleImagesChange}
             onMapClick={handleMapClick}

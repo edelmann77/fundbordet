@@ -132,7 +132,16 @@
     "openImage": "Åbn billede {{index}}",
     "closeImageViewer": "Luk billedviser",
     "previousImage": "Forrige billede",
-    "nextImage": "Næste billede"
+    "nextImage": "Næste billede",
+    "sharedBadge": "Delt",
+    "sharedBy": "Delt med dig af {{email}}",
+    "shareAction": "Del fund",
+    "shareTitle": "Del med venner",
+    "shareSave": "Gem deling",
+    "shareLoading": "Indlæser delinger...",
+    "shareEmpty": "Du har ingen bekræftede venner at dele med endnu.",
+    "shareLoadFailed": "Delingerne kunne ikke indlæses. Prøv igen.",
+    "shareSaveFailed": "Delingen kunne ikke gemmes. Prøv igen."
   },
   "landing": {
     "selectLanguage": "Vælg sprog",
