@@ -1,5 +1,8 @@
 import { useTranslation } from "react-i18next";
-import type { Finding } from "../../../../hooks/useFindings";
+import {
+  getFindingOwnerDisplayName,
+  type Finding,
+} from "../../../../hooks/useFindings";
 import { formatDate } from "../../myFindingsUtils";
 
 export const MyFindingsSidebar: React.FC<{
@@ -7,6 +10,7 @@ export const MyFindingsSidebar: React.FC<{
   filteredFindings: Finding[];
   query: string;
   selectedFindingId: string | null;
+  countLabelKey?: string;
   onQueryChange: (value: string) => void;
   onSelectFinding: (findingId: string) => void;
 }> = ({
@@ -14,6 +18,7 @@ export const MyFindingsSidebar: React.FC<{
   filteredFindings,
   query,
   selectedFindingId,
+  countLabelKey = "myFindings.count",
   onQueryChange,
   onSelectFinding,
 }) => {
@@ -22,7 +27,7 @@ export const MyFindingsSidebar: React.FC<{
   return (
     <div className="my-findings__sidebar">
       <p className="my-findings__count">
-        {t("myFindings.count", { count: findings.length })}
+        {t(countLabelKey, { count: findings.length })}
       </p>
       <div className="my-findings__search">
         <svg
@@ -57,6 +62,7 @@ export const MyFindingsSidebar: React.FC<{
         {filteredFindings.map((finding) => {
           const name = finding.genstand;
           const isSelected = selectedFindingId === finding.id;
+          const ownerDisplayName = getFindingOwnerDisplayName(finding);
 
           return (
             <div
@@ -67,13 +73,20 @@ export const MyFindingsSidebar: React.FC<{
               }`}
             >
               <div className="my-findings__card-header">
-                <p className="my-findings__card-title">
-                  {name ?? (
-                    <span className="my-findings__card-title--unnamed">
-                      {t("myFindings.unnamed")}
-                    </span>
+                <div className="my-findings__card-copy">
+                  <p className="my-findings__card-title">
+                    {name ?? (
+                      <span className="my-findings__card-title--unnamed">
+                        {t("myFindings.unnamed")}
+                      </span>
+                    )}
+                  </p>
+                  {finding.accessLevel === "shared" && ownerDisplayName && (
+                    <p className="my-findings__card-subtitle">
+                      {t("sharedFindings.finder", { finder: ownerDisplayName })}
+                    </p>
                   )}
-                </p>
+                </div>
                 <span className="my-findings__card-chevron" aria-hidden="true">
                   ›
                 </span>

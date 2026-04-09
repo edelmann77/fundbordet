@@ -156,19 +156,33 @@
 /* Top row: title + chevron */
 .my-findings__card-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 0.5rem;
 }
 
-.my-findings__card-title {
+.my-findings__card-copy {
   flex: 1 1 0%;
   min-width: 0;
+}
+
+.my-findings__card-title {
   font-weight: 600;
   font-size: 0.9375rem;
   line-height: 1.4;
   color: var(--color-ink);
   margin: 0;
+}
+
+.my-findings__card-subtitle {
+  margin: 0.125rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--color-ink-muted);
+}
+
+.my-findings__card--selected .my-findings__card-subtitle {
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .my-findings__card-title--unnamed {

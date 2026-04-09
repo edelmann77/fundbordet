@@ -8,6 +8,7 @@ import type {
 } from "react-map-gl/maplibre";
 import type { FriendRecord } from "../../../../hooks/useFriendSearch";
 import {
+  getFindingOwnerDisplayName,
   getFindingImageUrl,
   type Finding,
   useFindingImageUids,
@@ -85,6 +86,9 @@ export const MyFindingsDetail: React.FC<{
   }));
   const selectedFindingTitle =
     detailValues.genstand || detailValues.materiale || t("myFindings.unnamed");
+  const ownerDisplayName = selectedFinding
+    ? getFindingOwnerDisplayName(selectedFinding)
+    : null;
   const hasImages = imageUrls.length > 0;
   const hasMedia = hasValidCoordinates || hasImages;
   const activeImage =
@@ -192,14 +196,13 @@ export const MyFindingsDetail: React.FC<{
       <div className="my-findings__detail-header">
         <div className="my-findings__detail-heading">
           <h2 className="my-findings__detail-title">{selectedFindingTitle}</h2>
-          {selectedFinding.accessLevel === "shared" &&
-            selectedFinding.sharedByEmail && (
-              <p className="my-findings__detail-subtitle">
-                {t("myFindings.sharedBy", {
-                  email: selectedFinding.sharedByEmail,
-                })}
-              </p>
-            )}
+          {selectedFinding.accessLevel === "shared" && ownerDisplayName && (
+            <p className="my-findings__detail-subtitle">
+              {t("sharedFindings.foundBy", {
+                finder: ownerDisplayName,
+              })}
+            </p>
+          )}
         </div>
 
         {isOwnerFinding && (

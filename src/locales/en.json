@@ -71,6 +71,8 @@
   "home": {
     "myFindings": "My finds",
     "myFindingsDesc": "View and manage your registered finds",
+    "sharedFindings": "Shared findings",
+    "sharedFindingsDesc": "View finds that other users have shared with you",
     "createFinding": "Register find",
     "createFindingDesc": "Register a new find",
     "mapTitle": "Find distribution",
@@ -156,9 +158,19 @@
     "login": "Log in",
     "signup": "Sign up",
     "myFindings": "My finds",
+    "sharedFindings": "Shared findings",
     "createFinding": "Register find",
     "friends": "Friends",
     "settings": "Settings"
+  },
+  "sharedFindings": {
+    "loading": "Loading shared finds...",
+    "emptyTitle": "No shared finds yet",
+    "empty": "Finds shared with your account will appear here.",
+    "count_one": "1 shared find",
+    "count_other": "{{count}} shared finds",
+    "finder": "Finder: {{finder}}",
+    "foundBy": "Found by {{finder}}"
   },
   "friendsPage": {
     "eyebrow": "Network",

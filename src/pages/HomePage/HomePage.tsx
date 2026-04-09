@@ -62,6 +62,18 @@ export const HomePage: React.FC = () => {
               <p className="home-page__card-desc">{t("home.myFindingsDesc")}</p>
             </Link>
 
+            <Link
+              to="/detector/shared-findings"
+              className="home-page__card home-page__card--link"
+            >
+              <p className="home-page__card-title">
+                {t("home.sharedFindings")}
+              </p>
+              <p className="home-page__card-desc">
+                {t("home.sharedFindingsDesc")}
+              </p>
+            </Link>
+
             <button
               onClick={() => setCreateOpen(true)}
               className="home-page__card"

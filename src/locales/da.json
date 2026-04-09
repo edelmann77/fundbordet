@@ -71,6 +71,8 @@
   "home": {
     "myFindings": "Mine fund",
     "myFindingsDesc": "Se og administrer dine registrerede fund",
+    "sharedFindings": "Delte fund",
+    "sharedFindingsDesc": "Se fund som andre brugere har delt med dig",
     "createFinding": "Opret fund",
     "createFindingDesc": "Registrer et nyt fund",
     "mapTitle": "Fundspredning",
@@ -156,9 +158,19 @@
     "login": "Log ind",
     "signup": "Opret konto",
     "myFindings": "Mine fund",
+    "sharedFindings": "Delte fund",
     "createFinding": "Opret fund",
     "friends": "Venner",
     "settings": "Indstillinger"
+  },
+  "sharedFindings": {
+    "loading": "Indlæser delte fund...",
+    "emptyTitle": "Ingen delte fund endnu",
+    "empty": "Fund, der deles med din konto, vises her.",
+    "count_one": "1 delt fund",
+    "count_other": "{{count}} delte fund",
+    "finder": "Finder: {{finder}}",
+    "foundBy": "Fundet af {{finder}}"
   },
   "friendsPage": {
     "eyebrow": "Netværk",

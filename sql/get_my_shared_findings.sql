@@ -12,7 +12,9 @@ returns table (
   access_level text,
   shared_at timestamptz,
   owner_user_id uuid,
-  shared_by_email text
+  shared_by_email text,
+  owner_first_name text,
+  owner_last_name text
 )
 language sql
 security definer
@@ -31,12 +33,16 @@ as $$
     'shared'::text as access_level,
     finding_shares.created_at as shared_at,
     finding_shares.owner_user_id,
-    owners.email::text as shared_by_email
+    owners.email::text as shared_by_email,
+    coalesce(owner_profiles.first_name, '')::text as owner_first_name,
+    coalesce(owner_profiles.last_name, '')::text as owner_last_name
   from public.finding_shares as finding_shares
   join public.findings as findings
     on findings.id = finding_shares.finding_id
   join auth.users as owners
     on owners.id = finding_shares.owner_user_id
+  left join public.user_profiles as owner_profiles
+    on owner_profiles.user_id = finding_shares.owner_user_id
   where finding_shares.shared_with_user_id = auth.uid()
   order by findings.created_at desc;
 $$;

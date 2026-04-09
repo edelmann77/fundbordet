@@ -51,19 +51,23 @@ export const MyFindingsPage: React.FC = () => {
   const [sharedFriendIds, setSharedFriendIds] = useState<string[]>([]);
   const [shareError, setShareError] = useState<string | null>(null);
   const mapRef = useRef<MapRef>(null);
+  const ownerFindings = useMemo(
+    () => findings.filter((finding) => finding.accessLevel === "owner"),
+    [findings],
+  );
 
   const needle = query.toLowerCase();
   const filteredFindings = needle
-    ? findings.filter(
+    ? ownerFindings.filter(
         (f) =>
           f.genstand?.toLowerCase().startsWith(needle) ||
           f.datering?.toLowerCase().startsWith(needle) ||
           f.dime_id?.toLowerCase().startsWith(needle),
       )
-    : findings;
+    : ownerFindings;
 
   const selectedFinding = selectedFindingId
-    ? (findings.find((f) => f.id === selectedFindingId) ?? null)
+    ? (ownerFindings.find((f) => f.id === selectedFindingId) ?? null)
     : null;
   const selectedFindingName =
     selectedFinding?.genstand ||
@@ -128,8 +132,8 @@ export const MyFindingsPage: React.FC = () => {
   }, []);
 
   const findingsWithCoords = useMemo(
-    () => getFindingsWithCoordinates(findings),
-    [findings],
+    () => getFindingsWithCoordinates(ownerFindings),
+    [ownerFindings],
   );
 
   const editedFinding = useMemo(
@@ -255,14 +259,14 @@ export const MyFindingsPage: React.FC = () => {
       return;
     }
 
-    const findingFromRoute = findings.find((f) => f.id === routeFindingId);
+    const findingFromRoute = ownerFindings.find((f) => f.id === routeFindingId);
     if (!findingFromRoute) return;
 
     setSelectedFindingId(findingFromRoute.id);
     setEditValues({ ...findingFromRoute });
     setSelectedImages([]);
     setIsEditing(false);
-  }, [routeFindingId, findings]);
+  }, [routeFindingId, ownerFindings]);
 
   const breadcrumb = (
     <Breadcrumb
@@ -297,7 +301,7 @@ export const MyFindingsPage: React.FC = () => {
     );
   }
 
-  if (findings.length === 0) {
+  if (ownerFindings.length === 0) {
     return (
       <div className="my-findings">
         {breadcrumb}
@@ -337,7 +341,7 @@ export const MyFindingsPage: React.FC = () => {
       {breadcrumb}
       <div className="my-findings__container">
         <MyFindingsSidebar
-          findings={findings}
+          findings={ownerFindings}
           filteredFindings={filteredFindings}
           query={query}
           selectedFindingId={selectedFindingId}

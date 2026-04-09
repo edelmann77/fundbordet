@@ -6,6 +6,7 @@ import LoginPage from "./pages/LoginPage/LoginPage";
 import SignUpPage from "./pages/SignUpPage/SignUpPage";
 import HomePage from "./pages/HomePage/HomePage";
 import MyFindingsPage from "./pages/MyFindingsPage/MyFindingsPage";
+import SharedFindingsPage from "./pages/SharedFindingsPage/SharedFindingsPage";
 import CreateFindingPage from "./pages/CreateFindingPage/CreateFindingPage";
 import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import FriendsPage from "./pages/FriendsPage/FriendsPage";
@@ -66,6 +67,26 @@ function App() {
               <RequireAuth>
                 <AppShell>
                   <MyFindingsPage />
+                </AppShell>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/detector/shared-findings"
+            element={
+              <RequireAuth>
+                <AppShell>
+                  <SharedFindingsPage />
+                </AppShell>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/detector/shared-findings/:id"
+            element={
+              <RequireAuth>
+                <AppShell>
+                  <SharedFindingsPage />
                 </AppShell>
               </RequireAuth>
             }

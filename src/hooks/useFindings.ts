@@ -32,11 +32,24 @@ export interface Finding {
   ownerUserId: string | null;
   sharedAt: string | null;
   sharedByEmail: string | null;
+  ownerFirstName: string | null;
+  ownerLastName: string | null;
 }
 
 export interface FindingShare {
   findingId: string;
   sharedWithUserId: string;
+}
+
+export function getFindingOwnerDisplayName(
+  finding: Pick<Finding, "ownerFirstName" | "ownerLastName" | "sharedByEmail">,
+): string | null {
+  const fullName = [finding.ownerFirstName, finding.ownerLastName]
+    .map((value) => value?.trim() ?? "")
+    .filter(Boolean)
+    .join(" ");
+
+  return fullName || finding.sharedByEmail || null;
 }
 
 function extractImageUid(value: unknown): string | null {
@@ -134,6 +147,8 @@ function mapRowToFinding(row: any): Finding {
     ownerUserId: row.owner_user_id ?? row.user_id ?? null,
     sharedAt: row.shared_at ?? null,
     sharedByEmail: row.shared_by_email ?? null,
+    ownerFirstName: row.owner_first_name ?? null,
+    ownerLastName: row.owner_last_name ?? null,
   } as Finding;
 }
 
