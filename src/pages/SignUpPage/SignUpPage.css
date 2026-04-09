@@ -24,6 +24,22 @@
   margin-bottom: 2rem;
 }
 
+.signup-page__header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.signup-page__header-top--success {
+  width: 100%;
+}
+
+.signup-page__header-spacer {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
 .signup-page__logo-link {
   display: inline-block;
   text-decoration: none;

@@ -18,6 +18,18 @@
   margin-bottom: 2rem;
 }
 
+.login-page__header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.login-page__header-spacer {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
 .login-page__logo-link {
   display: inline-block;
   text-decoration: none;

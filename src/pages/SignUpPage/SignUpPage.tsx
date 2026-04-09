@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Breadcrumb, Button, Card, TextInput } from "fundbrdet-ui";
 import { supabase } from "../../lib/supabase";
+import LanguageMenu from "../../components/LanguageMenu/LanguageMenu";
 import "./SignUpPage.css";
 
 export const SignUpPage: React.FC = () => {
@@ -46,6 +47,10 @@ export const SignUpPage: React.FC = () => {
     return (
       <div className="signup-page signup-page--success">
         <div className="signup-page__success">
+          <div className="signup-page__header-top signup-page__header-top--success">
+            <div className="signup-page__header-spacer" />
+            <LanguageMenu />
+          </div>
           <div className="signup-page__logo">🪙</div>
           <h1 className="signup-page__success-title">
             {t("signup.success.title")}
@@ -69,6 +74,10 @@ export const SignUpPage: React.FC = () => {
       />
       <div className="signup-page__container">
         <div className="signup-page__header">
+          <div className="signup-page__header-top">
+            <div className="signup-page__header-spacer" />
+            <LanguageMenu />
+          </div>
           <Link to="/" className="signup-page__logo-link">
             <div className="signup-page__logo">🪙</div>
           </Link>

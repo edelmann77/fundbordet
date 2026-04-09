@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumb, Button, Card, TextInput } from "fundbrdet-ui";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../../lib/supabase";
+import LanguageMenu from "../../components/LanguageMenu/LanguageMenu";
 import "./LoginPage.css";
 
 export const LoginPage: React.FC = () => {
@@ -47,6 +48,10 @@ export const LoginPage: React.FC = () => {
       />
       <div className="login-page__container">
         <div className="login-page__header">
+          <div className="login-page__header-top">
+            <div className="login-page__header-spacer" />
+            <LanguageMenu />
+          </div>
           <Link to="/" className="login-page__logo-link">
             <div className="login-page__logo">🪙</div>
           </Link>

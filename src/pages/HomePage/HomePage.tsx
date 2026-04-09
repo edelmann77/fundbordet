@@ -6,6 +6,7 @@ import RegisterFindingForm from "../../components/RegisterFindingForm/RegisterFi
 import ImportFindingForm from "../../components/ImportFindingForm/ImportFindingForm";
 import AccountMenu from "../../components/AccountMenu/AccountMenu";
 import NotificationsMenu from "../../components/NotificationsMenu/NotificationsMenu";
+import LanguageMenu from "../../components/LanguageMenu/LanguageMenu";
 import Map, { Source, Layer } from "react-map-gl/maplibre";
 import type { StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
@@ -42,6 +43,7 @@ export const HomePage: React.FC = () => {
       <header className="home-page__header">
         <span className="home-page__header-icon">🪙</span>
         <div className="home-page__header-actions">
+          <LanguageMenu />
           <NotificationsMenu />
           <AccountMenu />
         </div>

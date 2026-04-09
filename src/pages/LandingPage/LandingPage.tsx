@@ -1,73 +1,8 @@
-import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Breadcrumb, Button } from "fundbrdet-ui";
+import LanguageMenu from "../../components/LanguageMenu/LanguageMenu";
 import "./LandingPage.css";
-
-type Language = "da" | "en";
-
-const languages: { value: Language; flag: string; label: string }[] = [
-  { value: "da", flag: "🇩🇰", label: "Dansk" },
-  { value: "en", flag: "🇬🇧", label: "English" },
-];
-
-const LanguageMenu: React.FC = () => {
-  const { t, i18n } = useTranslation();
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!open) return;
-    const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, [open]);
-
-  const current =
-    languages.find((l) => l.value === i18n.language) ?? languages[0];
-
-  return (
-    <div ref={ref} className="language-menu">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-label={t("landing.selectLanguage")}
-        aria-expanded={open}
-        className="language-menu__trigger"
-      >
-        {current.flag}
-      </button>
-
-      {open && (
-        <div className="language-menu__dropdown">
-          {languages.map((lang) => (
-            <button
-              key={lang.value}
-              type="button"
-              onClick={() => {
-                i18n.changeLanguage(lang.value);
-                setOpen(false);
-              }}
-              className={[
-                "language-menu__option",
-                i18n.language === lang.value
-                  ? "language-menu__option--active"
-                  : "language-menu__option--inactive",
-              ].join(" ")}
-            >
-              <span className="language-menu__flag">{lang.flag}</span>
-              {lang.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  );
-};
 
 export const LandingPage: React.FC = () => {
   const { t } = useTranslation();
