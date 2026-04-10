@@ -34,6 +34,7 @@ export interface Finding {
   sharedByEmail: string | null;
   ownerFirstName: string | null;
   ownerLastName: string | null;
+  coordinatesVisible: boolean;
 }
 
 export interface FindingShare {
@@ -129,13 +130,17 @@ function normalizeImageUids(value: unknown): string[] | null {
 }
 
 function mapRowToFinding(row: any): Finding {
+  const accessLevel = row.access_level === "shared" ? "shared" : "owner";
+  const oest = row.easting;
+  const nord = row.northing;
+
   return {
     ...row,
     genstand: row.written_name,
     materiale: row.material,
     datering: row.dating,
-    oest: row.easting,
-    nord: row.northing,
+    oest,
+    nord,
     image_uids: normalizeImageUids(
       row.image_uids ??
         row.imageUids ??
@@ -143,12 +148,14 @@ function mapRowToFinding(row: any): Finding {
         row.imageIds ??
         row.images,
     ),
-    accessLevel: row.access_level === "shared" ? "shared" : "owner",
+    accessLevel,
     ownerUserId: row.owner_user_id ?? row.user_id ?? null,
     sharedAt: row.shared_at ?? null,
     sharedByEmail: row.shared_by_email ?? null,
     ownerFirstName: row.owner_first_name ?? null,
     ownerLastName: row.owner_last_name ?? null,
+    coordinatesVisible:
+      accessLevel === "owner" ? true : row.coordinates_visible === true,
   } as Finding;
 }
 

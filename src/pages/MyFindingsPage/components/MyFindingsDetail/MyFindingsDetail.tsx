@@ -91,6 +91,7 @@ export const MyFindingsDetail: React.FC<{
     : null;
   const hasImages = imageUrls.length > 0;
   const hasMedia = hasValidCoordinates || hasImages;
+  const showCoordinates = isOwnerFinding || selectedFinding.coordinatesVisible;
   const activeImage =
     activeImageIndex != null ? (imageUrls[activeImageIndex] ?? null) : null;
   const activeImageNumber = activeImageIndex != null ? activeImageIndex + 1 : 1;
@@ -374,7 +375,7 @@ export const MyFindingsDetail: React.FC<{
                 {detailValues.datering || "—"}
               </span>
             </div>
-            {(detailValues.oest || detailValues.nord) && (
+            {showCoordinates && (detailValues.oest || detailValues.nord) && (
               <>
                 <div className="my-findings__detail-field">
                   <span className="my-findings__detail-label">
@@ -393,6 +394,16 @@ export const MyFindingsDetail: React.FC<{
                   </span>
                 </div>
               </>
+            )}
+            {!showCoordinates && selectedFinding.accessLevel === "shared" && (
+              <div className="my-findings__detail-field">
+                <span className="my-findings__detail-label">
+                  {t("myFindings.locationSection")}
+                </span>
+                <span className="my-findings__detail-value">
+                  {t("sharedFindings.locationHidden")}
+                </span>
+              </div>
             )}
             {detailValues.dime_id && (
               <div className="my-findings__detail-field">

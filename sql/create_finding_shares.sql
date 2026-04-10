@@ -36,7 +36,6 @@ set search_path = public, auth
 as $$
 declare
   finding_owner_id uuid;
-  has_confirmed_friendship boolean;
 begin
   select findings.user_id
     into finding_owner_id
@@ -51,21 +50,6 @@ begin
 
   if new.owner_user_id = new.shared_with_user_id then
     raise exception 'A finding cannot be shared with its owner';
-  end if;
-
-  select exists (
-    select 1
-    from public.friends as friends
-    where friends.status = 'confirmed'
-      and (
-        (friends.inviter = new.owner_user_id and friends.invitee = new.shared_with_user_id)
-        or (friends.invitee = new.owner_user_id and friends.inviter = new.shared_with_user_id)
-      )
-  )
-    into has_confirmed_friendship;
-
-  if not has_confirmed_friendship then
-    raise exception 'A finding can only be shared with confirmed friends';
   end if;
 
   return new;

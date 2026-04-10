@@ -170,7 +170,8 @@
     "count_one": "1 delt fund",
     "count_other": "{{count}} delte fund",
     "finder": "Finder: {{finder}}",
-    "foundBy": "Fundet af {{finder}}"
+    "foundBy": "Fundet af {{finder}}",
+    "locationHidden": "Placeringen deles kun med ejeren og bekræftede venner."
   },
   "friendsPage": {
     "eyebrow": "Netværk",

@@ -24,6 +24,27 @@ begin
 end;
 $$;
 
+create or replace function public.has_confirmed_friendship(
+  first_user_id uuid,
+  second_user_id uuid
+)
+returns boolean
+language sql
+security definer
+set search_path = public, auth
+stable
+as $$
+  select exists (
+    select 1
+    from public.friends as friends
+    where friends.status = 'confirmed'
+      and (
+        (friends.inviter = first_user_id and friends.invitee = second_user_id)
+        or (friends.invitee = first_user_id and friends.inviter = second_user_id)
+      )
+  );
+$$;
+
 drop trigger if exists set_friends_updated_at on public.friends;
 
 create trigger set_friends_updated_at
@@ -34,6 +55,7 @@ execute function public.set_friends_updated_at();
 alter table public.friends enable row level security;
 
 grant select, insert, update, delete on public.friends to authenticated;
+grant execute on function public.has_confirmed_friendship(uuid, uuid) to authenticated;
 
 drop policy if exists "Authenticated users can create friends" on public.friends;
 create policy "Authenticated users can create friends"

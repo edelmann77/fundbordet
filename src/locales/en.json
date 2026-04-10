@@ -170,7 +170,8 @@
     "count_one": "1 shared find",
     "count_other": "{{count}} shared finds",
     "finder": "Finder: {{finder}}",
-    "foundBy": "Found by {{finder}}"
+    "foundBy": "Found by {{finder}}",
+    "locationHidden": "Location is only shared with the owner and confirmed friends."
   },
   "friendsPage": {
     "eyebrow": "Network",
