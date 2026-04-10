@@ -1,4 +1,5 @@
-import { supabase } from "./supabase";
+import { requireSessionUser } from "./useAuth";
+import { supabase } from "../lib/supabase";
 
 export interface UserProfile {
   firstName: string;
@@ -23,14 +24,7 @@ function mapRowToUserProfile(row: UserProfileRow | null): UserProfile {
 }
 
 export async function getCurrentUserProfile(): Promise<CurrentUserProfile> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    throw new Error("Not authenticated");
-  }
+  const user = await requireSessionUser();
 
   const { data, error } = await supabase
     .from("user_profiles")
@@ -51,14 +45,7 @@ export async function getCurrentUserProfile(): Promise<CurrentUserProfile> {
 export async function upsertCurrentUserProfile(
   values: UserProfile,
 ): Promise<UserProfile> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    throw new Error("Not authenticated");
-  }
+  const user = await requireSessionUser();
 
   const payload = {
     user_id: user.id,
@@ -77,4 +64,11 @@ export async function upsertCurrentUserProfile(
   }
 
   return mapRowToUserProfile(data);
+}
+
+export function useUserProfile() {
+  return {
+    getCurrentUserProfile,
+    upsertCurrentUserProfile,
+  };
 }

@@ -1,3 +1,4 @@
+import { requireSessionUser } from "./useAuth";
 import { supabase } from "../lib/supabase";
 
 export const CONFIRMED_FRIEND_STATUS = "confirmed";
@@ -56,14 +57,7 @@ function mapRowToFriend(row: FriendRow, currentUserId: string): FriendRecord {
 }
 
 async function getCurrentUserId(): Promise<string> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    throw new Error("Not authenticated");
-  }
+  const user = await requireSessionUser();
 
   return user.id;
 }
@@ -154,14 +148,7 @@ export const useFriendSearch = (): {
   ): Promise<FriendLookupResult | null> => {
     const normalizedEmail = email.trim().toLowerCase();
 
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
-      throw new Error("Not authenticated");
-    }
+    const user = await requireSessionUser();
 
     if ((user.email ?? "").trim().toLowerCase() === normalizedEmail) {
       throw new Error("SELF_FRIEND");

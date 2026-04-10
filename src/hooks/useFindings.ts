@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { requireSessionUser } from "./useAuth";
 import { supabase } from "../lib/supabase";
 import proj4 from "proj4";
 
@@ -301,14 +302,7 @@ export async function updateCurrentUserFinding(
   findingId: string,
   values: Partial<Finding>,
 ): Promise<void> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    throw new Error("Not authenticated");
-  }
+  const user = await requireSessionUser();
 
   const updatePayload = {
     written_name: values.genstand ?? null,
@@ -370,14 +364,7 @@ export async function updateFindingShares(
   findingId: string,
   sharedWithUserIds: string[],
 ): Promise<void> {
-  const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
-
-  if (authError || !user) {
-    throw new Error("Not authenticated");
-  }
+  const user = await requireSessionUser();
 
   const normalizedNextIds = [...new Set(sharedWithUserIds)].filter(Boolean);
   const existingIds = await listFindingShares(findingId);
@@ -484,9 +471,7 @@ export function useUserFindings() {
     };
 
     const setup = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await requireSessionUser().catch(() => null);
 
       if (!user) {
         if (isMounted) {

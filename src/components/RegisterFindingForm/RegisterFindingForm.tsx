@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { TextInput, Button } from "fundbrdet-ui";
+import { requireSessionUser } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
 import Map, {
   Marker,
@@ -103,11 +104,9 @@ export const RegisterFindingForm: React.FC<{
   }, [oest, nord]);
 
   const handleSubmit = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const user = await requireSessionUser();
     const { error } = await supabase.from("findings").insert({
-      user_id: user?.id,
+      user_id: user.id,
       written_name: genstand,
       material: materiale,
       dating: datering,

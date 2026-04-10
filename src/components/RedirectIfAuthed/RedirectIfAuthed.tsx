@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
-import { supabase } from "../../lib/supabase";
+import { getSessionUser } from "../../hooks/useAuth";
 
 export const RedirectIfAuthed: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -8,9 +8,13 @@ export const RedirectIfAuthed: React.FC<{ children: React.ReactNode }> = ({
   const [authed, setAuthed] = useState<boolean | null>(null);
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setAuthed(!!data.session);
-    });
+    getSessionUser()
+      .then((user) => {
+        setAuthed(Boolean(user));
+      })
+      .catch(() => {
+        setAuthed(false);
+      });
   }, []);
 
   if (authed === null) return null;

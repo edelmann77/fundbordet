@@ -5,6 +5,7 @@ import {
   listPendingFriendRequests,
   type AppNotification,
 } from "../../hooks/useFriendSearch";
+import { getSessionUser } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
 import "./NotificationsMenu.css";
 
@@ -70,12 +71,9 @@ export const NotificationsMenu: React.FC = () => {
     let cancelled = false;
 
     const setupRealtime = async () => {
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.getUser();
+      const user = await getSessionUser();
 
-      if (cancelled || authError || !user) {
+      if (cancelled || !user) {
         return;
       }
 

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import {
   getCurrentUserProfile,
   upsertCurrentUserProfile,
-} from "../../lib/userProfile";
+} from "../../hooks/useUserProfile";
 import "./SettingsPage.css";
 
 export const SettingsPage: React.FC = () => {

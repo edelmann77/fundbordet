@@ -6,6 +6,7 @@ import type { StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import proj4 from "proj4";
 import { Button } from "fundbrdet-ui";
+import { requireSessionUser } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
 import "./ImportFindingForm.css";
 
@@ -76,10 +77,7 @@ export const ImportFindingForm: React.FC<{
   const mapRef = useRef<MapRef>(null);
 
   const handleSubmit = async () => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) return;
+    const user = await requireSessionUser();
 
     const payload = rows.map((r) => {
       let easting: number | null = null;
@@ -96,7 +94,7 @@ export const ImportFindingForm: React.FC<{
         if (northing == null) northing = utm.northing;
       }
       return {
-        user_id: user?.id,
+        user_id: user.id,
         written_name: r.genstand,
         material: r.materiale,
         dating: r.datering,

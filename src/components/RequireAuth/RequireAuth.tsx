@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
+import { getSessionUser, getValidatedUser } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
 
 type State = "loading" | "authed" | "no-session" | "deleted";
@@ -11,17 +12,23 @@ export const RequireAuth: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     (async () => {
-      const { data: sessionData } = await supabase.auth.getSession();
-      if (!sessionData.session) {
+      try {
+        const sessionUser = await getSessionUser();
+        if (!sessionUser) {
+          setState("no-session");
+          return;
+        }
+
+        const validatedUser = await getValidatedUser();
+
+        if (!validatedUser) {
+          await supabase.auth.signOut();
+          setState("deleted");
+        } else {
+          setState("authed");
+        }
+      } catch {
         setState("no-session");
-        return;
-      }
-      const { data: userData } = await supabase.auth.getUser();
-      if (!userData.user) {
-        await supabase.auth.signOut();
-        setState("deleted");
-      } else {
-        setState("authed");
       }
     })();
   }, []);
