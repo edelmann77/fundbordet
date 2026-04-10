@@ -55,36 +55,52 @@ export const HomePage: React.FC = () => {
           items={[{ label: t("breadcrumb.home"), current: true }]}
         />
         <div className="home-page__main-content">
-          <div className="home-page__nav-cards">
-            <Link
-              to="/detector/my-findings"
-              className="home-page__card home-page__card--link"
-            >
-              <p className="home-page__card-title">{t("home.myFindings")}</p>
-              <p className="home-page__card-desc">{t("home.myFindingsDesc")}</p>
-            </Link>
-
-            <Link
-              to="/detector/shared-findings"
-              className="home-page__card home-page__card--link"
-            >
-              <p className="home-page__card-title">
-                {t("home.sharedFindings")}
-              </p>
-              <p className="home-page__card-desc">
-                {t("home.sharedFindingsDesc")}
-              </p>
-            </Link>
-
+          <div className="home-page__nav">
             <button
               onClick={() => setCreateOpen(true)}
-              className="home-page__card"
+              className="home-page__card home-page__card--primary"
             >
               <p className="home-page__card-title">{t("home.createFinding")}</p>
               <p className="home-page__card-desc">
                 {t("home.createFindingDesc")}
               </p>
             </button>
+
+            <div className="home-page__nav-cards">
+              <Link
+                to="/detector/my-findings"
+                className="home-page__card home-page__card--link"
+              >
+                <p className="home-page__card-title">{t("home.myFindings")}</p>
+                <p className="home-page__card-desc">
+                  {t("home.myFindingsDesc")}
+                </p>
+              </Link>
+
+              <Link
+                to="/detector/shared-findings"
+                className="home-page__card home-page__card--link"
+              >
+                <p className="home-page__card-title">
+                  {t("home.sharedFindings")}
+                </p>
+                <p className="home-page__card-desc">
+                  {t("home.sharedFindingsDesc")}
+                </p>
+              </Link>
+
+              <Link
+                to="/detector/fund-database"
+                className="home-page__card home-page__card--link home-page__card--wide"
+              >
+                <p className="home-page__card-title">
+                  {t("home.fundDatabase")}
+                </p>
+                <p className="home-page__card-desc">
+                  {t("home.fundDatabaseDesc")}
+                </p>
+              </Link>
+            </div>
           </div>
 
           <div className="home-page__map-section">

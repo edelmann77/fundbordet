@@ -37,6 +37,25 @@ export interface Finding {
   coordinatesVisible: boolean;
 }
 
+export interface FindingCatalogEntry {
+  id: string;
+  genstand: string | null;
+  materiale: string | null;
+  datering: string | null;
+  dime_id: string | null;
+  created_at: string;
+}
+
+export interface FindingCatalogResult {
+  findings: FindingCatalogEntry[];
+  totalCount: number;
+}
+
+export interface FindingCatalogPreviewImage {
+  findingId: string;
+  imageUid: string;
+}
+
 export interface FindingShare {
   findingId: string;
   sharedWithUserId: string;
@@ -157,6 +176,22 @@ function mapRowToFinding(row: any): Finding {
     coordinatesVisible:
       accessLevel === "owner" ? true : row.coordinates_visible === true,
   } as Finding;
+}
+
+function mapRowToFindingCatalogEntry(row: any): FindingCatalogEntry {
+  return {
+    id: row.id,
+    genstand: row.written_name ?? null,
+    materiale: row.material ?? null,
+    datering: row.dating ?? null,
+    dime_id: row.dime_id ?? null,
+    created_at: row.created_at,
+  };
+}
+
+function toCatalogSearchValue(search: string): string | null {
+  const normalized = search.trim();
+  return normalized ? normalized : null;
 }
 
 function sortFindings(findings: Finding[]): Finding[] {
@@ -642,6 +677,129 @@ export function useAllFindingsHeatmap() {
   }, []);
 
   return heatData;
+}
+
+export function useFindingsCatalog(
+  page: number,
+  pageSize: number,
+  search: string,
+) {
+  const [findings, setFindings] = useState<FindingCatalogEntry[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadCatalog = async () => {
+      setLoading(true);
+
+      const safePage = Math.max(1, page);
+      const safePageSize = Math.max(1, pageSize);
+      const from = (safePage - 1) * safePageSize;
+      const normalizedSearch = toCatalogSearchValue(search);
+
+      const { data, error: queryError } = await supabase.rpc(
+        "get_all_findings_catalog",
+        {
+          page_limit: safePageSize,
+          page_offset: from,
+          search_term: normalizedSearch,
+        },
+      );
+
+      if (!isMounted) {
+        return;
+      }
+
+      if (queryError) {
+        setError(queryError.message);
+        setFindings([]);
+        setTotalCount(0);
+      } else {
+        const rows = (data as any[]) ?? [];
+        setError(null);
+        setFindings(rows.map(mapRowToFindingCatalogEntry));
+        setTotalCount(Number(rows[0]?.total_count ?? 0));
+      }
+
+      setLoading(false);
+    };
+
+    void loadCatalog();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [page, pageSize, search]);
+
+  return { findings, totalCount, loading, error };
+}
+
+export function useFindingCatalogPreviewImages(findingIds: string[]) {
+  const [previewImages, setPreviewImages] = useState<
+    Record<string, FindingCatalogPreviewImage>
+  >({});
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    if (findingIds.length === 0) {
+      setPreviewImages({});
+      setLoading(false);
+      return;
+    }
+
+    const loadPreviewImages = async () => {
+      setLoading(true);
+
+      const { data, error } = await supabase
+        .schema("public")
+        .from("imageLinks")
+        .select("*")
+        .in("finding_id", findingIds);
+
+      if (!isMounted) {
+        return;
+      }
+
+      if (error) {
+        setPreviewImages({});
+        setLoading(false);
+        return;
+      }
+
+      const nextPreviewImages: Record<string, FindingCatalogPreviewImage> = {};
+
+      for (const row of (data as any[]) ?? []) {
+        const findingId =
+          typeof row.finding_id === "string" ? row.finding_id : null;
+        const imageUid = extractImageUid(row);
+
+        if (!findingId || !imageUid || nextPreviewImages[findingId]) {
+          continue;
+        }
+
+        nextPreviewImages[findingId] = {
+          findingId,
+          imageUid,
+        };
+      }
+
+      setPreviewImages(nextPreviewImages);
+      setLoading(false);
+    };
+
+    void loadPreviewImages();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [findingIds]);
+
+  return { previewImages, loading };
 }
 
 /**

@@ -37,14 +37,19 @@
   align-items: center;
 }
 
-.home-page__nav-cards {
+.home-page__nav {
   flex: 1 1 0%;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
   gap: 1rem;
   padding: 2rem;
+}
+
+.home-page__nav-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
 }
 
 .home-page__card {
@@ -52,20 +57,51 @@
   text-align: left;
   border-radius: 0.75rem;
   background-color: var(--color-surface);
-  border: none;
+  border: 1px solid transparent;
   padding-inline: 1.5rem;
   padding-block: 1rem;
-  max-width: 24rem;
   cursor: pointer;
-  transition: background-color 150ms;
+  transition:
+    background-color 150ms,
+    border-color 150ms,
+    transform 150ms,
+    box-shadow 150ms;
 }
 
 .home-page__card:hover {
   background-color: rgba(0, 0, 0, 0.05);
+  border-color: rgba(74, 124, 89, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
 }
 
 .home-page__card--link {
   text-decoration: none;
+}
+
+.home-page__card--primary {
+  background:
+    linear-gradient(135deg, rgba(74, 124, 89, 0.92), rgba(57, 95, 67, 0.96)),
+    var(--color-primary);
+  color: white;
+  border-color: rgba(74, 124, 89, 0.4);
+  padding-block: 1.25rem;
+}
+
+.home-page__card--primary:hover {
+  background:
+    linear-gradient(135deg, rgba(74, 124, 89, 1), rgba(57, 95, 67, 1)),
+    var(--color-primary-dark);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+.home-page__card--primary .home-page__card-title,
+.home-page__card--primary .home-page__card-desc {
+  color: white;
+}
+
+.home-page__card--wide {
+  grid-column: 1 / -1;
 }
 
 .home-page__card-title {
@@ -121,4 +157,30 @@
 
 .home-page__tabs {
   height: 100%;
+}
+
+@media (max-width: 900px) {
+  .home-page__main-content {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .home-page__nav {
+    padding-bottom: 1rem;
+  }
+
+  .home-page__map-section {
+    width: 100%;
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .home-page__nav-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .home-page__card--wide {
+    grid-column: auto;
+  }
 }

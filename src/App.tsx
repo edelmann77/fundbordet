@@ -10,6 +10,7 @@ import SharedFindingsPage from "./pages/SharedFindingsPage/SharedFindingsPage";
 import CreateFindingPage from "./pages/CreateFindingPage/CreateFindingPage";
 import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import FriendsPage from "./pages/FriendsPage/FriendsPage";
+import FundDatabasePage from "./pages/FundDatabasePage/FundDatabasePage";
 import RequireAuth from "./components/RequireAuth/RequireAuth";
 import RedirectIfAuthed from "./components/RedirectIfAuthed/RedirectIfAuthed";
 import AppShell from "./components/AppShell/AppShell";
@@ -87,6 +88,16 @@ function App() {
               <RequireAuth>
                 <AppShell>
                   <SharedFindingsPage />
+                </AppShell>
+              </RequireAuth>
+            }
+          />
+          <Route
+            path="/detector/fund-database"
+            element={
+              <RequireAuth>
+                <AppShell>
+                  <FundDatabasePage />
                 </AppShell>
               </RequireAuth>
             }
