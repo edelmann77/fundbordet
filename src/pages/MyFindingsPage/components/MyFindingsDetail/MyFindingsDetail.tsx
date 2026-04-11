@@ -91,8 +91,8 @@ export const MyFindingsDetail: React.FC<{
     ? getFindingOwnerDisplayName(selectedFinding)
     : null;
   const hasImages = imageUrls.length > 0;
-  const hasMedia = hasValidCoordinates || hasImages;
   const showCoordinates = isOwnerFinding || selectedFinding.coordinatesVisible;
+  const showMetaMapSplit = hasValidCoordinates;
   const activeImage =
     activeImageIndex != null ? (imageUrls[activeImageIndex] ?? null) : null;
   const activeImageNumber = activeImageIndex != null ? activeImageIndex + 1 : 1;
@@ -208,291 +208,291 @@ export const MyFindingsDetail: React.FC<{
         </div>
 
         {isOwnerFinding && (
-          <div className="my-findings__detail-share" ref={shareMenuRef}>
-            <button
-              type="button"
-              className="my-findings__detail-share-trigger"
-              aria-expanded={shareMenuOpen}
-              aria-haspopup="dialog"
-              aria-label={t("myFindings.shareAction")}
-              onClick={() => {
-                setShareSelection(sharedFriendIds);
-                setShareMenuOpen((currentOpen) => !currentOpen);
-              }}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
+          <div className="my-findings__detail-header-actions">
+            <Button type="button" variant="outline" onClick={onStartEditing}>
+              {t("myFindings.edit")}
+            </Button>
+
+            <div className="my-findings__detail-share" ref={shareMenuRef}>
+              <button
+                type="button"
+                className="my-findings__detail-share-trigger"
+                aria-expanded={shareMenuOpen}
+                aria-haspopup="dialog"
+                aria-label={t("myFindings.shareAction")}
+                onClick={() => {
+                  setShareSelection(sharedFriendIds);
+                  setShareMenuOpen((currentOpen) => !currentOpen);
+                }}
               >
-                <circle cx="18" cy="5" r="3" />
-                <circle cx="6" cy="12" r="3" />
-                <circle cx="18" cy="19" r="3" />
-                <path d="m8.6 13.5 6.8 4" />
-                <path d="m15.4 6.5-6.8 4" />
-              </svg>
-            </button>
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                >
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <path d="m8.6 13.5 6.8 4" />
+                  <path d="m15.4 6.5-6.8 4" />
+                </svg>
+              </button>
 
-            {shareMenuOpen && (
-              <div className="my-findings__detail-share-menu" role="dialog">
-                <div className="my-findings__detail-share-menu-header">
-                  <span className="my-findings__detail-label">
-                    {t("myFindings.shareTitle")}
-                  </span>
-                  <span className="my-findings__detail-images-count">
-                    {shareSelection.length}
-                  </span>
-                </div>
-
-                {sharesLoading ? (
-                  <p className="my-findings__detail-share-empty">
-                    {t("myFindings.shareLoading")}
-                  </p>
-                ) : confirmedFriends.length === 0 ? (
-                  <p className="my-findings__detail-share-empty">
-                    {t("myFindings.shareEmpty")}
-                  </p>
-                ) : (
-                  <div className="my-findings__detail-share-list">
-                    {confirmedFriends.map((friend) => {
-                      const isSelected = shareSelection.includes(
-                        friend.counterpartUserId,
-                      );
-
-                      return (
-                        <label
-                          key={friend.counterpartUserId}
-                          className="my-findings__detail-share-option"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => {
-                              setShareSelection((currentSelection) => {
-                                if (
-                                  currentSelection.includes(
-                                    friend.counterpartUserId,
-                                  )
-                                ) {
-                                  return currentSelection.filter(
-                                    (userId) =>
-                                      userId !== friend.counterpartUserId,
-                                  );
-                                }
-
-                                return [
-                                  ...currentSelection,
-                                  friend.counterpartUserId,
-                                ];
-                              });
-                            }}
-                          />
-                          <span className="my-findings__detail-share-option-copy">
-                            <span className="my-findings__detail-share-option-email">
-                              {friend.email}
-                            </span>
-                          </span>
-                        </label>
-                      );
-                    })}
+              {shareMenuOpen && (
+                <div className="my-findings__detail-share-menu" role="dialog">
+                  <div className="my-findings__detail-share-menu-header">
+                    <span className="my-findings__detail-label">
+                      {t("myFindings.shareTitle")}
+                    </span>
+                    <span className="my-findings__detail-images-count">
+                      {shareSelection.length}
+                    </span>
                   </div>
-                )}
 
-                {shareError && (
-                  <p className="my-findings__detail-share-error" role="alert">
-                    {shareError}
-                  </p>
-                )}
+                  {sharesLoading ? (
+                    <p className="my-findings__detail-share-empty">
+                      {t("myFindings.shareLoading")}
+                    </p>
+                  ) : confirmedFriends.length === 0 ? (
+                    <p className="my-findings__detail-share-empty">
+                      {t("myFindings.shareEmpty")}
+                    </p>
+                  ) : (
+                    <div className="my-findings__detail-share-list">
+                      {confirmedFriends.map((friend) => {
+                        const isSelected = shareSelection.includes(
+                          friend.counterpartUserId,
+                        );
 
-                <div className="my-findings__detail-share-actions">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => {
-                      setShareSelection(sharedFriendIds);
-                      setShareMenuOpen(false);
-                    }}
-                  >
-                    {t("registerFinding.cancel")}
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="primary"
-                    loading={sharesSaving}
-                    disabled={sharesLoading}
-                    onClick={() => {
-                      void (async () => {
-                        try {
-                          await onShareChange(shareSelection);
-                          setShareMenuOpen(false);
-                        } catch {
-                          // keep the menu open so the user can correct the selection
-                        }
-                      })();
-                    }}
-                  >
-                    {t("myFindings.shareSave")}
-                  </Button>
+                        return (
+                          <label
+                            key={friend.counterpartUserId}
+                            className="my-findings__detail-share-option"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={isSelected}
+                              onChange={() => {
+                                setShareSelection((currentSelection) => {
+                                  if (
+                                    currentSelection.includes(
+                                      friend.counterpartUserId,
+                                    )
+                                  ) {
+                                    return currentSelection.filter(
+                                      (userId) =>
+                                        userId !== friend.counterpartUserId,
+                                    );
+                                  }
+
+                                  return [
+                                    ...currentSelection,
+                                    friend.counterpartUserId,
+                                  ];
+                                });
+                              }}
+                            />
+                            <span className="my-findings__detail-share-option-copy">
+                              <span className="my-findings__detail-share-option-email">
+                                {friend.email}
+                              </span>
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {shareError && (
+                    <p className="my-findings__detail-share-error" role="alert">
+                      {shareError}
+                    </p>
+                  )}
+
+                  <div className="my-findings__detail-share-actions">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setShareSelection(sharedFriendIds);
+                        setShareMenuOpen(false);
+                      }}
+                    >
+                      {t("registerFinding.cancel")}
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="primary"
+                      loading={sharesSaving}
+                      disabled={sharesLoading}
+                      onClick={() => {
+                        void (async () => {
+                          try {
+                            await onShareChange(shareSelection);
+                            setShareMenuOpen(false);
+                          } catch {
+                            // keep the menu open so the user can correct the selection
+                          }
+                        })();
+                      }}
+                    >
+                      {t("myFindings.shareSave")}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </div>
 
       <div className="my-findings__detail-view">
         <div className="my-findings__detail-scroll">
-          <section className="my-findings__detail-meta-section">
-            <div className="my-findings__detail-images-header">
-              <span className="my-findings__detail-label">
-                {t("myFindings.detailsSection")}
-              </span>
-            </div>
-            <div className="my-findings__detail-fields">
-              <div className="my-findings__detail-field">
+          <div
+            className={
+              showMetaMapSplit
+                ? "my-findings__detail-top-row"
+                : "my-findings__detail-top-row my-findings__detail-top-row--single"
+            }
+          >
+            <section className="my-findings__detail-meta-section">
+              <div className="my-findings__detail-images-header">
                 <span className="my-findings__detail-label">
-                  {t("registerFinding.genstand")}
-                </span>
-                <span className="my-findings__detail-value">
-                  {detailValues.genstand || "—"}
+                  {t("myFindings.detailsSection")}
                 </span>
               </div>
-              <div className="my-findings__detail-field">
-                <span className="my-findings__detail-label">
-                  {t("registerFinding.materiale")}
-                </span>
-                <span className="my-findings__detail-value">
-                  {detailValues.materiale || "—"}
-                </span>
-              </div>
-              <div className="my-findings__detail-field">
-                <span className="my-findings__detail-label">
-                  {t("registerFinding.datering")}
-                </span>
-                <span className="my-findings__detail-value">
-                  {detailValues.datering || "—"}
-                </span>
-              </div>
-              {showCoordinates && (detailValues.oest || detailValues.nord) && (
-                <>
-                  <div className="my-findings__detail-field">
-                    <span className="my-findings__detail-label">
-                      {t("registerFinding.oest")}
-                    </span>
-                    <span className="my-findings__detail-value">
-                      {detailValues.oest || "—"}
-                    </span>
-                  </div>
-                  <div className="my-findings__detail-field">
-                    <span className="my-findings__detail-label">
-                      {t("registerFinding.nord")}
-                    </span>
-                    <span className="my-findings__detail-value">
-                      {detailValues.nord || "—"}
-                    </span>
-                  </div>
-                </>
-              )}
-              {!showCoordinates && selectedFinding.accessLevel === "shared" && (
+              <div className="my-findings__detail-fields">
                 <div className="my-findings__detail-field">
+                  <span className="my-findings__detail-label">
+                    {t("registerFinding.genstand")}
+                  </span>
+                  <span className="my-findings__detail-value">
+                    {detailValues.genstand || "—"}
+                  </span>
+                </div>
+                <div className="my-findings__detail-field">
+                  <span className="my-findings__detail-label">
+                    {t("registerFinding.materiale")}
+                  </span>
+                  <span className="my-findings__detail-value">
+                    {detailValues.materiale || "—"}
+                  </span>
+                </div>
+                <div className="my-findings__detail-field">
+                  <span className="my-findings__detail-label">
+                    {t("registerFinding.datering")}
+                  </span>
+                  <span className="my-findings__detail-value">
+                    {detailValues.datering || "—"}
+                  </span>
+                </div>
+                {showCoordinates &&
+                  (detailValues.oest || detailValues.nord) && (
+                    <>
+                      <div className="my-findings__detail-field">
+                        <span className="my-findings__detail-label">
+                          {t("registerFinding.oest")}
+                        </span>
+                        <span className="my-findings__detail-value">
+                          {detailValues.oest || "—"}
+                        </span>
+                      </div>
+                      <div className="my-findings__detail-field">
+                        <span className="my-findings__detail-label">
+                          {t("registerFinding.nord")}
+                        </span>
+                        <span className="my-findings__detail-value">
+                          {detailValues.nord || "—"}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                {!showCoordinates &&
+                  selectedFinding.accessLevel === "shared" && (
+                    <div className="my-findings__detail-field">
+                      <span className="my-findings__detail-label">
+                        {t("myFindings.locationSection")}
+                      </span>
+                      <span className="my-findings__detail-value">
+                        {t("sharedFindings.locationHidden")}
+                      </span>
+                    </div>
+                  )}
+                {detailValues.dime_id && (
+                  <div className="my-findings__detail-field">
+                    <span className="my-findings__detail-label">
+                      {t("registerFinding.dimeId")}
+                    </span>
+                    <span className="my-findings__detail-value">
+                      {detailValues.dime_id}
+                    </span>
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {showMetaMapSplit && (
+              <section className="my-findings__detail-map-section">
+                <div className="my-findings__detail-images-header">
                   <span className="my-findings__detail-label">
                     {t("myFindings.locationSection")}
                   </span>
-                  <span className="my-findings__detail-value">
-                    {t("sharedFindings.locationHidden")}
-                  </span>
                 </div>
-              )}
-              {detailValues.dime_id && (
-                <div className="my-findings__detail-field">
+                <div className="my-findings__detail-map-container">
+                  <div className="my-findings__detail-map">
+                    <MyFindingsMap
+                      mapRef={mapRef}
+                      findings={mapFindings}
+                      selectedFindingId={selectedFinding.id}
+                      center={mapBounds.center}
+                      zoom={mapBounds.zoom}
+                      interactive={false}
+                    />
+                  </div>
+                </div>
+              </section>
+            )}
+          </div>
+
+          {hasImages && (
+            <div className="my-findings__detail-media my-findings__detail-media--single">
+              <section className="my-findings__detail-images-section">
+                <div className="my-findings__detail-images-header">
                   <span className="my-findings__detail-label">
-                    {t("registerFinding.dimeId")}
+                    {t("myFindings.imagesHeading")}
                   </span>
-                  <span className="my-findings__detail-value">
-                    {detailValues.dime_id}
+                  <span className="my-findings__detail-images-count">
+                    {imageUrls.length}
                   </span>
                 </div>
-              )}
-            </div>
-          </section>
-
-          {hasMedia && (
-            <div
-              className={
-                hasValidCoordinates && hasImages
-                  ? "my-findings__detail-media"
-                  : "my-findings__detail-media my-findings__detail-media--single"
-              }
-            >
-              {hasValidCoordinates && (
-                <section className="my-findings__detail-map-section">
-                  <div className="my-findings__detail-images-header">
-                    <span className="my-findings__detail-label">
-                      {t("myFindings.locationSection")}
-                    </span>
-                  </div>
-                  <div className="my-findings__detail-map-container">
-                    <div className="my-findings__detail-map">
-                      <MyFindingsMap
-                        mapRef={mapRef}
-                        findings={mapFindings}
-                        selectedFindingId={selectedFinding.id}
-                        center={mapBounds.center}
-                        zoom={mapBounds.zoom}
-                        interactive={false}
+                <p className="my-findings__detail-images-hint">
+                  {t("myFindings.openImageHint")}
+                </p>
+                <div className="my-findings__detail-images-grid" role="list">
+                  {imageUrls.map(({ uid, url }, index) => (
+                    <button
+                      key={uid}
+                      type="button"
+                      className="my-findings__detail-image-card"
+                      onClick={() => setActiveImageIndex(index)}
+                      aria-label={t("myFindings.openImage", {
+                        index: index + 1,
+                      })}
+                    >
+                      <img
+                        className="my-findings__detail-image"
+                        src={url}
+                        alt={`${selectedFindingTitle} ${index + 1}`}
+                        loading="lazy"
                       />
-                    </div>
-                  </div>
-                </section>
-              )}
-
-              {hasImages && (
-                <section className="my-findings__detail-images-section">
-                  <div className="my-findings__detail-images-header">
-                    <span className="my-findings__detail-label">
-                      {t("myFindings.imagesHeading")}
-                    </span>
-                    <span className="my-findings__detail-images-count">
-                      {imageUrls.length}
-                    </span>
-                  </div>
-                  <p className="my-findings__detail-images-hint">
-                    {t("myFindings.openImageHint")}
-                  </p>
-                  <div className="my-findings__detail-images-grid" role="list">
-                    {imageUrls.map(({ uid, url }, index) => (
-                      <button
-                        key={uid}
-                        type="button"
-                        className="my-findings__detail-image-card"
-                        onClick={() => setActiveImageIndex(index)}
-                        aria-label={t("myFindings.openImage", {
-                          index: index + 1,
-                        })}
-                      >
-                        <img
-                          className="my-findings__detail-image"
-                          src={url}
-                          alt={`${selectedFindingTitle} ${index + 1}`}
-                          loading="lazy"
-                        />
-                      </button>
-                    ))}
-                  </div>
-                </section>
-              )}
-            </div>
-          )}
-
-          {isOwnerFinding && (
-            <div className="my-findings__detail-actions">
-              <Button onClick={onStartEditing} variant="primary">
-                {t("myFindings.edit")}
-              </Button>
+                    </button>
+                  ))}
+                </div>
+              </section>
             </div>
           )}
 
