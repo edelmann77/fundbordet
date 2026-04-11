@@ -1,6 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Breadcrumb, ProgressSpinner } from "fundbrdet-ui";
+import { FindingComments } from "../../components/FindingComments/FindingComments";
+import {
+  listConfirmedFriends,
+  type FriendRecord,
+} from "../../hooks/useFriendSearch";
 import {
   getFindingImageUrl,
   useFindingCatalogPreviewImages,
@@ -23,6 +28,10 @@ export const FundDatabasePage: React.FC = () => {
   const [draftQuery, setDraftQuery] = useState("");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [confirmedFriends, setConfirmedFriends] = useState<FriendRecord[]>([]);
+  const [expandedFindingId, setExpandedFindingId] = useState<string | null>(
+    null,
+  );
   const needle = query.trim();
   const { findings, totalCount, loading, error } = useFindingsCatalog(
     page,
@@ -32,6 +41,30 @@ export const FundDatabasePage: React.FC = () => {
 
   const pageCount = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadConfirmedFriends = async () => {
+      try {
+        const nextFriends = await listConfirmedFriends();
+
+        if (isMounted) {
+          setConfirmedFriends(nextFriends);
+        }
+      } catch {
+        if (isMounted) {
+          setConfirmedFriends([]);
+        }
+      }
+    };
+
+    void loadConfirmedFriends();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     setPage(1);
@@ -176,6 +209,14 @@ export const FundDatabasePage: React.FC = () => {
           <div className="fund-database__grid">
             {findings.map((finding) => {
               const previewImage = previewImages[finding.id];
+              const finderDisplayName =
+                [finding.ownerFirstName, finding.ownerLastName]
+                  .map((value) => value?.trim() ?? "")
+                  .filter(Boolean)
+                  .join(" ") ||
+                finding.ownerEmail ||
+                null;
+              const isCommentsOpen = expandedFindingId === finding.id;
 
               return (
                 <article key={finding.id} className="fund-database__card">
@@ -213,6 +254,13 @@ export const FundDatabasePage: React.FC = () => {
                         {t("fundDatabase.registered")}:{" "}
                         {formatDate(finding.created_at)}
                       </p>
+                      {finderDisplayName ? (
+                        <p className="fund-database__finder">
+                          {t("sharedFindings.foundBy", {
+                            finder: finderDisplayName,
+                          })}
+                        </p>
+                      ) : null}
                     </div>
 
                     {previewImage ? (
@@ -238,6 +286,30 @@ export const FundDatabasePage: React.FC = () => {
                       </div>
                     )}
                   </div>
+
+                  <div className="fund-database__comments-actions">
+                    <button
+                      type="button"
+                      className="fund-database__comments-toggle"
+                      onClick={() =>
+                        setExpandedFindingId((currentId) =>
+                          currentId === finding.id ? null : finding.id,
+                        )
+                      }
+                    >
+                      {isCommentsOpen ? t("comments.hide") : t("comments.show")}
+                    </button>
+                  </div>
+
+                  {isCommentsOpen ? (
+                    <FindingComments
+                      findingId={finding.id}
+                      finderUserId={finding.ownerUserId}
+                      finderDisplayName={finderDisplayName}
+                      friends={confirmedFriends}
+                      compact
+                    />
+                  ) : null}
                 </article>
               );
             })}

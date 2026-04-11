@@ -1,6 +1,7 @@
 import { Button } from "fundbrdet-ui";
 import { useTranslation } from "react-i18next";
 import { useEffect, useRef, useState, type RefObject } from "react";
+import { FindingComments } from "../../../../components/FindingComments/FindingComments";
 import type {
   MapMouseEvent,
   MapRef,
@@ -344,155 +345,164 @@ export const MyFindingsDetail: React.FC<{
       </div>
 
       <div className="my-findings__detail-view">
-        <section className="my-findings__detail-meta-section">
-          <div className="my-findings__detail-images-header">
-            <span className="my-findings__detail-label">
-              {t("myFindings.detailsSection")}
-            </span>
-          </div>
-          <div className="my-findings__detail-fields">
-            <div className="my-findings__detail-field">
+        <div className="my-findings__detail-scroll">
+          <section className="my-findings__detail-meta-section">
+            <div className="my-findings__detail-images-header">
               <span className="my-findings__detail-label">
-                {t("registerFinding.genstand")}
-              </span>
-              <span className="my-findings__detail-value">
-                {detailValues.genstand || "—"}
+                {t("myFindings.detailsSection")}
               </span>
             </div>
-            <div className="my-findings__detail-field">
-              <span className="my-findings__detail-label">
-                {t("registerFinding.materiale")}
-              </span>
-              <span className="my-findings__detail-value">
-                {detailValues.materiale || "—"}
-              </span>
-            </div>
-            <div className="my-findings__detail-field">
-              <span className="my-findings__detail-label">
-                {t("registerFinding.datering")}
-              </span>
-              <span className="my-findings__detail-value">
-                {detailValues.datering || "—"}
-              </span>
-            </div>
-            {showCoordinates && (detailValues.oest || detailValues.nord) && (
-              <>
-                <div className="my-findings__detail-field">
-                  <span className="my-findings__detail-label">
-                    {t("registerFinding.oest")}
-                  </span>
-                  <span className="my-findings__detail-value">
-                    {detailValues.oest || "—"}
-                  </span>
-                </div>
-                <div className="my-findings__detail-field">
-                  <span className="my-findings__detail-label">
-                    {t("registerFinding.nord")}
-                  </span>
-                  <span className="my-findings__detail-value">
-                    {detailValues.nord || "—"}
-                  </span>
-                </div>
-              </>
-            )}
-            {!showCoordinates && selectedFinding.accessLevel === "shared" && (
+            <div className="my-findings__detail-fields">
               <div className="my-findings__detail-field">
                 <span className="my-findings__detail-label">
-                  {t("myFindings.locationSection")}
+                  {t("registerFinding.genstand")}
                 </span>
                 <span className="my-findings__detail-value">
-                  {t("sharedFindings.locationHidden")}
+                  {detailValues.genstand || "—"}
                 </span>
               </div>
-            )}
-            {detailValues.dime_id && (
               <div className="my-findings__detail-field">
                 <span className="my-findings__detail-label">
-                  {t("registerFinding.dimeId")}
+                  {t("registerFinding.materiale")}
                 </span>
                 <span className="my-findings__detail-value">
-                  {detailValues.dime_id}
+                  {detailValues.materiale || "—"}
                 </span>
               </div>
-            )}
-          </div>
-        </section>
-
-        {hasMedia && (
-          <div
-            className={
-              hasValidCoordinates && hasImages
-                ? "my-findings__detail-media"
-                : "my-findings__detail-media my-findings__detail-media--single"
-            }
-          >
-            {hasValidCoordinates && (
-              <section className="my-findings__detail-map-section">
-                <div className="my-findings__detail-images-header">
+              <div className="my-findings__detail-field">
+                <span className="my-findings__detail-label">
+                  {t("registerFinding.datering")}
+                </span>
+                <span className="my-findings__detail-value">
+                  {detailValues.datering || "—"}
+                </span>
+              </div>
+              {showCoordinates && (detailValues.oest || detailValues.nord) && (
+                <>
+                  <div className="my-findings__detail-field">
+                    <span className="my-findings__detail-label">
+                      {t("registerFinding.oest")}
+                    </span>
+                    <span className="my-findings__detail-value">
+                      {detailValues.oest || "—"}
+                    </span>
+                  </div>
+                  <div className="my-findings__detail-field">
+                    <span className="my-findings__detail-label">
+                      {t("registerFinding.nord")}
+                    </span>
+                    <span className="my-findings__detail-value">
+                      {detailValues.nord || "—"}
+                    </span>
+                  </div>
+                </>
+              )}
+              {!showCoordinates && selectedFinding.accessLevel === "shared" && (
+                <div className="my-findings__detail-field">
                   <span className="my-findings__detail-label">
                     {t("myFindings.locationSection")}
                   </span>
+                  <span className="my-findings__detail-value">
+                    {t("sharedFindings.locationHidden")}
+                  </span>
                 </div>
-                <div className="my-findings__detail-map-container">
-                  <div className="my-findings__detail-map">
-                    <MyFindingsMap
-                      mapRef={mapRef}
-                      findings={mapFindings}
-                      selectedFindingId={selectedFinding.id}
-                      center={mapBounds.center}
-                      zoom={mapBounds.zoom}
-                      interactive
-                    />
-                  </div>
-                </div>
-              </section>
-            )}
-
-            {hasImages && (
-              <section className="my-findings__detail-images-section">
-                <div className="my-findings__detail-images-header">
+              )}
+              {detailValues.dime_id && (
+                <div className="my-findings__detail-field">
                   <span className="my-findings__detail-label">
-                    {t("myFindings.imagesHeading")}
+                    {t("registerFinding.dimeId")}
                   </span>
-                  <span className="my-findings__detail-images-count">
-                    {imageUrls.length}
+                  <span className="my-findings__detail-value">
+                    {detailValues.dime_id}
                   </span>
                 </div>
-                <p className="my-findings__detail-images-hint">
-                  {t("myFindings.openImageHint")}
-                </p>
-                <div className="my-findings__detail-images-grid" role="list">
-                  {imageUrls.map(({ uid, url }, index) => (
-                    <button
-                      key={uid}
-                      type="button"
-                      className="my-findings__detail-image-card"
-                      onClick={() => setActiveImageIndex(index)}
-                      aria-label={t("myFindings.openImage", {
-                        index: index + 1,
-                      })}
-                    >
-                      <img
-                        className="my-findings__detail-image"
-                        src={url}
-                        alt={`${selectedFindingTitle} ${index + 1}`}
-                        loading="lazy"
-                      />
-                    </button>
-                  ))}
-                </div>
-              </section>
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          </section>
 
-        {isOwnerFinding && (
-          <div className="my-findings__detail-actions">
-            <Button onClick={onStartEditing} variant="primary">
-              {t("myFindings.edit")}
-            </Button>
-          </div>
-        )}
+          {hasMedia && (
+            <div
+              className={
+                hasValidCoordinates && hasImages
+                  ? "my-findings__detail-media"
+                  : "my-findings__detail-media my-findings__detail-media--single"
+              }
+            >
+              {hasValidCoordinates && (
+                <section className="my-findings__detail-map-section">
+                  <div className="my-findings__detail-images-header">
+                    <span className="my-findings__detail-label">
+                      {t("myFindings.locationSection")}
+                    </span>
+                  </div>
+                  <div className="my-findings__detail-map-container">
+                    <div className="my-findings__detail-map">
+                      <MyFindingsMap
+                        mapRef={mapRef}
+                        findings={mapFindings}
+                        selectedFindingId={selectedFinding.id}
+                        center={mapBounds.center}
+                        zoom={mapBounds.zoom}
+                        interactive={false}
+                      />
+                    </div>
+                  </div>
+                </section>
+              )}
+
+              {hasImages && (
+                <section className="my-findings__detail-images-section">
+                  <div className="my-findings__detail-images-header">
+                    <span className="my-findings__detail-label">
+                      {t("myFindings.imagesHeading")}
+                    </span>
+                    <span className="my-findings__detail-images-count">
+                      {imageUrls.length}
+                    </span>
+                  </div>
+                  <p className="my-findings__detail-images-hint">
+                    {t("myFindings.openImageHint")}
+                  </p>
+                  <div className="my-findings__detail-images-grid" role="list">
+                    {imageUrls.map(({ uid, url }, index) => (
+                      <button
+                        key={uid}
+                        type="button"
+                        className="my-findings__detail-image-card"
+                        onClick={() => setActiveImageIndex(index)}
+                        aria-label={t("myFindings.openImage", {
+                          index: index + 1,
+                        })}
+                      >
+                        <img
+                          className="my-findings__detail-image"
+                          src={url}
+                          alt={`${selectedFindingTitle} ${index + 1}`}
+                          loading="lazy"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              )}
+            </div>
+          )}
+
+          {isOwnerFinding && (
+            <div className="my-findings__detail-actions">
+              <Button onClick={onStartEditing} variant="primary">
+                {t("myFindings.edit")}
+              </Button>
+            </div>
+          )}
+
+          <FindingComments
+            findingId={selectedFinding.id}
+            finderUserId={selectedFinding.ownerUserId}
+            finderDisplayName={ownerDisplayName}
+            friends={confirmedFriends}
+          />
+        </div>
       </div>
 
       {isEditing && (

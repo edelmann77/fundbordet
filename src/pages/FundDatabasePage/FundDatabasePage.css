@@ -116,6 +116,8 @@
 
 .fund-database__card {
   display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
   min-height: 0;
   padding: 0.85rem;
   border-radius: 1rem;
@@ -224,6 +226,37 @@
   margin: auto 0 0;
   font-size: 0.75rem;
   color: var(--color-ink-faint);
+}
+
+.fund-database__finder {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  color: var(--color-ink-muted);
+}
+
+.fund-database__comments-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.fund-database__comments-toggle {
+  border: 1px solid var(--color-edge);
+  border-radius: 999px;
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 0.5rem 0.85rem;
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease;
+}
+
+.fund-database__comments-toggle:hover {
+  border-color: var(--color-primary-light);
+  background-color: rgba(74, 124, 89, 0.08);
 }
 
 .fund-database__state {

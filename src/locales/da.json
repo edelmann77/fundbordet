@@ -194,6 +194,24 @@
     "foundBy": "Fundet af {{finder}}",
     "locationHidden": "Placeringen deles kun med ejeren og bekræftede venner."
   },
+  "comments": {
+    "title": "Kommentarer",
+    "count_one": "1 kommentar",
+    "count_other": "{{count}} kommentarer",
+    "fieldLabel": "Skriv en kommentar",
+    "placeholder": "Skriv en kommentar, brug @ til at tagge venner med navn eller e-mail, eller skriv @finder…",
+    "submit": "Send kommentar",
+    "show": "Vis kommentarer",
+    "hide": "Skjul kommentarer",
+    "loading": "Indlæser kommentarer...",
+    "empty": "Der er endnu ingen kommentarer. Start samtalen.",
+    "loadFailed": "Kommentarerne kunne ikke indlæses. Prøv igen.",
+    "submitFailed": "Din kommentar kunne ikke sendes. Prøv igen.",
+    "emptyError": "Skriv en kommentar, før du sender.",
+    "unknownAuthor": "Ukendt bruger",
+    "friendSuggestion": "Ven",
+    "finderSuggestionFallback": "Finderen"
+  },
   "friendsPage": {
     "eyebrow": "Netværk",
     "title": "Venner",

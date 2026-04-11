@@ -3,6 +3,10 @@ import { useTranslation } from "react-i18next";
 import { Breadcrumb, ProgressSpinner } from "fundbrdet-ui";
 import { useNavigate, useParams } from "react-router-dom";
 import type { MapRef } from "react-map-gl/maplibre";
+import {
+  listConfirmedFriends,
+  type FriendRecord,
+} from "../../hooks/useFriendSearch";
 import { type Finding, useUserFindings } from "../../hooks/useFindings";
 import { MyFindingsDetail } from "../MyFindingsPage/components/MyFindingsDetail/MyFindingsDetail";
 import { MyFindingsSidebar } from "../MyFindingsPage/components/MyFindingsSidebar/MyFindingsSidebar";
@@ -24,6 +28,7 @@ export const SharedFindingsPage: React.FC = () => {
   const [selectedFindingId, setSelectedFindingId] = useState<string | null>(
     null,
   );
+  const [confirmedFriends, setConfirmedFriends] = useState<FriendRecord[]>([]);
 
   const sharedFindings = useMemo(
     () => findings.filter((finding) => finding.accessLevel === "shared"),
@@ -79,9 +84,35 @@ export const SharedFindingsPage: React.FC = () => {
 
     return [
       selectedWithCoords,
-      ...findingsWithCoords.filter((finding) => finding.id !== selectedWithCoords.id),
+      ...findingsWithCoords.filter(
+        (finding) => finding.id !== selectedWithCoords.id,
+      ),
     ];
   }, [findingsWithCoords, selectedWithCoords]);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const loadConfirmedFriends = async () => {
+      try {
+        const nextFriends = await listConfirmedFriends();
+
+        if (isMounted) {
+          setConfirmedFriends(nextFriends);
+        }
+      } catch {
+        if (isMounted) {
+          setConfirmedFriends([]);
+        }
+      }
+    };
+
+    void loadConfirmedFriends();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     if (!routeFindingId) {
@@ -208,7 +239,7 @@ export const SharedFindingsPage: React.FC = () => {
             editValues={selectedFinding as Partial<Finding> | null}
             isEditing={false}
             saving={false}
-            confirmedFriends={[]}
+            confirmedFriends={confirmedFriends}
             mapRef={mapRef}
             mapFindings={mapFindings}
             mapBounds={mapBounds}

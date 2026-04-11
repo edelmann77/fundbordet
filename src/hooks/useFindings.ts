@@ -40,11 +40,50 @@ export interface Finding {
 
 export interface FindingCatalogEntry {
   id: string;
+  ownerUserId: string | null;
+  ownerEmail: string | null;
+  ownerFirstName: string | null;
+  ownerLastName: string | null;
   genstand: string | null;
   materiale: string | null;
   datering: string | null;
   dime_id: string | null;
   created_at: string;
+}
+
+export interface FindingCommentMention {
+  id: string;
+  mentionedUserId: string;
+  kind: "friend" | "finder";
+  label: string;
+  startIndex: number;
+  endIndex: number;
+}
+
+export interface FindingComment {
+  id: string;
+  findingId: string;
+  authorUserId: string;
+  authorEmail: string | null;
+  authorFirstName: string | null;
+  authorLastName: string | null;
+  content: string;
+  createdAt: string;
+  mentions: FindingCommentMention[];
+}
+
+export interface CreateFindingCommentMentionInput {
+  mentionedUserId: string;
+  kind: "friend" | "finder";
+  label: string;
+  startIndex: number;
+  endIndex: number;
+}
+
+export interface CreateFindingCommentInput {
+  findingId: string;
+  content: string;
+  mentions?: CreateFindingCommentMentionInput[];
 }
 
 export interface FindingCatalogResult {
@@ -182,12 +221,94 @@ function mapRowToFinding(row: any): Finding {
 function mapRowToFindingCatalogEntry(row: any): FindingCatalogEntry {
   return {
     id: row.id,
+    ownerUserId: row.owner_user_id ?? null,
+    ownerEmail: row.owner_email ?? null,
+    ownerFirstName: row.owner_first_name ?? null,
+    ownerLastName: row.owner_last_name ?? null,
     genstand: row.written_name ?? null,
     materiale: row.material ?? null,
     datering: row.dating ?? null,
     dime_id: row.dime_id ?? null,
     created_at: row.created_at,
   };
+}
+
+function mapRowToFindingCommentMention(row: any): FindingCommentMention | null {
+  const mentionedUserId =
+    typeof row?.mentionedUserId === "string"
+      ? row.mentionedUserId
+      : typeof row?.mentioned_user_id === "string"
+        ? row.mentioned_user_id
+        : null;
+  const kind =
+    row?.kind === "finder"
+      ? "finder"
+      : row?.kind === "friend"
+        ? "friend"
+        : null;
+  const label = typeof row?.label === "string" ? row.label : null;
+  const startIndex = Number(row?.startIndex ?? row?.start_index);
+  const endIndex = Number(row?.endIndex ?? row?.end_index);
+
+  if (
+    !mentionedUserId ||
+    !kind ||
+    !label ||
+    !Number.isInteger(startIndex) ||
+    !Number.isInteger(endIndex)
+  ) {
+    return null;
+  }
+
+  return {
+    id:
+      typeof row?.id === "string"
+        ? row.id
+        : `${mentionedUserId}:${startIndex}:${endIndex}`,
+    mentionedUserId,
+    kind,
+    label,
+    startIndex,
+    endIndex,
+  };
+}
+
+function mapRowToFindingComment(row: any): FindingComment {
+  const mentionsSource: unknown[] = Array.isArray(row.mentions)
+    ? row.mentions
+    : [];
+
+  return {
+    id: row.id,
+    findingId: row.finding_id,
+    authorUserId: row.author_user_id,
+    authorEmail: row.author_email ?? null,
+    authorFirstName: row.author_first_name ?? null,
+    authorLastName: row.author_last_name ?? null,
+    content: row.content ?? "",
+    createdAt: row.created_at,
+    mentions: mentionsSource
+      .map(mapRowToFindingCommentMention)
+      .filter(
+        (
+          mention: FindingCommentMention | null,
+        ): mention is FindingCommentMention => Boolean(mention),
+      ),
+  };
+}
+
+export function getFindingCommentAuthorDisplayName(
+  comment: Pick<
+    FindingComment,
+    "authorFirstName" | "authorLastName" | "authorEmail"
+  >,
+): string | null {
+  const fullName = [comment.authorFirstName, comment.authorLastName]
+    .map((value) => value?.trim() ?? "")
+    .filter(Boolean)
+    .join(" ");
+
+  return fullName || comment.authorEmail || null;
 }
 
 function toCatalogSearchValue(search: string): string | null {
@@ -341,6 +462,93 @@ export async function updateCurrentUserFinding(
     if (!updatedRowsById || updatedRowsById.length !== 1) {
       throw new Error("No finding was updated");
     }
+  }
+}
+
+export async function listFindingComments(
+  findingId: string,
+): Promise<FindingComment[]> {
+  const { data, error } = await supabase.rpc("get_finding_comments", {
+    target_finding_id: findingId,
+  });
+
+  if (error) {
+    throw error;
+  }
+
+  return ((data as any[]) ?? []).map(mapRowToFindingComment);
+}
+
+export async function createFindingComment({
+  findingId,
+  content,
+  mentions = [],
+}: CreateFindingCommentInput): Promise<void> {
+  const user = await requireSessionUser();
+  const normalizedContent = content.trim();
+
+  if (!normalizedContent) {
+    throw new Error("EMPTY_COMMENT");
+  }
+
+  const { data: insertedComment, error: insertCommentError } = await supabase
+    .schema("public")
+    .from("finding_comments")
+    .insert({
+      finding_id: findingId,
+      author_user_id: user.id,
+      content: normalizedContent,
+    })
+    .select("id")
+    .single();
+
+  if (insertCommentError) {
+    throw insertCommentError;
+  }
+
+  const commentId =
+    insertedComment && typeof insertedComment.id === "string"
+      ? insertedComment.id
+      : null;
+
+  if (!commentId) {
+    throw new Error("COMMENT_INSERT_FAILED");
+  }
+
+  if (mentions.length === 0) {
+    return;
+  }
+
+  const rows = mentions
+    .filter(
+      (mention) =>
+        mention.mentionedUserId &&
+        mention.label.trim() &&
+        Number.isInteger(mention.startIndex) &&
+        Number.isInteger(mention.endIndex) &&
+        mention.endIndex > mention.startIndex,
+    )
+    .map((mention) => ({
+      comment_id: commentId,
+      finding_id: findingId,
+      mentioned_user_id: mention.mentionedUserId,
+      kind: mention.kind,
+      label: mention.label.trim(),
+      start_index: mention.startIndex,
+      end_index: mention.endIndex,
+    }));
+
+  if (rows.length === 0) {
+    return;
+  }
+
+  const { error: insertMentionsError } = await supabase
+    .schema("public")
+    .from("finding_comment_mentions")
+    .insert(rows);
+
+  if (insertMentionsError) {
+    throw insertMentionsError;
   }
 }
 
@@ -662,6 +870,105 @@ export function useAllFindingsHeatmap() {
   }, []);
 
   return heatData;
+}
+
+export function useFindingComments(findingId: string | null) {
+  const [comments, setComments] = useState<FindingComment[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    let commentsChannel: ReturnType<typeof supabase.channel> | null = null;
+    let mentionsChannel: ReturnType<typeof supabase.channel> | null = null;
+
+    if (!findingId) {
+      setComments([]);
+      setLoading(false);
+      setError(null);
+      return () => {
+        isMounted = false;
+      };
+    }
+
+    const loadComments = async () => {
+      if (isMounted) {
+        setLoading(true);
+      }
+
+      try {
+        const nextComments = await listFindingComments(findingId);
+
+        if (!isMounted) {
+          return;
+        }
+
+        setComments(nextComments);
+        setError(null);
+      } catch (loadError) {
+        if (!isMounted) {
+          return;
+        }
+
+        setComments([]);
+        setError(
+          loadError instanceof Error
+            ? loadError.message
+            : "Unable to load comments",
+        );
+      } finally {
+        if (isMounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    void loadComments();
+
+    commentsChannel = supabase
+      .channel(`finding-comments:${findingId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "finding_comments",
+          filter: `finding_id=eq.${findingId}`,
+        },
+        () => {
+          void loadComments();
+        },
+      )
+      .subscribe();
+
+    mentionsChannel = supabase
+      .channel(`finding-comment-mentions:${findingId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "finding_comment_mentions",
+          filter: `finding_id=eq.${findingId}`,
+        },
+        () => {
+          void loadComments();
+        },
+      )
+      .subscribe();
+
+    return () => {
+      isMounted = false;
+      if (commentsChannel) {
+        supabase.removeChannel(commentsChannel);
+      }
+      if (mentionsChannel) {
+        supabase.removeChannel(mentionsChannel);
+      }
+    };
+  }, [findingId]);
+
+  return { comments, loading, error };
 }
 
 export function useFindingsCatalog(

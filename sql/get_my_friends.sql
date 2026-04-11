@@ -6,6 +6,8 @@ returns table (
   status text,
   counterpart_user_id uuid,
   counterpart_email text,
+  counterpart_first_name text,
+  counterpart_last_name text,
   created_at timestamptz
 )
 language sql
@@ -22,6 +24,8 @@ as $$
       else friends.inviter
     end as counterpart_user_id,
     counterpart.email::text as counterpart_email,
+    coalesce(counterpart_profile.first_name, '')::text as counterpart_first_name,
+    coalesce(counterpart_profile.last_name, '')::text as counterpart_last_name,
     friends.created_at
   from public.friends as friends
   join auth.users as counterpart
@@ -29,6 +33,8 @@ as $$
       when friends.inviter = auth.uid() then friends.invitee
       else friends.inviter
     end
+  left join public.user_profiles as counterpart_profile
+    on counterpart_profile.user_id = counterpart.id
   where friends.inviter = auth.uid()
     or friends.invitee = auth.uid()
   order by

@@ -14,6 +14,8 @@ export interface FriendRecord {
   invitee: string;
   counterpartUserId: string;
   email: string;
+  firstName: string;
+  lastName: string;
   status: FriendStatus;
   isIncoming: boolean;
 }
@@ -41,6 +43,8 @@ interface FriendRow {
   invitee: string;
   counterpart_user_id: string;
   counterpart_email: string;
+  counterpart_first_name: string | null;
+  counterpart_last_name: string | null;
   status: FriendStatus;
 }
 
@@ -51,6 +55,8 @@ function mapRowToFriend(row: FriendRow, currentUserId: string): FriendRecord {
     invitee: row.invitee,
     counterpartUserId: row.counterpart_user_id,
     email: row.counterpart_email,
+    firstName: row.counterpart_first_name ?? "",
+    lastName: row.counterpart_last_name ?? "",
     status: row.status,
     isIncoming: row.invitee === currentUserId,
   };

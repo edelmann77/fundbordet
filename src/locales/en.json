@@ -194,6 +194,24 @@
     "foundBy": "Found by {{finder}}",
     "locationHidden": "Location is only shared with the owner and confirmed friends."
   },
+  "comments": {
+    "title": "Comments",
+    "count_one": "1 comment",
+    "count_other": "{{count}} comments",
+    "fieldLabel": "Add a comment",
+    "placeholder": "Write a comment, use @ to tag friends by name or email, or write @finder…",
+    "submit": "Post comment",
+    "show": "Show comments",
+    "hide": "Hide comments",
+    "loading": "Loading comments...",
+    "empty": "No comments yet. Start the conversation.",
+    "loadFailed": "Comments could not be loaded. Please try again.",
+    "submitFailed": "Your comment could not be posted. Please try again.",
+    "emptyError": "Write a comment before posting.",
+    "unknownAuthor": "Unknown user",
+    "friendSuggestion": "Friend",
+    "finderSuggestionFallback": "The finder"
+  },
   "friendsPage": {
     "eyebrow": "Network",
     "title": "Friends",

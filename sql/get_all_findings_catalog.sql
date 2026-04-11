@@ -7,6 +7,10 @@ create or replace function public.get_all_findings_catalog(
 )
 returns table (
   id uuid,
+  owner_user_id uuid,
+  owner_email text,
+  owner_first_name text,
+  owner_last_name text,
   written_name text,
   material text,
   dating text,
@@ -21,12 +25,20 @@ as $$
   with filtered_findings as (
     select
       findings.id,
+      findings.user_id as owner_user_id,
+      owners.email::text as owner_email,
+      coalesce(owner_profiles.first_name, '')::text as owner_first_name,
+      coalesce(owner_profiles.last_name, '')::text as owner_last_name,
       findings.written_name,
       findings.material,
       findings.dating,
       findings.dime_id::text as dime_id,
       findings.created_at
     from public.findings as findings
+    join auth.users as owners
+      on owners.id = findings.user_id
+    left join public.user_profiles as owner_profiles
+      on owner_profiles.user_id = findings.user_id
     where
       search_term is null
       or search_term = ''
@@ -37,6 +49,10 @@ as $$
   )
   select
     filtered_findings.id,
+    filtered_findings.owner_user_id,
+    filtered_findings.owner_email,
+    filtered_findings.owner_first_name,
+    filtered_findings.owner_last_name,
     filtered_findings.written_name,
     filtered_findings.material,
     filtered_findings.dating,

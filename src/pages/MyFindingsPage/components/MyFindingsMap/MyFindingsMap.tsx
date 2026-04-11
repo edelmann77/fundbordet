@@ -41,6 +41,11 @@ export const MyFindingsMap: React.FC<{
       style={{ width: "100%", height: "100%" }}
       mapStyle={SATELLITE_STYLE}
       interactive={interactive}
+      dragPan={interactive}
+      scrollZoom={interactive}
+      doubleClickZoom={interactive}
+      touchZoomRotate={interactive}
+      keyboard={interactive}
       dragRotate={false}
       pitchWithRotate={false}
       maxPitch={0}
