@@ -1,10 +1,12 @@
-import type { RefObject } from "react";
+import { useState, type RefObject } from "react";
 import Map, {
   Marker,
+  Popup,
   type MapMouseEvent,
   type MapRef,
   type ViewStateChangeEvent,
 } from "react-map-gl/maplibre";
+import { useTranslation } from "react-i18next";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
   SATELLITE_STYLE,
@@ -20,6 +22,8 @@ export const MyFindingsMap: React.FC<{
   interactive: boolean;
   onClick?: (event: MapMouseEvent) => void;
   onZoom?: (event: ViewStateChangeEvent) => void;
+  onMarkerSelect?: (finding: FindingWithCoordinates) => void;
+  showFullscreenControl?: boolean;
 }> = ({
   findings,
   selectedFindingId,
@@ -29,56 +33,212 @@ export const MyFindingsMap: React.FC<{
   interactive,
   onClick,
   onZoom,
+  onMarkerSelect,
+  showFullscreenControl = true,
 }) => {
-  return (
-    <Map
-      ref={mapRef}
-      initialViewState={{
-        longitude: center[0],
-        latitude: center[1],
-        zoom,
-      }}
-      style={{ width: "100%", height: "100%" }}
-      mapStyle={SATELLITE_STYLE}
-      interactive={interactive}
-      dragPan={interactive}
-      scrollZoom={interactive}
-      doubleClickZoom={interactive}
-      touchZoomRotate={interactive}
-      keyboard={interactive}
-      dragRotate={false}
-      pitchWithRotate={false}
-      maxPitch={0}
-      onClick={onClick}
-      onZoom={onZoom}
-    >
-      {findings.map((finding) => {
-        const isSelected = finding.id === selectedFindingId;
+  const { t } = useTranslation();
+  const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const [hoveredInlineFindingId, setHoveredInlineFindingId] = useState<
+    string | null
+  >(null);
+  const [hoveredModalFindingId, setHoveredModalFindingId] = useState<
+    string | null
+  >(null);
 
-        return (
-          <Marker
-            key={finding.id}
-            longitude={finding.lng}
-            latitude={finding.lat}
-            anchor="bottom"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width={isSelected ? 28 : 20}
-              height={isSelected ? 28 : 20}
-              viewBox="0 0 24 24"
+  const renderMapOverlays = (variant: "inline" | "modal") => {
+    const hoveredFindingId =
+      variant === "modal" ? hoveredModalFindingId : hoveredInlineFindingId;
+    const hoveredFinding = hoveredFindingId
+      ? (findings.find((finding) => finding.id === hoveredFindingId) ?? null)
+      : null;
+    const showPopover =
+      hoveredFinding != null && hoveredFinding.id !== selectedFindingId;
+    const setHoveredFindingId =
+      variant === "modal" ? setHoveredModalFindingId : setHoveredInlineFindingId;
+
+    return (
+      <>
+        {findings.map((finding) => {
+          const isSelected = finding.id === selectedFindingId;
+
+          return (
+            <Marker
+              key={finding.id}
+              longitude={finding.lng}
+              latitude={finding.lat}
+              anchor="bottom"
             >
-              <path
-                fill={isSelected ? "#e63946" : "#888"}
-                stroke="#fff"
-                strokeWidth="1"
-                d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-              />
-            </svg>
-          </Marker>
-        );
-      })}
-    </Map>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width={isSelected ? 28 : 20}
+                height={isSelected ? 28 : 20}
+                viewBox="0 0 24 24"
+                role="button"
+                tabIndex={0}
+                aria-label="Select finding marker"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onMarkerSelect?.(finding);
+                }}
+                onMouseEnter={() => {
+                  setHoveredFindingId(finding.id);
+                }}
+                onMouseLeave={() => {
+                  setHoveredFindingId((currentId) =>
+                    currentId === finding.id ? null : currentId,
+                  );
+                }}
+                onKeyDown={(event) => {
+                  if (event.key !== "Enter" && event.key !== " ") {
+                    return;
+                  }
+
+                  event.preventDefault();
+                  event.stopPropagation();
+                  onMarkerSelect?.(finding);
+                }}
+                style={{ cursor: "pointer" }}
+              >
+                <path
+                  fill={isSelected ? "#e63946" : "#888"}
+                  stroke="#fff"
+                  strokeWidth="1"
+                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+                />
+              </svg>
+            </Marker>
+          );
+        })}
+
+        {showPopover && hoveredFinding ? (
+          <Popup
+            longitude={hoveredFinding.lng}
+            latitude={hoveredFinding.lat}
+            anchor="top"
+            closeButton={false}
+            closeOnClick={false}
+            offset={18}
+            className="my-findings__map-popover"
+          >
+            <div className="my-findings__map-popover-content">
+              <p className="my-findings__map-popover-title">
+                {hoveredFinding.genstand ||
+                  hoveredFinding.materiale ||
+                  t("myFindings.unnamed")}
+              </p>
+
+              {hoveredFinding.materiale ? (
+                <p className="my-findings__map-popover-row">
+                  <span>{t("registerFinding.materiale")}: </span>
+                  <span>{hoveredFinding.materiale}</span>
+                </p>
+              ) : null}
+
+              {hoveredFinding.datering ? (
+                <p className="my-findings__map-popover-row">
+                  <span>{t("registerFinding.datering")}: </span>
+                  <span>{hoveredFinding.datering}</span>
+                </p>
+              ) : null}
+
+              {hoveredFinding.dime_id ? (
+                <p className="my-findings__map-popover-row">
+                  <span>{t("registerFinding.dimeId")}: </span>
+                  <span>{hoveredFinding.dime_id}</span>
+                </p>
+              ) : null}
+            </div>
+          </Popup>
+        ) : null}
+      </>
+    );
+  };
+
+  return (
+    <div className="my-findings__map-shell">
+      <Map
+        ref={mapRef}
+        initialViewState={{
+          longitude: center[0],
+          latitude: center[1],
+          zoom,
+        }}
+        style={{ width: "100%", height: "100%" }}
+        mapStyle={SATELLITE_STYLE}
+        interactive={interactive}
+        dragPan={interactive}
+        scrollZoom={interactive}
+        doubleClickZoom={interactive}
+        touchZoomRotate={interactive}
+        keyboard={interactive}
+        dragRotate={false}
+        pitchWithRotate={false}
+        maxPitch={0}
+        onClick={onClick}
+        onZoom={onZoom}
+      >
+        {renderMapOverlays("inline")}
+      </Map>
+
+      {showFullscreenControl ? (
+        <button
+          type="button"
+          className="my-findings__map-expand-button"
+          aria-label="Open map in modal"
+          onClick={() => setIsMapModalOpen(true)}
+        >
+          ⤢
+        </button>
+      ) : null}
+
+      {isMapModalOpen ? (
+        <div className="my-findings__map-modal" role="dialog" aria-modal="true">
+          <button
+            type="button"
+            className="my-findings__map-modal-backdrop"
+            aria-label="Close map modal"
+            onClick={() => setIsMapModalOpen(false)}
+          />
+
+          <div className="my-findings__map-modal-content">
+            <button
+              type="button"
+              className="my-findings__map-modal-close"
+              aria-label="Close map modal"
+              onClick={() => setIsMapModalOpen(false)}
+            >
+              ×
+            </button>
+
+            <div className="my-findings__map-modal-map">
+              <Map
+                ref={mapRef}
+                initialViewState={{
+                  longitude: center[0],
+                  latitude: center[1],
+                  zoom,
+                }}
+                style={{ width: "100%", height: "100%" }}
+                mapStyle={SATELLITE_STYLE}
+                interactive
+                dragPan
+                scrollZoom
+                doubleClickZoom
+                touchZoomRotate
+                keyboard
+                dragRotate={false}
+                pitchWithRotate={false}
+                maxPitch={0}
+                onClick={onClick}
+                onZoom={onZoom}
+              >
+                {renderMapOverlays("modal")}
+              </Map>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </div>
   );
 };
 

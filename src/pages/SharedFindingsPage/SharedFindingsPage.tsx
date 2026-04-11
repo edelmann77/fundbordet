@@ -14,6 +14,7 @@ import {
   calculateMapBounds,
   getFindingWithCoordinates,
   getFindingsWithCoordinates,
+  type FindingWithCoordinates,
   utmToWGS84,
 } from "../MyFindingsPage/myFindingsUtils";
 import "../MyFindingsPage/MyFindingsPage.css";
@@ -256,6 +257,7 @@ export const SharedFindingsPage: React.FC = () => {
             onImagesChange={() => {}}
             onMapClick={() => {}}
             onMapZoom={() => {}}
+            onMapMarkerSelect={(_finding: FindingWithCoordinates) => {}}
           />
         </div>
       </div>

@@ -41,6 +41,7 @@ export const MyFindingsDetail: React.FC<{
   onImagesChange: (images: File[]) => void;
   onMapClick: (event: MapMouseEvent) => void;
   onMapZoom: (event: ViewStateChangeEvent) => void;
+  onMapMarkerSelect: (finding: FindingWithCoordinates) => void;
 }> = ({
   selectedFinding,
   editValues,
@@ -63,6 +64,7 @@ export const MyFindingsDetail: React.FC<{
   onImagesChange,
   onMapClick,
   onMapZoom,
+  onMapMarkerSelect,
 }) => {
   const { t } = useTranslation();
   const [activeImageIndex, setActiveImageIndex] = useState<number | null>(null);
@@ -451,6 +453,7 @@ export const MyFindingsDetail: React.FC<{
                       center={mapBounds.center}
                       zoom={mapBounds.zoom}
                       interactive={false}
+                      onMarkerSelect={onMapMarkerSelect}
                     />
                   </div>
                 </div>

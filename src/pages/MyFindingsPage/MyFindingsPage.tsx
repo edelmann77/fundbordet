@@ -26,6 +26,7 @@ import {
   calculateMapBounds,
   getFindingWithCoordinates,
   getFindingsWithCoordinates,
+  type FindingWithCoordinates,
   utmToWGS84,
   wgs84ToUTM,
 } from "./myFindingsUtils";
@@ -130,6 +131,22 @@ export const MyFindingsPage: React.FC = () => {
   const handleMapZoom = useCallback((e: ViewStateChangeEvent) => {
     setZoom(e.viewState.zoom);
   }, []);
+
+  const handleMapMarkerSelect = useCallback(
+    (finding: FindingWithCoordinates) => {
+      navigate(`/detector/my-findings/${finding.id}`);
+
+      const map = mapRef.current;
+      if (map) {
+        map.flyTo({
+          center: [finding.lng, finding.lat],
+          zoom: Math.max(14, map.getZoom()),
+          duration: 900,
+        });
+      }
+    },
+    [navigate],
+  );
 
   const findingsWithCoords = useMemo(
     () => getFindingsWithCoordinates(ownerFindings),
@@ -394,6 +411,7 @@ export const MyFindingsPage: React.FC = () => {
             onImagesChange={handleImagesChange}
             onMapClick={handleMapClick}
             onMapZoom={handleMapZoom}
+            onMapMarkerSelect={handleMapMarkerSelect}
           />
         </div>
       </div>
