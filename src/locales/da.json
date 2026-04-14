@@ -18,10 +18,13 @@
     "count_one": "1 notifikation",
     "count_other": "{{count}} notifikationer",
     "emptyTitle": "Ingen notifikationer",
-    "emptyDescription": "Venneanmodninger sendt til dig vises her.",
+    "emptyDescription": "Venneanmodninger og kommentarer, hvor du er tagget, vises her.",
     "friendRequestTitle": "Venneanmodning",
     "friendRequestDescription": "{{email}} har sendt dig en venneanmodning.",
-    "viewFriends": "Åbn venner"
+    "viewFriends": "Åbn venner",
+    "commentMentionTitle": "Du er tagget i en kommentar",
+    "commentMentionDescription": "En bruger har nævnt dig i en fundkommentar.",
+    "viewComment": "Åbn kommentar"
   },
   "hero": {
     "eyebrow": "Dit udendørs fundjournal",

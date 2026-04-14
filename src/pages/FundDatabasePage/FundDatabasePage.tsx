@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Breadcrumb, ProgressSpinner } from "fundbrdet-ui";
+import { useSearchParams } from "react-router-dom";
 import { FindingComments } from "../../components/FindingComments/FindingComments";
 import {
   listConfirmedFriends,
@@ -25,6 +26,7 @@ function formatDate(value: string): string {
 
 export const FundDatabasePage: React.FC = () => {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [draftQuery, setDraftQuery] = useState("");
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
@@ -32,6 +34,8 @@ export const FundDatabasePage: React.FC = () => {
   const [expandedFindingId, setExpandedFindingId] = useState<string | null>(
     null,
   );
+  const linkedFindingId = searchParams.get("findingId")?.trim() ?? "";
+  const shouldOpenLinkedComments = searchParams.get("openComments") === "1";
   const needle = query.trim();
   const { findings, totalCount, loading, error } = useFindingsCatalog(
     page,
@@ -69,6 +73,20 @@ export const FundDatabasePage: React.FC = () => {
   useEffect(() => {
     setPage(1);
   }, [needle]);
+
+  useEffect(() => {
+    if (!linkedFindingId) {
+      return;
+    }
+
+    setDraftQuery(linkedFindingId);
+    setQuery(linkedFindingId);
+    setPage(1);
+
+    if (shouldOpenLinkedComments) {
+      setExpandedFindingId(linkedFindingId);
+    }
+  }, [linkedFindingId, shouldOpenLinkedComments]);
 
   useEffect(() => {
     if (page > pageCount) {

@@ -18,10 +18,13 @@
     "count_one": "1 notification",
     "count_other": "{{count}} notifications",
     "emptyTitle": "No notifications",
-    "emptyDescription": "Friend requests sent to you will appear here.",
+    "emptyDescription": "Friend requests and comment mentions sent to you will appear here.",
     "friendRequestTitle": "Friend request",
     "friendRequestDescription": "{{email}} sent you a friend request.",
-    "viewFriends": "Open friends"
+    "viewFriends": "Open friends",
+    "commentMentionTitle": "You were tagged in a comment",
+    "commentMentionDescription": "A user mentioned you in a finding comment.",
+    "viewComment": "Open comment"
   },
   "hero": {
     "eyebrow": "Your outdoor finding journal",

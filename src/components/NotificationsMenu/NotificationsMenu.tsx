@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
-  listPendingFriendRequests,
+  listAppNotifications,
   type AppNotification,
 } from "../../hooks/useFriendSearch";
 import { getSessionUser } from "../../hooks/useAuth";
@@ -28,16 +28,40 @@ export const NotificationsMenu: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [lastSeenAt, setLastSeenAt] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const loadNotificationsRef = useRef<() => Promise<void>>(async () => {});
 
+  const markNotificationsAsSeen = () => {
+    const seenAt = new Date().toISOString();
+    setLastSeenAt(seenAt);
+
+    if (!currentUserId) {
+      return;
+    }
+
+    localStorage.setItem(`notifications:lastSeenAt:${currentUserId}`, seenAt);
+  };
+
+  const unseenCount = notifications.filter((notification) => {
+    if (!lastSeenAt) {
+      return true;
+    }
+
+    return (
+      new Date(notification.createdAt).getTime() >
+      new Date(lastSeenAt).getTime()
+    );
+  }).length;
+
   const loadNotifications = async () => {
     try {
       setLoading(true);
-      const nextNotifications = await listPendingFriendRequests();
+      const nextNotifications = await listAppNotifications();
       setNotifications(nextNotifications);
       setLoadError(null);
     } catch {
@@ -77,6 +101,11 @@ export const NotificationsMenu: React.FC = () => {
         return;
       }
 
+      setCurrentUserId(user.id);
+      setLastSeenAt(
+        localStorage.getItem(`notifications:lastSeenAt:${user.id}`),
+      );
+
       const refreshNotifications = () => {
         void loadNotificationsRef.current();
       };
@@ -110,6 +139,26 @@ export const NotificationsMenu: React.FC = () => {
             schema: "public",
             table: "friends",
             filter: `invitee=eq.${user.id}`,
+          },
+          refreshNotifications,
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "INSERT",
+            schema: "public",
+            table: "finding_comment_mentions",
+            filter: `mentioned_user_id=eq.${user.id}`,
+          },
+          refreshNotifications,
+        )
+        .on(
+          "postgres_changes",
+          {
+            event: "DELETE",
+            schema: "public",
+            table: "finding_comment_mentions",
+            filter: `mentioned_user_id=eq.${user.id}`,
           },
           refreshNotifications,
         )
@@ -157,13 +206,33 @@ export const NotificationsMenu: React.FC = () => {
     setOpen(nextOpen);
 
     if (nextOpen) {
+      markNotificationsAsSeen();
       void loadNotificationsRef.current();
     }
   };
 
+  useEffect(() => {
+    if (!open) {
+      return;
+    }
+
+    markNotificationsAsSeen();
+  }, [notifications, open]);
+
   const handleOpenFriends = () => {
     setOpen(false);
     navigate("/detector/friends");
+  };
+
+  const handleOpenMention = (notification: AppNotification) => {
+    if (!notification.findingId) {
+      return;
+    }
+
+    setOpen(false);
+    navigate(
+      `/detector/fund-database?findingId=${encodeURIComponent(notification.findingId)}&openComments=1`,
+    );
   };
 
   return (
@@ -177,9 +246,9 @@ export const NotificationsMenu: React.FC = () => {
         onClick={handleTriggerClick}
       >
         <BellIcon />
-        {notifications.length > 0 && (
+        {unseenCount > 0 && (
           <span className="notifications-menu__badge" aria-hidden="true">
-            {notifications.length}
+            {unseenCount}
           </span>
         )}
       </button>
@@ -230,19 +299,32 @@ export const NotificationsMenu: React.FC = () => {
                   <button
                     type="button"
                     className="notifications-menu__item"
-                    onClick={handleOpenFriends}
+                    onClick={() => {
+                      if (notification.kind === "comment-mention") {
+                        handleOpenMention(notification);
+                        return;
+                      }
+
+                      handleOpenFriends();
+                    }}
                     role="menuitem"
                   >
                     <span className="notifications-menu__item-title">
-                      {t("notifications.friendRequestTitle")}
+                      {notification.kind === "comment-mention"
+                        ? t("notifications.commentMentionTitle")
+                        : t("notifications.friendRequestTitle")}
                     </span>
                     <span className="notifications-menu__item-description">
-                      {t("notifications.friendRequestDescription", {
-                        email: notification.senderEmail,
-                      })}
+                      {notification.kind === "comment-mention"
+                        ? t("notifications.commentMentionDescription")
+                        : t("notifications.friendRequestDescription", {
+                            email: notification.senderEmail,
+                          })}
                     </span>
                     <span className="notifications-menu__item-action">
-                      {t("notifications.viewFriends")}
+                      {notification.kind === "comment-mention"
+                        ? t("notifications.viewComment")
+                        : t("notifications.viewFriends")}
                     </span>
                   </button>
                 </li>

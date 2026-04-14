@@ -18,6 +18,7 @@ export interface FriendRecord {
   lastName: string;
   status: FriendStatus;
   isIncoming: boolean;
+  createdAt: string;
 }
 
 export interface FriendLookupResult {
@@ -27,9 +28,12 @@ export interface FriendLookupResult {
 
 export interface AppNotification {
   id: string;
-  kind: "friend-request";
-  friendId: string;
-  senderEmail: string;
+  kind: "friend-request" | "comment-mention";
+  createdAt: string;
+  friendId?: string;
+  senderEmail?: string;
+  findingId?: string;
+  commentId?: string;
 }
 
 interface FriendLookupRow {
@@ -46,6 +50,14 @@ interface FriendRow {
   counterpart_first_name: string | null;
   counterpart_last_name: string | null;
   status: FriendStatus;
+  created_at: string;
+}
+
+interface MentionNotificationRow {
+  id: string;
+  finding_id: string;
+  comment_id: string;
+  created_at: string;
 }
 
 function mapRowToFriend(row: FriendRow, currentUserId: string): FriendRecord {
@@ -59,6 +71,7 @@ function mapRowToFriend(row: FriendRow, currentUserId: string): FriendRecord {
     lastName: row.counterpart_last_name ?? "",
     status: row.status,
     isIncoming: row.invitee === currentUserId,
+    createdAt: row.created_at,
   };
 }
 
@@ -98,9 +111,75 @@ export async function listPendingFriendRequests(): Promise<AppNotification[]> {
     .map((friend) => ({
       id: `friend-request:${friend.id}`,
       kind: "friend-request" as const,
+      createdAt: friend.createdAt,
       friendId: friend.id,
       senderEmail: friend.email,
     }));
+}
+
+export async function listCommentMentionNotifications(): Promise<
+  AppNotification[]
+> {
+  const currentUserId = await getCurrentUserId();
+
+  const { data, error } = await supabase
+    .from("finding_comment_mentions")
+    .select("id, finding_id, comment_id, created_at")
+    .eq("mentioned_user_id", currentUserId)
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    throw error;
+  }
+
+  const mentionRows = (data ?? []) as MentionNotificationRow[];
+
+  if (mentionRows.length === 0) {
+    return [];
+  }
+
+  const uniqueCommentIds = [
+    ...new Set(mentionRows.map((row) => row.comment_id)),
+  ];
+
+  const { data: comments, error: commentsError } = await supabase
+    .from("finding_comments")
+    .select("id, author_user_id")
+    .in("id", uniqueCommentIds);
+
+  if (commentsError) {
+    throw commentsError;
+  }
+
+  const commentAuthorMap = new Map<string, string>(
+    ((comments ?? []) as Array<{ id: string; author_user_id: string }>).map(
+      (comment) => [comment.id, comment.author_user_id],
+    ),
+  );
+
+  return mentionRows
+    .filter(
+      (mention) => commentAuthorMap.get(mention.comment_id) !== currentUserId,
+    )
+    .map((mention) => ({
+      id: `comment-mention:${mention.id}`,
+      kind: "comment-mention",
+      createdAt: mention.created_at,
+      findingId: mention.finding_id,
+      commentId: mention.comment_id,
+    }));
+}
+
+export async function listAppNotifications(): Promise<AppNotification[]> {
+  const [friendRequests, mentionNotifications] = await Promise.all([
+    listPendingFriendRequests(),
+    listCommentMentionNotifications(),
+  ]);
+
+  return [...friendRequests, ...mentionNotifications].sort(
+    (left, right) =>
+      new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime(),
+  );
 }
 
 export async function addFriend(inviteeUserId: string): Promise<void> {

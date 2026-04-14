@@ -46,6 +46,7 @@ as $$
       or coalesce(findings.material, '') ilike '%' || search_term || '%'
       or coalesce(findings.dating, '') ilike '%' || search_term || '%'
       or coalesce(findings.dime_id::text, '') ilike '%' || search_term || '%'
+        or findings.id::text = search_term
   )
   select
     filtered_findings.id,
