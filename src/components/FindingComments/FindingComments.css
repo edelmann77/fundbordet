@@ -64,6 +64,11 @@
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
+  min-width: 0;
+}
+
+.finding-comments__textarea-wrap {
+  position: relative;
 }
 
 .finding-comments__composer-label-text {
@@ -98,6 +103,11 @@
 }
 
 .finding-comments__suggestions {
+  position: absolute;
+  left: 0.55rem;
+  right: 0.55rem;
+  bottom: 0.6rem;
+  z-index: 3;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -105,6 +115,9 @@
   border: 1px solid rgba(74, 124, 89, 0.16);
   border-radius: 0.85rem;
   background-color: var(--color-surface-raised);
+  box-shadow: 0 12px 26px rgba(19, 24, 27, 0.16);
+  max-height: 11rem;
+  overflow-y: auto;
 }
 
 .finding-comments__suggestion {

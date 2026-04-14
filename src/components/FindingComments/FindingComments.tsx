@@ -302,7 +302,7 @@ export const FindingComments: React.FC<{
     const before = draft.slice(0, activeMention.startIndex);
     const after = draft.slice(activeMention.endIndex);
     const mentionText = `@${candidate.insertLabel}`;
-    const suffix = after.startsWith(" ") || after.length === 0 ? "" : " ";
+    const suffix = after.startsWith(" ") ? "" : " ";
     const nextValue = `${before}${mentionText}${suffix}${after}`;
     const nextCaretPosition =
       before.length + mentionText.length + suffix.length;
@@ -389,83 +389,85 @@ export const FindingComments: React.FC<{
             <span className="finding-comments__composer-label-text">
               {t("comments.fieldLabel")}
             </span>
-            <textarea
-              ref={textareaRef}
-              className="finding-comments__textarea"
-              value={draft}
-              rows={compact ? 3 : 4}
-              placeholder={t("comments.placeholder")}
-              onChange={(event) => {
-                const nextValue = event.target.value;
-                const previousValue = draft;
-                const nextSelectionStart =
-                  event.target.selectionStart ?? event.target.value.length;
-                let prefixLength = 0;
-                let suffixLength = 0;
+            <div className="finding-comments__textarea-wrap">
+              <textarea
+                ref={textareaRef}
+                className="finding-comments__textarea"
+                value={draft}
+                rows={compact ? 3 : 4}
+                placeholder={t("comments.placeholder")}
+                onChange={(event) => {
+                  const nextValue = event.target.value;
+                  const previousValue = draft;
+                  const nextSelectionStart =
+                    event.target.selectionStart ?? event.target.value.length;
+                  let prefixLength = 0;
+                  let suffixLength = 0;
 
-                while (
-                  prefixLength < previousValue.length &&
-                  prefixLength < nextValue.length &&
-                  previousValue[prefixLength] === nextValue[prefixLength]
-                ) {
-                  prefixLength += 1;
-                }
+                  while (
+                    prefixLength < previousValue.length &&
+                    prefixLength < nextValue.length &&
+                    previousValue[prefixLength] === nextValue[prefixLength]
+                  ) {
+                    prefixLength += 1;
+                  }
 
-                while (
-                  suffixLength < previousValue.length - prefixLength &&
-                  suffixLength < nextValue.length - prefixLength &&
-                  previousValue[previousValue.length - 1 - suffixLength] ===
-                    nextValue[nextValue.length - 1 - suffixLength]
-                ) {
-                  suffixLength += 1;
-                }
+                  while (
+                    suffixLength < previousValue.length - prefixLength &&
+                    suffixLength < nextValue.length - prefixLength &&
+                    previousValue[previousValue.length - 1 - suffixLength] ===
+                      nextValue[nextValue.length - 1 - suffixLength]
+                  ) {
+                    suffixLength += 1;
+                  }
 
-                const oldChangedEnd = previousValue.length - suffixLength;
-                const delta = nextValue.length - previousValue.length;
+                  const oldChangedEnd = previousValue.length - suffixLength;
+                  const delta = nextValue.length - previousValue.length;
 
-                setDraft(nextValue);
-                setDraftMentions((currentMentions) =>
-                  shiftMentionRanges(
-                    currentMentions,
-                    prefixLength,
-                    oldChangedEnd,
-                    delta,
-                    nextValue,
-                  ),
-                );
-                setSelectionStart(nextSelectionStart);
-                setSubmitError(null);
-              }}
-              onClick={handleSelectionChange}
-              onKeyUp={handleSelectionChange}
-              onSelect={handleSelectionChange}
-            />
-          </label>
+                  setDraft(nextValue);
+                  setDraftMentions((currentMentions) =>
+                    shiftMentionRanges(
+                      currentMentions,
+                      prefixLength,
+                      oldChangedEnd,
+                      delta,
+                      nextValue,
+                    ),
+                  );
+                  setSelectionStart(nextSelectionStart);
+                  setSubmitError(null);
+                }}
+                onClick={handleSelectionChange}
+                onKeyUp={handleSelectionChange}
+                onSelect={handleSelectionChange}
+              />
 
-          {activeMention && filteredSuggestions.length > 0 ? (
-            <div className="finding-comments__suggestions" role="listbox">
-              {filteredSuggestions.map((candidate) => (
-                <button
-                  key={candidate.key}
-                  type="button"
-                  className="finding-comments__suggestion"
-                  onMouseDown={(event) => {
-                    event.preventDefault();
-                    handleInsertMention(candidate);
-                  }}
-                >
-                  <span className="finding-comments__suggestion-token">
-                    @{candidate.primaryText}
-                  </span>
-                  {candidate.secondaryText ? (
-                    <span className="finding-comments__suggestion-description">
-                      {candidate.secondaryText}
-                    </span>
-                  ) : null}
-                </button>
-              ))}
+              {activeMention && filteredSuggestions.length > 0 ? (
+                <div className="finding-comments__suggestions" role="listbox">
+                  {filteredSuggestions.map((candidate) => (
+                    <button
+                      key={candidate.key}
+                      type="button"
+                      className="finding-comments__suggestion"
+                      onMouseDown={(event) => {
+                        event.preventDefault();
+                        handleInsertMention(candidate);
+                      }}
+                    >
+                      <span className="finding-comments__suggestion-token">
+                        @{candidate.primaryText}
+                      </span>
+                      {candidate.secondaryText ? (
+                        <span className="finding-comments__suggestion-description">
+                          {candidate.secondaryText}
+                        </span>
+                      ) : null}
+                    </button>
+                  ))}
+                </div>
+              ) : null}
             </div>
-          ) : null}
+          </label>
 
           {submitError ? (
             <p className="finding-comments__feedback" role="alert">
