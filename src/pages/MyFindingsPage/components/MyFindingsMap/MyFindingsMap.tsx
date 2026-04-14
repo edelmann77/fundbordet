@@ -54,7 +54,9 @@ export const MyFindingsMap: React.FC<{
     const showPopover =
       hoveredFinding != null && hoveredFinding.id !== selectedFindingId;
     const setHoveredFindingId =
-      variant === "modal" ? setHoveredModalFindingId : setHoveredInlineFindingId;
+      variant === "modal"
+        ? setHoveredModalFindingId
+        : setHoveredInlineFindingId;
 
     return (
       <>

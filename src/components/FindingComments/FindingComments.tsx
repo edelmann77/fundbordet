@@ -196,7 +196,7 @@ export const FindingComments: React.FC<{
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [selectionStart, setSelectionStart] = useState(0);
   const [draftMentions, setDraftMentions] = useState<DraftMention[]>([]);
-  const { comments, loading, error } = useFindingComments(findingId);
+  const { comments, loading, error, refresh } = useFindingComments(findingId);
 
   const mentionCandidates = useMemo<MentionCandidate[]>(() => {
     const nextCandidates: MentionCandidate[] = [];
@@ -361,6 +361,7 @@ export const FindingComments: React.FC<{
         content: normalizedContent,
         mentions: normalizedMentions,
       });
+      refresh();
       setDraft("");
       setDraftMentions([]);
       setSelectionStart(0);

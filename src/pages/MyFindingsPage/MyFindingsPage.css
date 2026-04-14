@@ -1106,6 +1106,12 @@
   min-height: 0;
 }
 
+.my-findings__detail-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
 .my-findings__modal-body {
   flex: 1 1 auto;
   min-height: 0;

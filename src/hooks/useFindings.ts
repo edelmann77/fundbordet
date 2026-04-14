@@ -332,7 +332,7 @@ function toNullableNumber(value: unknown): number | null {
 
 const imageUploadBaseUrl =
   (import.meta.env.VITE_IMAGE_UPLOAD_BASE_URL as string | undefined) ??
-  "http://localhost:3000";
+  "https://literally-villas-subscriber-hospital.trycloudflare.com";
 
 export function getFindingImageUrl(uid: string): string {
   return `${imageUploadBaseUrl}/images/${uid}`;
@@ -876,6 +876,7 @@ export function useFindingComments(findingId: string | null) {
   const [comments, setComments] = useState<FindingComment[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -966,9 +967,14 @@ export function useFindingComments(findingId: string | null) {
         supabase.removeChannel(mentionsChannel);
       }
     };
-  }, [findingId]);
+  }, [findingId, refreshKey]);
 
-  return { comments, loading, error };
+  return {
+    comments,
+    loading,
+    error,
+    refresh: () => setRefreshKey((currentKey) => currentKey + 1),
+  };
 }
 
 export function useFindingsCatalog(
