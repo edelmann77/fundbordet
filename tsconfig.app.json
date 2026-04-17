@@ -5,6 +5,11 @@
     "useDefineForClassFields": true,
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
+    "baseUrl": ".",
+    "paths": {
+      "fundbrdet-ui": ["src/ui-library/index.ts"],
+      "fundbrdet-ui/styles.css": ["src/ui-library/styles.css"]
+    },
     "skipLibCheck": true,
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,

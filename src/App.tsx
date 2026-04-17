@@ -18,7 +18,7 @@ import AppShell from "./components/AppShell/AppShell";
 function App() {
   return (
     <ThemeProvider theme={outdoorTheme}>
-      <BrowserRouter>
+      <BrowserRouter basename={import.meta.env.BASE_URL}>
         <Routes>
           <Route
             path="/"
