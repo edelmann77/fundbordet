@@ -38,6 +38,33 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
   className,
 }) => {
   const lastIndex = items.length - 1;
+  const resolvedBase =
+    import.meta.env.BASE_URL === "/"
+      ? ""
+      : import.meta.env.BASE_URL.replace(/\/$/, "");
+
+  const resolveHref = (href?: string) => {
+    if (!href) return undefined;
+
+    if (
+      href.startsWith("#") ||
+      href.startsWith("mailto:") ||
+      href.startsWith("tel:") ||
+      /^[a-z][a-z\d+.-]*:/i.test(href)
+    ) {
+      return href;
+    }
+
+    if (!href.startsWith("/")) {
+      return href;
+    }
+
+    if (href === "/") {
+      return resolvedBase || "/";
+    }
+
+    return `${resolvedBase}${href}`;
+  };
 
   return (
     <nav
@@ -60,7 +87,7 @@ export const Breadcrumb: React.FC<BreadcrumbProps> = ({
                     "breadcrumb__link",
                     item.disabled && "breadcrumb__link--disabled",
                   )}
-                  href={item.disabled ? undefined : item.href}
+                  href={item.disabled ? undefined : resolveHref(item.href)}
                   onClick={item.disabled ? undefined : item.onClick}
                   aria-disabled={item.disabled || undefined}
                   tabIndex={item.disabled ? -1 : undefined}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { getSessionUser, getValidatedUser } from "../../hooks/useAuth";
+import { routes } from "../../lib/routes";
 import { supabase } from "../../lib/supabase";
 
 type State = "loading" | "authed" | "no-session" | "deleted";
@@ -34,8 +35,8 @@ export const RequireAuth: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   if (state === "loading") return null;
-  if (state === "no-session") return <Navigate to="/login" replace />;
-  if (state === "deleted") return <Navigate to="/" replace />;
+  if (state === "no-session") return <Navigate to={routes.login} replace />;
+  if (state === "deleted") return <Navigate to={routes.landing} replace />;
   return <>{children}</>;
 };
 

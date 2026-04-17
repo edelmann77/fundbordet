@@ -30,6 +30,7 @@ import {
   utmToWGS84,
   wgs84ToUTM,
 } from "./myFindingsUtils";
+import { routes } from "../../lib/routes";
 import "./MyFindingsPage.css";
 
 export const MyFindingsPage: React.FC = () => {
@@ -77,9 +78,9 @@ export const MyFindingsPage: React.FC = () => {
 
   const handleSelectFinding = (findingId: string) => {
     if (selectedFindingId === findingId) {
-      navigate("/detector/my-findings");
+      navigate(routes.myFindings);
     } else {
-      navigate(`/detector/my-findings/${findingId}`);
+      navigate(routes.myFinding(findingId));
     }
   };
 
@@ -134,7 +135,7 @@ export const MyFindingsPage: React.FC = () => {
 
   const handleMapMarkerSelect = useCallback(
     (finding: FindingWithCoordinates) => {
-      navigate(`/detector/my-findings/${finding.id}`);
+      navigate(routes.myFinding(finding.id));
 
       const map = mapRef.current;
       if (map) {
@@ -289,10 +290,10 @@ export const MyFindingsPage: React.FC = () => {
     <Breadcrumb
       className="page-breadcrumb"
       items={[
-        { label: t("breadcrumb.home"), href: "/detector/home" },
+        { label: t("breadcrumb.home"), href: routes.home },
         {
           label: t("breadcrumb.myFindings"),
-          href: "/detector/my-findings",
+          href: routes.myFindings,
           current: !selectedFinding,
         },
         ...(selectedFinding
@@ -342,10 +343,7 @@ export const MyFindingsPage: React.FC = () => {
             {t("myFindings.emptyTitle")}
           </p>
           <p className="my-findings__empty-text">{t("myFindings.empty")}</p>
-          <Link
-            to="/detector/create-finding"
-            className="my-findings__empty-cta"
-          >
+          <Link to={routes.createFinding} className="my-findings__empty-cta">
             {t("myFindings.registerFirst")}
           </Link>
         </div>

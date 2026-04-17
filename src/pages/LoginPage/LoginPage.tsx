@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Breadcrumb, Button, Card, TextInput } from "fundbrdet-ui";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../../lib/supabase";
+import { routes } from "../../lib/routes";
 import LanguageMenu from "../../components/LanguageMenu/LanguageMenu";
 import "./LoginPage.css";
 
@@ -33,7 +34,7 @@ export const LoginPage: React.FC = () => {
     if (authError) {
       setError(authError.message);
     } else {
-      navigate("/detector/home");
+      navigate(routes.home);
     }
   };
 
@@ -42,7 +43,7 @@ export const LoginPage: React.FC = () => {
       <Breadcrumb
         className="page-breadcrumb"
         items={[
-          { label: t("breadcrumb.home"), href: "/" },
+          { label: t("breadcrumb.home"), href: routes.landing },
           { label: t("breadcrumb.login"), current: true },
         ]}
       />
@@ -52,7 +53,7 @@ export const LoginPage: React.FC = () => {
             <div className="login-page__header-spacer" />
             <LanguageMenu />
           </div>
-          <Link to="/" className="login-page__logo-link">
+          <Link to={routes.landing} className="login-page__logo-link">
             <div className="login-page__logo">🪙</div>
           </Link>
           <h1 className="login-page__title">Hobbybordet</h1>
@@ -112,7 +113,7 @@ export const LoginPage: React.FC = () => {
 
         <p className="login-page__footer">
           {t("login.noAccount")}{" "}
-          <Link to="/signup" className="login-page__signup-link">
+          <Link to={routes.signup} className="login-page__signup-link">
             {t("login.signupFree")}
           </Link>
         </p>

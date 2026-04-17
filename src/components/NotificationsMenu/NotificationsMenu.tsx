@@ -5,6 +5,7 @@ import {
   listAppNotifications,
   type AppNotification,
 } from "../../hooks/useFriendSearch";
+import { routes } from "../../lib/routes";
 import { getSessionUser } from "../../hooks/useAuth";
 import { supabase } from "../../lib/supabase";
 import "./NotificationsMenu.css";
@@ -221,7 +222,7 @@ export const NotificationsMenu: React.FC = () => {
 
   const handleOpenFriends = () => {
     setOpen(false);
-    navigate("/detector/friends");
+    navigate(routes.friends);
   };
 
   const handleOpenMention = (notification: AppNotification) => {
@@ -231,7 +232,7 @@ export const NotificationsMenu: React.FC = () => {
 
     setOpen(false);
     navigate(
-      `/detector/fund-database?findingId=${encodeURIComponent(notification.findingId)}&openComments=1`,
+      `${routes.fundDatabase}?findingId=${encodeURIComponent(notification.findingId)}&openComments=1`,
     );
   };
 

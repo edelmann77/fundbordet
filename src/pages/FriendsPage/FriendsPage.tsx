@@ -10,6 +10,7 @@ import {
   type FriendRecord,
   useFriendSearch,
 } from "../../hooks/useFriendSearch";
+import { routes } from "../../lib/routes";
 import "./FriendsPage.css";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -140,7 +141,7 @@ export const FriendsPage: React.FC = () => {
       <Breadcrumb
         className="page-breadcrumb"
         items={[
-          { label: t("breadcrumb.home"), href: "/detector/home" },
+          { label: t("breadcrumb.home"), href: routes.home },
           { label: t("breadcrumb.friends"), current: true },
         ]}
       />

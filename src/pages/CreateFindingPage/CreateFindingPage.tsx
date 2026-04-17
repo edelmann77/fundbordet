@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Breadcrumb } from "fundbrdet-ui";
+import { routes } from "../../lib/routes";
 import "./CreateFindingPage.css";
 
 export const CreateFindingPage: React.FC = () => {
@@ -9,7 +10,7 @@ export const CreateFindingPage: React.FC = () => {
       <Breadcrumb
         className="page-breadcrumb"
         items={[
-          { label: t("breadcrumb.home"), href: "/detector/home" },
+          { label: t("breadcrumb.home"), href: routes.home },
           { label: t("breadcrumb.createFinding"), current: true },
         ]}
       />

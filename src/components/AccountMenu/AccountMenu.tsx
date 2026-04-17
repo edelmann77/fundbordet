@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
+import { routes } from "../../lib/routes";
 import { supabase } from "../../lib/supabase";
 import "./AccountMenu.css";
 
@@ -56,19 +57,19 @@ export const AccountMenu: React.FC = () => {
 
   const handleSettingsClick = () => {
     setOpen(false);
-    navigate("/detector/settings");
+    navigate(routes.settings);
   };
 
   const handleFriendsClick = () => {
     setOpen(false);
-    navigate("/detector/friends");
+    navigate(routes.friends);
   };
 
   const handleLogoutClick = async () => {
     try {
       setLoggingOut(true);
       await supabase.auth.signOut();
-      navigate("/", { replace: true });
+      navigate(routes.landing, { replace: true });
     } finally {
       setLoggingOut(false);
       setOpen(false);

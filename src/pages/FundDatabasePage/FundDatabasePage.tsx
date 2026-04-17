@@ -12,6 +12,7 @@ import {
   useFindingCatalogPreviewImages,
   useFindingsCatalog,
 } from "../../hooks/useFindings";
+import { routes } from "../../lib/routes";
 import "./FundDatabasePage.css";
 
 const PAGE_SIZE = 9;
@@ -106,7 +107,7 @@ export const FundDatabasePage: React.FC = () => {
     <Breadcrumb
       className="page-breadcrumb"
       items={[
-        { label: t("breadcrumb.home"), href: "/detector/home" },
+        { label: t("breadcrumb.home"), href: routes.home },
         { label: t("breadcrumb.fundDatabase"), current: true },
       ]}
     />

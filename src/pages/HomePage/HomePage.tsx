@@ -11,6 +11,7 @@ import Map, { Source, Layer } from "react-map-gl/maplibre";
 import type { StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useAllFindingsHeatmap } from "../../hooks/useFindings";
+import { routes } from "../../lib/routes";
 import "./HomePage.css";
 
 const SATELLITE_STYLE: StyleSpecification = {
@@ -68,7 +69,7 @@ export const HomePage: React.FC = () => {
 
             <div className="home-page__nav-cards">
               <Link
-                to="/detector/my-findings"
+                to={routes.myFindings}
                 className="home-page__card home-page__card--link"
               >
                 <p className="home-page__card-title">{t("home.myFindings")}</p>
@@ -78,7 +79,7 @@ export const HomePage: React.FC = () => {
               </Link>
 
               <Link
-                to="/detector/shared-findings"
+                to={routes.sharedFindings}
                 className="home-page__card home-page__card--link"
               >
                 <p className="home-page__card-title">
@@ -90,7 +91,7 @@ export const HomePage: React.FC = () => {
               </Link>
 
               <Link
-                to="/detector/fund-database"
+                to={routes.fundDatabase}
                 className="home-page__card home-page__card--link home-page__card--wide"
               >
                 <p className="home-page__card-title">

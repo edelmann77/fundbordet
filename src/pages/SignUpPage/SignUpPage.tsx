@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Breadcrumb, Button, Card, TextInput } from "fundbrdet-ui";
 import { supabase } from "../../lib/supabase";
+import { routes } from "../../lib/routes";
 import LanguageMenu from "../../components/LanguageMenu/LanguageMenu";
 import "./SignUpPage.css";
 
@@ -68,7 +69,7 @@ export const SignUpPage: React.FC = () => {
       <Breadcrumb
         className="page-breadcrumb"
         items={[
-          { label: t("breadcrumb.home"), href: "/" },
+          { label: t("breadcrumb.home"), href: routes.landing },
           { label: t("breadcrumb.signup"), current: true },
         ]}
       />
@@ -78,7 +79,7 @@ export const SignUpPage: React.FC = () => {
             <div className="signup-page__header-spacer" />
             <LanguageMenu />
           </div>
-          <Link to="/" className="signup-page__logo-link">
+          <Link to={routes.landing} className="signup-page__logo-link">
             <div className="signup-page__logo">🪙</div>
           </Link>
           <h1 className="signup-page__title">Hobbybordet</h1>
@@ -144,7 +145,7 @@ export const SignUpPage: React.FC = () => {
 
         <p className="signup-page__footer">
           {t("signup.haveAccount")}{" "}
-          <Link to="/" className="signup-page__back-link">
+          <Link to={routes.landing} className="signup-page__back-link">
             {t("signup.backHome")}
           </Link>
         </p>

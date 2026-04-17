@@ -5,6 +5,7 @@ import {
   getCurrentUserProfile,
   upsertCurrentUserProfile,
 } from "../../hooks/useUserProfile";
+import { routes } from "../../lib/routes";
 import "./SettingsPage.css";
 
 export const SettingsPage: React.FC = () => {
@@ -90,7 +91,7 @@ export const SettingsPage: React.FC = () => {
       <Breadcrumb
         className="page-breadcrumb"
         items={[
-          { label: t("breadcrumb.home"), href: "/detector/home" },
+          { label: t("breadcrumb.home"), href: routes.home },
           { label: t("breadcrumb.settings"), current: true },
         ]}
       />

@@ -1,4 +1,10 @@
-import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import {
+  BrowserRouter,
+  Navigate,
+  Route,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import { ThemeProvider, outdoorTheme } from "fundbrdet-ui";
 import "./index.css";
 import LandingPage from "./pages/LandingPage/LandingPage";
@@ -14,6 +20,16 @@ import FundDatabasePage from "./pages/FundDatabasePage/FundDatabasePage";
 import RequireAuth from "./components/RequireAuth/RequireAuth";
 import RedirectIfAuthed from "./components/RedirectIfAuthed/RedirectIfAuthed";
 import AppShell from "./components/AppShell/AppShell";
+import { routes } from "./lib/routes";
+
+function LegacyDetectorRedirect() {
+  const location = useLocation();
+  const nextPath = location.pathname.replace(/^\/detector/, "") || routes.home;
+
+  return (
+    <Navigate to={`${nextPath}${location.search}${location.hash}`} replace />
+  );
+}
 
 function App() {
   return (
@@ -45,7 +61,7 @@ function App() {
             }
           />
           <Route
-            path="/detector/home"
+            path={routes.home}
             element={
               <RequireAuth>
                 <HomePage />
@@ -53,7 +69,7 @@ function App() {
             }
           />
           <Route
-            path="/detector/my-findings"
+            path={routes.myFindings}
             element={
               <RequireAuth>
                 <AppShell>
@@ -63,7 +79,7 @@ function App() {
             }
           />
           <Route
-            path="/detector/my-findings/:id"
+            path={`${routes.myFindings}/:id`}
             element={
               <RequireAuth>
                 <AppShell>
@@ -73,7 +89,7 @@ function App() {
             }
           />
           <Route
-            path="/detector/shared-findings"
+            path={routes.sharedFindings}
             element={
               <RequireAuth>
                 <AppShell>
@@ -83,7 +99,7 @@ function App() {
             }
           />
           <Route
-            path="/detector/shared-findings/:id"
+            path={`${routes.sharedFindings}/:id`}
             element={
               <RequireAuth>
                 <AppShell>
@@ -93,7 +109,7 @@ function App() {
             }
           />
           <Route
-            path="/detector/fund-database"
+            path={routes.fundDatabase}
             element={
               <RequireAuth>
                 <AppShell>
@@ -103,7 +119,7 @@ function App() {
             }
           />
           <Route
-            path="/detector/create-finding"
+            path={routes.createFinding}
             element={
               <RequireAuth>
                 <AppShell>
@@ -113,7 +129,7 @@ function App() {
             }
           />
           <Route
-            path="/detector/settings"
+            path={routes.settings}
             element={
               <RequireAuth>
                 <AppShell>
@@ -123,7 +139,7 @@ function App() {
             }
           />
           <Route
-            path="/detector/friends"
+            path={routes.friends}
             element={
               <RequireAuth>
                 <AppShell>
@@ -132,7 +148,8 @@ function App() {
               </RequireAuth>
             }
           />
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/detector/*" element={<LegacyDetectorRedirect />} />
+          <Route path="*" element={<Navigate to={routes.landing} replace />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>

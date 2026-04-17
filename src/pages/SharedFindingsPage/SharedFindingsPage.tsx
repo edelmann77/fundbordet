@@ -17,6 +17,7 @@ import {
   type FindingWithCoordinates,
   utmToWGS84,
 } from "../MyFindingsPage/myFindingsUtils";
+import { routes } from "../../lib/routes";
 import "../MyFindingsPage/MyFindingsPage.css";
 
 export const SharedFindingsPage: React.FC = () => {
@@ -151,21 +152,21 @@ export const SharedFindingsPage: React.FC = () => {
 
   const handleSelectFinding = (findingId: string) => {
     if (selectedFindingId === findingId) {
-      navigate("/detector/shared-findings");
+      navigate(routes.sharedFindings);
       return;
     }
 
-    navigate(`/detector/shared-findings/${findingId}`);
+    navigate(routes.sharedFinding(findingId));
   };
 
   const breadcrumb = (
     <Breadcrumb
       className="page-breadcrumb"
       items={[
-        { label: t("breadcrumb.home"), href: "/detector/home" },
+        { label: t("breadcrumb.home"), href: routes.home },
         {
           label: t("breadcrumb.sharedFindings"),
-          href: "/detector/shared-findings",
+          href: routes.sharedFindings,
           current: !selectedFinding,
         },
         ...(selectedFinding

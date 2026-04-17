@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { getSessionUser } from "../../hooks/useAuth";
+import { routes } from "../../lib/routes";
 
 export const RedirectIfAuthed: React.FC<{ children: React.ReactNode }> = ({
   children,
@@ -18,7 +19,7 @@ export const RedirectIfAuthed: React.FC<{ children: React.ReactNode }> = ({
   }, []);
 
   if (authed === null) return null;
-  if (authed) return <Navigate to="/detector/home" replace />;
+  if (authed) return <Navigate to={routes.home} replace />;
   return <>{children}</>;
 };
 
