@@ -13,6 +13,20 @@
     />
   </head>
   <body>
+    <script>
+      (function () {
+        const params = new URLSearchParams(window.location.search);
+        const redirectPath = params.get("p");
+
+        if (!redirectPath) return;
+
+        const base = "%BASE_URL%";
+        const normalizedBase = base.endsWith("/") ? base : `${base}/`;
+        const target = normalizedBase + redirectPath.replace(/^\//, "");
+
+        window.history.replaceState(null, "", target);
+      })();
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

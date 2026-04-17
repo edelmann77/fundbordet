@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Redirecting...</title>
     <script>
-      // GitHub Pages SPA fallback: redirect unknown routes to the app entry.
       (function () {
-        var path = window.location.pathname;
-        var segments = path.split("/").filter(Boolean);
-        var repoBase = segments.length > 0 ? "/" + segments[0] + "/" : "/";
-        window.location.replace(repoBase + "index.html");
+        const base = "/fundbordet/";
+        const current = window.location;
+        const route =
+          current.pathname.replace(base, "") + current.search + current.hash;
+        const target = `${base}?p=${encodeURIComponent(route)}`;
+
+        window.location.replace(target);
       })();
     </script>
   </head>

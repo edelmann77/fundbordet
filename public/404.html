@@ -2,11 +2,18 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta http-equiv="refresh" content="0;url=/fundbordet/" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Redirecting...</title>
     <script>
-      window.location.replace("/fundbordet/");
+      (function () {
+        const base = "/fundbordet/";
+        const current = window.location;
+        const route =
+          current.pathname.replace(base, "") + current.search + current.hash;
+        const target = `${base}?p=${encodeURIComponent(route)}`;
+
+        window.location.replace(target);
+      })();
     </script>
   </head>
   <body>

@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { ThemeProvider, outdoorTheme } from "fundbrdet-ui";
 import "./index.css";
 import LandingPage from "./pages/LandingPage/LandingPage";
@@ -132,6 +132,7 @@ function App() {
               </RequireAuth>
             }
           />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
