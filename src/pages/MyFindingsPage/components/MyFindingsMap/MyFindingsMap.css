@@ -1,0 +1,8 @@
+.my-findings__map-marker {
+  cursor: pointer;
+}
+
+.my-findings__map-fill {
+  width: 100%;
+  height: 100%;
+}

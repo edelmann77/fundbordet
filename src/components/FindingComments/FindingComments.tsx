@@ -21,23 +21,23 @@ const COMMON_SMILEYS: Array<[RegExp, string]> = [
   [/(^|\s)<3(?=\s|$)/g, "$1❤️"],
 ];
 
-function normalizeCommentContent(value: string): string {
+const normalizeCommentContent = (value: string): string => {
   return COMMON_SMILEYS.reduce(
     (content, [pattern, replacement]) => content.replace(pattern, replacement),
     value,
   );
-}
+};
 
-function getFriendDisplayName(friend: FriendRecord): string | null {
+const getFriendDisplayName = (friend: FriendRecord): string | null => {
   const fullName = [friend.firstName, friend.lastName]
     .map((value) => value.trim())
     .filter(Boolean)
     .join(" ");
 
   return fullName || null;
-}
+};
 
-function getActiveMentionQuery(value: string, selectionStart: number) {
+const getActiveMentionQuery = (value: string, selectionStart: number) => {
   const prefix = value.slice(0, selectionStart);
   const match = prefix.match(/(^|\s)@(\S*)$/);
 
@@ -52,9 +52,9 @@ function getActiveMentionQuery(value: string, selectionStart: number) {
     startIndex: selectionStart - query.length - 1,
     endIndex: selectionStart,
   };
-}
+};
 
-function formatCommentDate(value: string, locale: string): string {
+const formatCommentDate = (value: string, locale: string): string => {
   return new Date(value).toLocaleString(locale, {
     day: "numeric",
     month: "short",
@@ -62,9 +62,9 @@ function formatCommentDate(value: string, locale: string): string {
     hour: "2-digit",
     minute: "2-digit",
   });
-}
+};
 
-function renderCommentContent(comment: FindingComment) {
+const renderCommentContent = (comment: FindingComment) => {
   const fragments: React.ReactNode[] = [];
   const sortedMentions = [...comment.mentions].sort(
     (left, right) => left.startIndex - right.startIndex,
@@ -100,15 +100,15 @@ function renderCommentContent(comment: FindingComment) {
   }
 
   return fragments;
-}
+};
 
-function shiftMentionRanges(
+const shiftMentionRanges = (
   mentions: DraftMention[],
   changedStart: number,
   oldChangedEnd: number,
   delta: number,
   nextValue: string,
-): DraftMention[] {
+): DraftMention[] => {
   return mentions
     .flatMap((mention) => {
       if (mention.endIndex <= changedStart) {
@@ -136,12 +136,12 @@ function shiftMentionRanges(
       (mention) =>
         nextValue.slice(mention.startIndex, mention.endIndex) === mention.text,
     );
-}
+};
 
-function normalizeDraftMentions(
+const normalizeDraftMentions = (
   sourceDraft: string,
   mentions: DraftMention[],
-): CreateFindingCommentMentionInput[] {
+): CreateFindingCommentMentionInput[] => {
   return mentions.map((mention) => {
     const normalizedPrefix = normalizeCommentContent(
       sourceDraft.slice(0, mention.startIndex),
@@ -159,7 +159,7 @@ function normalizeDraftMentions(
       endIndex: startIndex + normalizedText.length,
     };
   });
-}
+};
 
 interface MentionCandidate {
   key: string;
@@ -372,6 +372,57 @@ export const FindingComments: React.FC<{
     }
   };
 
+  const handleTextareaChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>,
+  ) => {
+    const nextValue = event.target.value;
+    const previousValue = draft;
+    const nextSelectionStart =
+      event.target.selectionStart ?? event.target.value.length;
+    let prefixLength = 0;
+    let suffixLength = 0;
+
+    while (
+      prefixLength < previousValue.length &&
+      prefixLength < nextValue.length &&
+      previousValue[prefixLength] === nextValue[prefixLength]
+    ) {
+      prefixLength += 1;
+    }
+
+    while (
+      suffixLength < previousValue.length - prefixLength &&
+      suffixLength < nextValue.length - prefixLength &&
+      previousValue[previousValue.length - 1 - suffixLength] ===
+        nextValue[nextValue.length - 1 - suffixLength]
+    ) {
+      suffixLength += 1;
+    }
+
+    const oldChangedEnd = previousValue.length - suffixLength;
+    const delta = nextValue.length - previousValue.length;
+
+    setDraft(nextValue);
+    setDraftMentions((currentMentions) =>
+      shiftMentionRanges(
+        currentMentions,
+        prefixLength,
+        oldChangedEnd,
+        delta,
+        nextValue,
+      ),
+    );
+    setSelectionStart(nextSelectionStart);
+    setSubmitError(null);
+  };
+
+  const handleMentionMouseDown =
+    (candidate: (typeof filteredSuggestions)[number]) =>
+    (event: React.MouseEvent<HTMLButtonElement>) => {
+      event.preventDefault();
+      handleInsertMention(candidate);
+    };
+
   return (
     <section
       className={`finding-comments${compact ? " finding-comments--compact" : ""}`}
@@ -396,47 +447,7 @@ export const FindingComments: React.FC<{
                 value={draft}
                 rows={compact ? 3 : 4}
                 placeholder={t("comments.placeholder")}
-                onChange={(event) => {
-                  const nextValue = event.target.value;
-                  const previousValue = draft;
-                  const nextSelectionStart =
-                    event.target.selectionStart ?? event.target.value.length;
-                  let prefixLength = 0;
-                  let suffixLength = 0;
-
-                  while (
-                    prefixLength < previousValue.length &&
-                    prefixLength < nextValue.length &&
-                    previousValue[prefixLength] === nextValue[prefixLength]
-                  ) {
-                    prefixLength += 1;
-                  }
-
-                  while (
-                    suffixLength < previousValue.length - prefixLength &&
-                    suffixLength < nextValue.length - prefixLength &&
-                    previousValue[previousValue.length - 1 - suffixLength] ===
-                      nextValue[nextValue.length - 1 - suffixLength]
-                  ) {
-                    suffixLength += 1;
-                  }
-
-                  const oldChangedEnd = previousValue.length - suffixLength;
-                  const delta = nextValue.length - previousValue.length;
-
-                  setDraft(nextValue);
-                  setDraftMentions((currentMentions) =>
-                    shiftMentionRanges(
-                      currentMentions,
-                      prefixLength,
-                      oldChangedEnd,
-                      delta,
-                      nextValue,
-                    ),
-                  );
-                  setSelectionStart(nextSelectionStart);
-                  setSubmitError(null);
-                }}
+                onChange={handleTextareaChange}
                 onClick={handleSelectionChange}
                 onKeyUp={handleSelectionChange}
                 onSelect={handleSelectionChange}
@@ -449,10 +460,7 @@ export const FindingComments: React.FC<{
                       key={candidate.key}
                       type="button"
                       className="finding-comments__suggestion"
-                      onMouseDown={(event) => {
-                        event.preventDefault();
-                        handleInsertMention(candidate);
-                      }}
+                      onMouseDown={handleMentionMouseDown(candidate)}
                     >
                       <span className="finding-comments__suggestion-token">
                         @{candidate.primaryText}

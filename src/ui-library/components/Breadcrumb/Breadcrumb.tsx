@@ -17,20 +17,13 @@ export interface BreadcrumbItem {
 
 export type BreadcrumbSize = "sm" | "md" | "lg";
 
-export interface BreadcrumbProps {
-  /** Ordered breadcrumb items from root to current page */
+export const Breadcrumb: React.FC<{
   items: BreadcrumbItem[];
-  /** Accessible label for the breadcrumb nav */
   ariaLabel?: string;
-  /** Separator rendered between items */
   separator?: ReactNode;
-  /** Visual size variant */
   size?: BreadcrumbSize;
-  /** Additional class names for the root nav */
   className?: string;
-}
-
-export const Breadcrumb: React.FC<BreadcrumbProps> = ({
+}> = ({
   items,
   ariaLabel = "Breadcrumb",
   separator = "/",

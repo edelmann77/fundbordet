@@ -17,13 +17,13 @@ import "./FundDatabasePage.css";
 
 const PAGE_SIZE = 9;
 
-function formatDate(value: string): string {
+const formatDate = (value: string): string => {
   return new Date(value).toLocaleDateString(undefined, {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
-}
+};
 
 export const FundDatabasePage: React.FC = () => {
   const { t } = useTranslation();
@@ -113,6 +113,35 @@ export const FundDatabasePage: React.FC = () => {
     />
   );
 
+  const handleToggleComments = (findingId: string) =>
+    setExpandedFindingId((currentId) =>
+      currentId === findingId ? null : findingId,
+    );
+  const handlePrevPage = () => setPage((current) => Math.max(1, current - 1));
+  const handleNextPage = () =>
+    setPage((current) => Math.min(pageCount, current + 1));
+
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const nextValue = event.target.value;
+    setDraftQuery(nextValue);
+    if (nextValue !== "") {
+      return;
+    }
+    setPage(1);
+    setQuery("");
+  };
+
+  const handleSearchKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+  ) => {
+    if (event.key !== "Enter") {
+      return;
+    }
+    event.preventDefault();
+    setPage(1);
+    setQuery(draftQuery);
+  };
+
   if (loading) {
     return (
       <div className="fund-database">
@@ -164,27 +193,8 @@ export const FundDatabasePage: React.FC = () => {
               type="search"
               placeholder={t("fundDatabase.searchPlaceholder")}
               value={draftQuery}
-              onChange={(event) => {
-                const nextValue = event.target.value;
-
-                setDraftQuery(nextValue);
-
-                if (nextValue !== "") {
-                  return;
-                }
-
-                setPage(1);
-                setQuery("");
-              }}
-              onKeyDown={(event) => {
-                if (event.key !== "Enter") {
-                  return;
-                }
-
-                event.preventDefault();
-                setPage(1);
-                setQuery(draftQuery);
-              }}
+              onChange={handleSearchChange}
+              onKeyDown={handleSearchKeyDown}
             />
           </label>
           <p className="fund-database__page-indicator">
@@ -310,11 +320,7 @@ export const FundDatabasePage: React.FC = () => {
                     <button
                       type="button"
                       className="fund-database__comments-toggle"
-                      onClick={() =>
-                        setExpandedFindingId((currentId) =>
-                          currentId === finding.id ? null : finding.id,
-                        )
-                      }
+                      onClick={() => handleToggleComments(finding.id)}
                     >
                       {isCommentsOpen ? t("comments.hide") : t("comments.show")}
                     </button>
@@ -341,7 +347,7 @@ export const FundDatabasePage: React.FC = () => {
             <button
               type="button"
               className="fund-database__pagination-button"
-              onClick={() => setPage((current) => Math.max(1, current - 1))}
+              onClick={handlePrevPage}
               disabled={currentPage === 1}
             >
               {t("fundDatabase.previous")}
@@ -358,9 +364,7 @@ export const FundDatabasePage: React.FC = () => {
             <button
               type="button"
               className="fund-database__pagination-button"
-              onClick={() =>
-                setPage((current) => Math.min(pageCount, current + 1))
-              }
+              onClick={handleNextPage}
               disabled={currentPage === pageCount}
             >
               {t("fundDatabase.next")}

@@ -6,30 +6,20 @@ import "./Card.css";
 
 export type CardVariant = "default" | "elevated" | "outlined" | "filled";
 
-export interface CardProps extends Omit<
-  HTMLAttributes<HTMLDivElement>,
-  "title"
-> {
-  /** Visual style of the card */
-  variant?: CardVariant;
-  /** Card title */
-  title?: ReactNode;
-  /** Subtitle shown beneath the title */
-  subtitle?: ReactNode;
-  /** URL of an image displayed at the top of the card */
-  image?: string;
-  /** Alt text for the card image */
-  imageAlt?: string;
-  /** Footer / action area content */
-  footer?: ReactNode;
-  /** Padding applied to the body and footer (e.g. "card__body--md"). Defaults to "card__body--md". */
-  padding?: "card__body--sm" | "card__body--md" | "card__body--lg";
-  children?: ReactNode;
-}
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export const Card: React.FC<CardProps> = ({
+export const Card: React.FC<
+  Omit<HTMLAttributes<HTMLDivElement>, "title"> & {
+    variant?: CardVariant;
+    title?: ReactNode;
+    subtitle?: ReactNode;
+    image?: string;
+    imageAlt?: string;
+    footer?: ReactNode;
+    padding?: "card__body--sm" | "card__body--md" | "card__body--lg";
+    children?: ReactNode;
+  }
+> = ({
   variant = "default",
   title,
   subtitle,

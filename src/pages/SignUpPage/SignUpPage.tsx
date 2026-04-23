@@ -44,6 +44,14 @@ export const SignUpPage: React.FC = () => {
     }
   };
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setEmail(e.target.value);
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setPassword(e.target.value);
+  const handleConfirmPasswordChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => setConfirmPassword(e.target.value);
+
   if (success) {
     return (
       <div className="signup-page signup-page--success">
@@ -101,9 +109,9 @@ export const SignUpPage: React.FC = () => {
             <TextInput
               label={t("signup.email")}
               type="email"
-              placeholder="you@example.com"
+              placeholder={t("login.emailPlaceholder")}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               required
               autoComplete="email"
               size="md"
@@ -114,7 +122,7 @@ export const SignUpPage: React.FC = () => {
               type="password"
               placeholder="••••••••"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handlePasswordChange}
               required
               autoComplete="new-password"
               size="md"
@@ -125,7 +133,7 @@ export const SignUpPage: React.FC = () => {
               type="password"
               placeholder="••••••••"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={handleConfirmPasswordChange}
               required
               autoComplete="new-password"
               size="md"

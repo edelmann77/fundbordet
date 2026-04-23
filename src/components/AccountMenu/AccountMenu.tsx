@@ -76,6 +76,8 @@ export const AccountMenu: React.FC = () => {
     }
   };
 
+  const handleToggle = () => setOpen((value) => !value);
+
   return (
     <div ref={ref} className="account-menu">
       <button
@@ -84,7 +86,7 @@ export const AccountMenu: React.FC = () => {
         aria-expanded={open}
         aria-haspopup="menu"
         aria-label={t("account.openMenu")}
-        onClick={() => setOpen((value) => !value)}
+        onClick={handleToggle}
       >
         <AccountIcon />
       </button>

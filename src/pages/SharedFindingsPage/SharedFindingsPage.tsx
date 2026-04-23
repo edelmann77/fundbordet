@@ -159,6 +159,10 @@ export const SharedFindingsPage: React.FC = () => {
     navigate(routes.sharedFinding(findingId));
   };
 
+  const noop = () => {};
+  const noopAsync = async () => {};
+  const noopFinding = (_finding: FindingWithCoordinates) => {};
+
   const breadcrumb = (
     <Breadcrumb
       className="page-breadcrumb"
@@ -250,15 +254,15 @@ export const SharedFindingsPage: React.FC = () => {
             sharesLoading={false}
             sharesSaving={false}
             selectedImages={[]}
-            onStartEditing={() => {}}
-            onCancel={() => {}}
-            onSave={() => {}}
-            onShareChange={async () => {}}
-            onEditChange={() => {}}
-            onImagesChange={() => {}}
-            onMapClick={() => {}}
-            onMapZoom={() => {}}
-            onMapMarkerSelect={(_finding: FindingWithCoordinates) => {}}
+            onStartEditing={noop}
+            onCancel={noop}
+            onSave={noop}
+            onShareChange={noopAsync}
+            onEditChange={noop}
+            onImagesChange={noop}
+            onMapClick={noop}
+            onMapZoom={noop}
+            onMapMarkerSelect={noopFinding}
           />
         </div>
       </div>

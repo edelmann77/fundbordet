@@ -12,6 +12,63 @@ import {
   SATELLITE_STYLE,
   type FindingWithCoordinates,
 } from "../../myFindingsUtils";
+import "./MyFindingsMap.css";
+
+const FindingMarker: React.FC<{
+  finding: FindingWithCoordinates;
+  isSelected: boolean;
+  ariaLabel: string;
+  onMarkerSelect?: (finding: FindingWithCoordinates) => void;
+  setHoveredId: React.Dispatch<React.SetStateAction<string | null>>;
+}> = ({ finding, isSelected, ariaLabel, onMarkerSelect, setHoveredId }) => {
+  const handleClick = (event: React.MouseEvent<SVGSVGElement>) => {
+    event.stopPropagation();
+    onMarkerSelect?.(finding);
+  };
+
+  const handleMouseEnter = () => {
+    setHoveredId(finding.id);
+  };
+
+  const handleMouseLeave = () => {
+    setHoveredId((currentId) => (currentId === finding.id ? null : currentId));
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<SVGSVGElement>) => {
+    if (event.key !== "Enter" && event.key !== " ") {
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    onMarkerSelect?.(finding);
+  };
+
+  return (
+    <Marker longitude={finding.lng} latitude={finding.lat} anchor="bottom">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width={isSelected ? 28 : 20}
+        height={isSelected ? 28 : 20}
+        viewBox="0 0 24 24"
+        role="button"
+        tabIndex={0}
+        aria-label={ariaLabel}
+        className="my-findings__map-marker"
+        onClick={handleClick}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onKeyDown={handleKeyDown}
+      >
+        <path
+          fill={isSelected ? "#e63946" : "#888"}
+          stroke="#fff"
+          strokeWidth="1"
+          d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
+        />
+      </svg>
+    </Marker>
+  );
+};
 
 export const MyFindingsMap: React.FC<{
   findings: FindingWithCoordinates[];
@@ -45,6 +102,9 @@ export const MyFindingsMap: React.FC<{
     string | null
   >(null);
 
+  const handleOpenModal = () => setIsMapModalOpen(true);
+  const handleCloseModal = () => setIsMapModalOpen(false);
+
   const renderMapOverlays = (variant: "inline" | "modal") => {
     const hoveredFindingId =
       variant === "modal" ? hoveredModalFindingId : hoveredInlineFindingId;
@@ -64,51 +124,14 @@ export const MyFindingsMap: React.FC<{
           const isSelected = finding.id === selectedFindingId;
 
           return (
-            <Marker
+            <FindingMarker
               key={finding.id}
-              longitude={finding.lng}
-              latitude={finding.lat}
-              anchor="bottom"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width={isSelected ? 28 : 20}
-                height={isSelected ? 28 : 20}
-                viewBox="0 0 24 24"
-                role="button"
-                tabIndex={0}
-                aria-label="Select finding marker"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  onMarkerSelect?.(finding);
-                }}
-                onMouseEnter={() => {
-                  setHoveredFindingId(finding.id);
-                }}
-                onMouseLeave={() => {
-                  setHoveredFindingId((currentId) =>
-                    currentId === finding.id ? null : currentId,
-                  );
-                }}
-                onKeyDown={(event) => {
-                  if (event.key !== "Enter" && event.key !== " ") {
-                    return;
-                  }
-
-                  event.preventDefault();
-                  event.stopPropagation();
-                  onMarkerSelect?.(finding);
-                }}
-                style={{ cursor: "pointer" }}
-              >
-                <path
-                  fill={isSelected ? "#e63946" : "#888"}
-                  stroke="#fff"
-                  strokeWidth="1"
-                  d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"
-                />
-              </svg>
-            </Marker>
+              finding={finding}
+              isSelected={isSelected}
+              ariaLabel={t("myFindings.markerAriaLabel")}
+              onMarkerSelect={onMarkerSelect}
+              setHoveredId={setHoveredFindingId}
+            />
           );
         })}
 
@@ -186,8 +209,8 @@ export const MyFindingsMap: React.FC<{
         <button
           type="button"
           className="my-findings__map-expand-button"
-          aria-label="Open map in modal"
-          onClick={() => setIsMapModalOpen(true)}
+          aria-label={t("myFindings.mapExpandAriaLabel")}
+          onClick={handleOpenModal}
         >
           ⤢
         </button>
@@ -198,16 +221,16 @@ export const MyFindingsMap: React.FC<{
           <button
             type="button"
             className="my-findings__map-modal-backdrop"
-            aria-label="Close map modal"
-            onClick={() => setIsMapModalOpen(false)}
+            aria-label={t("myFindings.mapCloseAriaLabel")}
+            onClick={handleCloseModal}
           />
 
           <div className="my-findings__map-modal-content">
             <button
               type="button"
               className="my-findings__map-modal-close"
-              aria-label="Close map modal"
-              onClick={() => setIsMapModalOpen(false)}
+              aria-label={t("myFindings.mapCloseAriaLabel")}
+              onClick={handleCloseModal}
             >
               ×
             </button>

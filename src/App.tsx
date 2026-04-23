@@ -22,16 +22,16 @@ import RedirectIfAuthed from "./components/RedirectIfAuthed/RedirectIfAuthed";
 import AppShell from "./components/AppShell/AppShell";
 import { routes } from "./lib/routes";
 
-function LegacyDetectorRedirect() {
+const LegacyDetectorRedirect = () => {
   const location = useLocation();
   const nextPath = location.pathname.replace(/^\/detector/, "") || routes.home;
 
   return (
     <Navigate to={`${nextPath}${location.search}${location.hash}`} replace />
   );
-}
+};
 
-function App() {
+const App = () => {
   return (
     <ThemeProvider theme={outdoorTheme}>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
@@ -154,6 +154,6 @@ function App() {
       </BrowserRouter>
     </ThemeProvider>
   );
-}
+};
 
 export default App;

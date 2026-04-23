@@ -7,26 +7,6 @@ import "./Modal.css";
 
 export type ModalSize = "sm" | "md" | "lg" | "xl" | "full";
 
-export interface ModalProps {
-  /** Whether the modal is visible */
-  open: boolean;
-  /** Called when the user requests to close the modal (Escape, backdrop click, or close button) */
-  onClose: () => void;
-  /** Modal title */
-  title?: ReactNode;
-  /** Footer / action area content */
-  footer?: ReactNode;
-  /** Width preset */
-  size?: ModalSize;
-  /** Hide the built-in close button */
-  hideCloseButton?: boolean;
-  /** Prevent closing by clicking the backdrop */
-  disableBackdropClose?: boolean;
-  /** Additional class names for the dialog panel */
-  className?: string;
-  children?: ReactNode;
-}
-
 // ─── Close icon ───────────────────────────────────────────────────────────────
 
 const CloseIcon = () => (
@@ -43,7 +23,17 @@ const CloseIcon = () => (
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export const Modal: React.FC<ModalProps> = ({
+export const Modal: React.FC<{
+  open: boolean;
+  onClose: () => void;
+  title?: ReactNode;
+  footer?: ReactNode;
+  size?: ModalSize;
+  hideCloseButton?: boolean;
+  disableBackdropClose?: boolean;
+  className?: string;
+  children?: ReactNode;
+}> = ({
   open,
   onClose,
   title,

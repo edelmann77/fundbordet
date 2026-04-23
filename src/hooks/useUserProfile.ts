@@ -16,14 +16,14 @@ interface UserProfileRow {
   last_name: string | null;
 }
 
-function mapRowToUserProfile(row: UserProfileRow | null): UserProfile {
+const mapRowToUserProfile = (row: UserProfileRow | null): UserProfile => {
   return {
     firstName: row?.first_name ?? "",
     lastName: row?.last_name ?? "",
   };
-}
+};
 
-export async function getCurrentUserProfile(): Promise<CurrentUserProfile> {
+export const getCurrentUserProfile = async (): Promise<CurrentUserProfile> => {
   const user = await requireSessionUser();
 
   const { data, error } = await supabase
@@ -40,11 +40,11 @@ export async function getCurrentUserProfile(): Promise<CurrentUserProfile> {
     email: user.email ?? "",
     profile: mapRowToUserProfile(data ?? null),
   };
-}
+};
 
-export async function upsertCurrentUserProfile(
+export const upsertCurrentUserProfile = async (
   values: UserProfile,
-): Promise<UserProfile> {
+): Promise<UserProfile> => {
   const user = await requireSessionUser();
 
   const payload = {
@@ -64,11 +64,11 @@ export async function upsertCurrentUserProfile(
   }
 
   return mapRowToUserProfile(data);
-}
+};
 
-export function useUserProfile() {
+export const useUserProfile = () => {
   return {
     getCurrentUserProfile,
     upsertCurrentUserProfile,
   };
-}
+};

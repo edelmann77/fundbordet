@@ -12,29 +12,23 @@ export type ButtonVariant =
   | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  /** Visual style of the button */
-  variant?: ButtonVariant;
-  /** Size of the button */
-  size?: ButtonSize;
-  /** Shows a loading spinner and disables interaction */
-  loading?: boolean;
-  /** Stretch button to fill its container */
-  fullWidth?: boolean;
-  /** Icon placed before the label */
-  leftIcon?: ReactNode;
-  /** Icon placed after the label */
-  rightIcon?: ReactNode;
-  children?: ReactNode;
-}
-
 // ─── Spinner ──────────────────────────────────────────────────────────────────
 
 const Spinner = () => <span className="button__spinner" aria-hidden="true" />;
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export const Button: React.FC<ButtonProps> = ({
+export const Button: React.FC<
+  ButtonHTMLAttributes<HTMLButtonElement> & {
+    variant?: ButtonVariant;
+    size?: ButtonSize;
+    loading?: boolean;
+    fullWidth?: boolean;
+    leftIcon?: ReactNode;
+    rightIcon?: ReactNode;
+    children?: ReactNode;
+  }
+> = ({
   variant = "primary",
   size = "md",
   loading = false,

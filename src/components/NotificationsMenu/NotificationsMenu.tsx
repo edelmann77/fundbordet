@@ -236,6 +236,14 @@ export const NotificationsMenu: React.FC = () => {
     );
   };
 
+  const handleNotificationClick = (notification: AppNotification) => () => {
+    if (notification.kind === "comment-mention") {
+      handleOpenMention(notification);
+      return;
+    }
+    handleOpenFriends();
+  };
+
   return (
     <div ref={ref} className="notifications-menu">
       <button
@@ -300,14 +308,7 @@ export const NotificationsMenu: React.FC = () => {
                   <button
                     type="button"
                     className="notifications-menu__item"
-                    onClick={() => {
-                      if (notification.kind === "comment-mention") {
-                        handleOpenMention(notification);
-                        return;
-                      }
-
-                      handleOpenFriends();
-                    }}
+                    onClick={handleNotificationClick(notification)}
                     role="menuitem"
                   >
                     <span className="notifications-menu__item-title">

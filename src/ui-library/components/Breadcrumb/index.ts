@@ -1,6 +1,2 @@
 export { Breadcrumb } from "./Breadcrumb";
-export type {
-  BreadcrumbProps,
-  BreadcrumbItem,
-  BreadcrumbSize,
-} from "./Breadcrumb";
+export type { BreadcrumbItem, BreadcrumbSize } from "./Breadcrumb";

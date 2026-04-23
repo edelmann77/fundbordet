@@ -30,12 +30,6 @@ interface BaseProps {
   className?: string;
 }
 
-export type SelectorProps = BaseProps &
-  (
-    | { multiple?: false; value?: string; onChange?: (value: string) => void }
-    | { multiple: true; value?: string[]; onChange?: (value: string[]) => void }
-  );
-
 // ─── Icons ────────────────────────────────────────────────────────────────────
 
 const ChevronDown = () => (
@@ -62,20 +56,30 @@ const XIcon = () => (
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export const Selector: React.FC<SelectorProps> = (props) => {
-  const {
-    options,
-    multiple,
-    label,
-    placeholder = "Select…",
-    disabled = false,
-    error,
-    helperText,
-    size = "md",
-    id: externalId,
-    className,
-  } = props;
-
+export const Selector: React.FC<
+  BaseProps &
+    (
+      | { multiple?: false; value?: string; onChange?: (value: string) => void }
+      | {
+          multiple: true;
+          value?: string[];
+          onChange?: (value: string[]) => void;
+        }
+    )
+> = ({
+  options,
+  multiple,
+  label,
+  placeholder = "Select…",
+  disabled = false,
+  error,
+  helperText,
+  size = "md",
+  id: externalId,
+  className,
+  value,
+  onChange,
+}) => {
   const generatedId = useId();
   const id = externalId ?? generatedId;
   const listboxId = `${id}-listbox`;
@@ -91,9 +95,9 @@ export const Selector: React.FC<SelectorProps> = (props) => {
   // ── Derived values ──────────────────────────────────────────────────────────
 
   const selectedValues: string[] = multiple
-    ? ((props.value as string[] | undefined) ?? [])
-    : props.value
-      ? [props.value as string]
+    ? ((value as string[] | undefined) ?? [])
+    : value
+      ? [value as string]
       : [];
 
   const isSelected = (v: string) => selectedValues.includes(v);
@@ -125,26 +129,44 @@ export const Selector: React.FC<SelectorProps> = (props) => {
     if (optionDisabled) return;
 
     if (multiple) {
-      const cur = (props.value as string[] | undefined) ?? [];
+      const cur = (value as string[] | undefined) ?? [];
       const next = cur.includes(optionValue)
         ? cur.filter((v) => v !== optionValue)
         : [...cur, optionValue];
-      (props.onChange as ((v: string[]) => void) | undefined)?.(next);
+      (onChange as ((v: string[]) => void) | undefined)?.(next);
     } else {
-      (props.onChange as ((v: string) => void) | undefined)?.(optionValue);
+      (onChange as ((v: string) => void) | undefined)?.(optionValue);
       setOpen(false);
       triggerRef.current?.focus();
     }
   };
 
+  const handleTriggerClick = () => {
+    setOpen((v) => !v);
+    if (!open) setActiveIndex(-1);
+  };
+
+  const handleOptionMouseEnter = (index: number, disabled?: boolean) => () => {
+    if (!disabled) setActiveIndex(index);
+  };
+
+  const handleOptionMouseLeave = () => setActiveIndex(-1);
+
+  const handleOptionClick = (optionValue: string, disabled?: boolean) => () =>
+    select(optionValue, disabled);
+
   const removeTag = (optionValue: string, e: React.MouseEvent) => {
     e.stopPropagation();
     if (!multiple) return;
-    const cur = (props.value as string[] | undefined) ?? [];
-    (props.onChange as ((v: string[]) => void) | undefined)?.(
+    const cur = (value as string[] | undefined) ?? [];
+    (onChange as ((v: string[]) => void) | undefined)?.(
       cur.filter((v) => v !== optionValue),
     );
   };
+
+  const handleRemoveTag =
+    (optionValue: string) => (e: React.MouseEvent<HTMLButtonElement>) =>
+      removeTag(optionValue, e);
 
   // ── Keyboard handling ───────────────────────────────────────────────────────
 
@@ -243,7 +265,7 @@ export const Selector: React.FC<SelectorProps> = (props) => {
                 {!disabled && (
                   <button
                     type="button"
-                    onMouseDown={(e) => removeTag(v, e)}
+                    onMouseDown={handleRemoveTag(v)}
                     aria-label={`Remove ${opt.label}`}
                     tabIndex={-1}
                     className="selector__tag-remove"
@@ -258,10 +280,10 @@ export const Selector: React.FC<SelectorProps> = (props) => {
       );
     }
 
-    const selected = options.find((o) => o.value === (props.value as string));
+    const selected = options.find((o) => o.value === (value as string));
     return (
       <span className="selector__trigger-value">
-        {selected?.label ?? props.value}
+        {selected?.label ?? value}
       </span>
     );
   };
@@ -300,10 +322,7 @@ export const Selector: React.FC<SelectorProps> = (props) => {
         aria-labelledby={label ? labelId : undefined}
         disabled={disabled}
         onKeyDown={handleTriggerKey}
-        onClick={() => {
-          setOpen((v) => !v);
-          if (!open) setActiveIndex(-1);
-        }}
+        onClick={handleTriggerClick}
         className={cn(
           "selector__trigger",
           `selector__trigger--${size}`,
@@ -348,9 +367,9 @@ export const Selector: React.FC<SelectorProps> = (props) => {
                   role="option"
                   aria-selected={selected}
                   aria-disabled={option.disabled}
-                  onMouseEnter={() => !option.disabled && setActiveIndex(index)}
-                  onMouseLeave={() => setActiveIndex(-1)}
-                  onClick={() => select(option.value, option.disabled)}
+                  onMouseEnter={handleOptionMouseEnter(index, option.disabled)}
+                  onMouseLeave={handleOptionMouseLeave}
+                  onClick={handleOptionClick(option.value, option.disabled)}
                   className={cn(
                     "selector__option",
                     `selector__option--${size}`,

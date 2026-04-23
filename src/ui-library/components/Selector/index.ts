@@ -1,2 +1,2 @@
-export { Selector } from './Selector';
-export type { SelectorProps, SelectorSize, SelectOption } from './Selector';
+export { Selector } from "./Selector";
+export type { SelectorSize, SelectOption } from "./Selector";

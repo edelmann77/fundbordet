@@ -136,6 +136,20 @@ export const FriendsPage: React.FC = () => {
     }
   };
 
+  const handleSearchInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setSearchInput(event.target.value);
+    if (error) {
+      setError("");
+    }
+  };
+
+  const handleConfirmFriendClick = (friendId: string) => () =>
+    handleConfirmFriend(friendId);
+  const handleRemoveFriendClick = (friendId: string) => () =>
+    handleRemoveFriend(friendId);
+
   return (
     <div className="friends-page">
       <Breadcrumb
@@ -177,12 +191,7 @@ export const FriendsPage: React.FC = () => {
                 label={t("friendsPage.searchLabel")}
                 type="email"
                 value={searchInput}
-                onChange={(event) => {
-                  setSearchInput(event.target.value);
-                  if (error) {
-                    setError("");
-                  }
-                }}
+                onChange={handleSearchInputChange}
                 placeholder={t("friendsPage.searchPlaceholder")}
                 size="md"
                 disabled={loading}
@@ -284,7 +293,7 @@ export const FriendsPage: React.FC = () => {
                             size="md"
                             loading={activeFriendId === friend.id}
                             disabled={activeFriendId !== null}
-                            onClick={() => handleConfirmFriend(friend.id)}
+                            onClick={handleConfirmFriendClick(friend.id)}
                           >
                             {t("friendsPage.confirm")}
                           </Button>
@@ -296,7 +305,7 @@ export const FriendsPage: React.FC = () => {
                         size="md"
                         loading={activeFriendId === friend.id}
                         disabled={activeFriendId !== null}
-                        onClick={() => handleRemoveFriend(friend.id)}
+                        onClick={handleRemoveFriendClick(friend.id)}
                       >
                         {t("friendsPage.remove")}
                       </Button>

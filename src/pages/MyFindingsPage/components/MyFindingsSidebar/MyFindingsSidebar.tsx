@@ -24,6 +24,11 @@ export const MyFindingsSidebar: React.FC<{
 }) => {
   const { t } = useTranslation();
 
+  const handleQueryChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    onQueryChange(event.target.value);
+  const handleSelectFinding = (findingId: string) => () =>
+    onSelectFinding(findingId);
+
   return (
     <div className="my-findings__sidebar">
       <p className="my-findings__count">
@@ -48,7 +53,7 @@ export const MyFindingsSidebar: React.FC<{
           type="search"
           placeholder={t("myFindings.searchPlaceholder")}
           value={query}
-          onChange={(event) => onQueryChange(event.target.value)}
+          onChange={handleQueryChange}
         />
         {query && (
           <span className="my-findings__search-results">
@@ -67,7 +72,7 @@ export const MyFindingsSidebar: React.FC<{
           return (
             <div
               key={finding.id}
-              onClick={() => onSelectFinding(finding.id)}
+              onClick={handleSelectFinding(finding.id)}
               className={`my-findings__card ${
                 isSelected ? "my-findings__card--selected" : ""
               }`}

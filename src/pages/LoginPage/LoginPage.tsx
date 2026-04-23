@@ -38,6 +38,13 @@ export const LoginPage: React.FC = () => {
     }
   };
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setEmail(e.target.value);
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setPassword(e.target.value);
+  const handleForgotPasswordClick = (e: React.MouseEvent<HTMLAnchorElement>) =>
+    e.preventDefault();
+
   return (
     <div className="login-page">
       <Breadcrumb
@@ -73,7 +80,7 @@ export const LoginPage: React.FC = () => {
               type="email"
               placeholder={t("login.emailPlaceholder")}
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={handleEmailChange}
               required
               autoComplete="email"
               size="md"
@@ -85,14 +92,14 @@ export const LoginPage: React.FC = () => {
                 type="password"
                 placeholder={t("login.passwordPlaceholder")}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={handlePasswordChange}
                 required
                 autoComplete="current-password"
                 size="md"
               />
               <a
                 href="#"
-                onClick={(e) => e.preventDefault()}
+                onClick={handleForgotPasswordClick}
                 className="login-page__forgot-link"
               >
                 {t("login.forgotPassword")}

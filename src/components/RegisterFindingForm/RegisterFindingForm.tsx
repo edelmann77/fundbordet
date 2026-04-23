@@ -127,6 +127,21 @@ export const RegisterFindingForm: React.FC<{
     }
   };
 
+  const handleGenstandChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setGenstand(e.target.value);
+  const handleMaterialeChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setMateriale(e.target.value);
+  const handleDateringChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setDatering(e.target.value);
+  const handleOestChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setOest(e.target.value);
+  const handleNordChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setNord(e.target.value);
+  const handleDimeIdChange = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setDimeId(e.target.value);
+  const handleZoomChange = (e: ViewStateChangeEvent) =>
+    setZoom(e.viewState.zoom);
+
   return (
     <div className="register-finding-form">
       <div className="register-finding-form__body">
@@ -134,37 +149,37 @@ export const RegisterFindingForm: React.FC<{
           <TextInput
             label={t("registerFinding.genstand")}
             value={genstand}
-            onChange={(e) => setGenstand(e.target.value)}
+            onChange={handleGenstandChange}
             size="md"
           />
           <TextInput
             label={t("registerFinding.materiale")}
             value={materiale}
-            onChange={(e) => setMateriale(e.target.value)}
+            onChange={handleMaterialeChange}
             size="md"
           />
           <TextInput
             label={t("registerFinding.datering")}
             value={datering}
-            onChange={(e) => setDatering(e.target.value)}
+            onChange={handleDateringChange}
             size="md"
           />
           <TextInput
             label={t("registerFinding.oest")}
             value={oest}
-            onChange={(e) => setOest(e.target.value)}
+            onChange={handleOestChange}
             size="md"
           />
           <TextInput
             label={t("registerFinding.nord")}
             value={nord}
-            onChange={(e) => setNord(e.target.value)}
+            onChange={handleNordChange}
             size="md"
           />
           <TextInput
             label={t("registerFinding.dimeId")}
             value={dimeId}
-            onChange={(e) => setDimeId(e.target.value)}
+            onChange={handleDimeIdChange}
             size="md"
           />
         </div>
@@ -177,7 +192,7 @@ export const RegisterFindingForm: React.FC<{
               style={{ width: "100%", height: "100%" }}
               mapStyle={SATELLITE_STYLE}
               onClick={handleMapClick}
-              onZoom={(e: ViewStateChangeEvent) => setZoom(e.viewState.zoom)}
+              onZoom={handleZoomChange}
             >
               {markerPos && (
                 <Marker

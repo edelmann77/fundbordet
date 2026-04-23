@@ -148,7 +148,10 @@
     "shareLoading": "Indlæser delinger...",
     "shareEmpty": "Du har ingen bekræftede venner at dele med endnu.",
     "shareLoadFailed": "Delingerne kunne ikke indlæses. Prøv igen.",
-    "shareSaveFailed": "Delingen kunne ikke gemmes. Prøv igen."
+    "shareSaveFailed": "Delingen kunne ikke gemmes. Prøv igen.",
+    "markerAriaLabel": "Vælg fund",
+    "mapExpandAriaLabel": "Udvid kort",
+    "mapCloseAriaLabel": "Luk kort"
   },
   "landing": {
     "selectLanguage": "Vælg sprog",

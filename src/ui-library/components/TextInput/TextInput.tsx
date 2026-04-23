@@ -6,26 +6,6 @@ import "./TextInput.css";
 
 export type TextInputSize = "sm" | "md" | "lg";
 
-export interface TextInputProps extends Omit<
-  InputHTMLAttributes<HTMLInputElement>,
-  "size"
-> {
-  /** Label displayed above the input */
-  label?: string;
-  /** Helper text shown below the input */
-  helperText?: string;
-  /** Error message; switches the input to error state */
-  error?: string;
-  /** Size of the input field */
-  size?: TextInputSize;
-  /** Icon/element placed inside the left of the input */
-  leftIcon?: ReactNode;
-  /** Icon/element placed inside the right of the input (replaced by eye toggle when type="password") */
-  rightIcon?: ReactNode;
-  /** Mark the field as required */
-  required?: boolean;
-}
-
 // ─── Eye icons ────────────────────────────────────────────────────────────────
 
 const EyeIcon = () => (
@@ -42,7 +22,17 @@ const EyeOffIcon = () => (
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export const TextInput: React.FC<TextInputProps> = ({
+export const TextInput: React.FC<
+  Omit<InputHTMLAttributes<HTMLInputElement>, "size"> & {
+    label?: string;
+    helperText?: string;
+    error?: string;
+    size?: TextInputSize;
+    leftIcon?: ReactNode;
+    rightIcon?: ReactNode;
+    required?: boolean;
+  }
+> = ({
   label,
   helperText,
   error,
@@ -83,6 +73,18 @@ export const TextInput: React.FC<TextInputProps> = ({
       : focused
         ? "text-input__wrapper--ring-focus"
         : "";
+
+  const handleFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    setFocused(true);
+    onFocus?.(e);
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    setFocused(false);
+    onBlur?.(e);
+  };
+
+  const handleTogglePassword = () => setShowPassword((v) => !v);
 
   return (
     <div className={cn("text-input", className)}>
@@ -142,14 +144,8 @@ export const TextInput: React.FC<TextInputProps> = ({
             hasLeft && "text-input__input--has-left",
             hasRight && "text-input__input--has-right",
           )}
-          onFocus={(e) => {
-            setFocused(true);
-            onFocus?.(e);
-          }}
-          onBlur={(e) => {
-            setFocused(false);
-            onBlur?.(e);
-          }}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           {...rest}
         />
 
@@ -157,7 +153,7 @@ export const TextInput: React.FC<TextInputProps> = ({
         {isPassword ? (
           <button
             type="button"
-            onClick={() => setShowPassword((v) => !v)}
+            onClick={handleTogglePassword}
             aria-label={showPassword ? "Hide password" : "Show password"}
             tabIndex={-1}
             className="text-input__password-toggle"

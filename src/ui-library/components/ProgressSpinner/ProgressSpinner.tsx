@@ -5,17 +5,14 @@ import "./ProgressSpinner.css";
 export type ProgressSpinnerSize = "sm" | "md" | "lg";
 export type ProgressSpinnerTone = "forest" | "earth" | "sky";
 
-export interface ProgressSpinnerProps extends Omit<
-  HTMLAttributes<HTMLSpanElement>,
-  "children"
-> {
-  size?: ProgressSpinnerSize;
-  tone?: ProgressSpinnerTone;
-  label?: string;
-  showLabel?: boolean;
-}
-
-export const ProgressSpinner: React.FC<ProgressSpinnerProps> = ({
+export const ProgressSpinner: React.FC<
+  Omit<HTMLAttributes<HTMLSpanElement>, "children"> & {
+    size?: ProgressSpinnerSize;
+    tone?: ProgressSpinnerTone;
+    label?: string;
+    showLabel?: boolean;
+  }
+> = ({
   size = "md",
   tone = "forest",
   label = "Scanning the trail…",
