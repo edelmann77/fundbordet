@@ -1,13 +1,13 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Modal, Tabs } from "fundbrdet-ui";
 import RegisterFindingForm from "../../components/RegisterFindingForm/RegisterFindingForm";
 import ImportFindingForm from "../../components/ImportFindingForm/ImportFindingForm";
 import AccountMenu from "../../components/AccountMenu/AccountMenu";
 import NotificationsMenu from "../../components/NotificationsMenu/NotificationsMenu";
 import LanguageMenu from "../../components/LanguageMenu/LanguageMenu";
-import Map, { Source, Layer } from "react-map-gl/maplibre";
+import Map, { Source, Layer, Marker, Popup } from "react-map-gl/maplibre";
 import type { StyleSpecification } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { useAllFindingsHeatmap } from "../../hooks/useFindings";
@@ -34,13 +34,35 @@ const SATELLITE_STYLE: StyleSpecification = {
   ],
 };
 
+const MARKER_ZOOM_THRESHOLD = 10;
+
 export const HomePage: React.FC = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [createOpen, setCreateOpen] = useState(false);
+  const [zoom, setZoom] = useState(7);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [popupInfo, setPopupInfo] = useState<{
+    lng: number;
+    lat: number;
+    id: string;
+    genstand: string | null;
+    datering: string | null;
+  } | null>(null);
   const heatData = useAllFindingsHeatmap();
 
   const handleOpenCreate = () => setCreateOpen(true);
   const handleCloseCreate = () => setCreateOpen(false);
+
+  const handleMapLoad = useCallback(() => {
+    setMapLoaded(true);
+  }, []);
+
+  const handleMove = useCallback((evt: { viewState: { zoom: number } }) => {
+    setZoom(evt.viewState.zoom);
+  }, []);
+
+  const showMarkers = zoom >= MARKER_ZOOM_THRESHOLD;
 
   return (
     <div className="home-page">
@@ -50,7 +72,10 @@ export const HomePage: React.FC = () => {
           <Link to={routes.myFindings} className="home-page__header-nav-link">
             {t("home.myFindings")}
           </Link>
-          <Link to={routes.sharedFindings} className="home-page__header-nav-link">
+          <Link
+            to={routes.sharedFindings}
+            className="home-page__header-nav-link"
+          >
             {t("home.sharedFindings")}
           </Link>
           <Link to={routes.fundDatabase} className="home-page__header-nav-link">
@@ -73,14 +98,18 @@ export const HomePage: React.FC = () => {
           style={{ width: "100%", height: "100%" }}
           mapStyle={SATELLITE_STYLE}
           interactive
+          onLoad={handleMapLoad}
+          onMove={handleMove}
+          onClick={() => setPopupInfo(null)}
         >
-          {heatData && (
+          {mapLoaded && heatData && (
             <>
               <Source id="heat" type="geojson" data={heatData} />
               <Layer
                 id="heatLayer"
                 type="heatmap"
                 source="heat"
+                maxzoom={MARKER_ZOOM_THRESHOLD}
                 paint={{
                   "heatmap-weight": 1,
                   "heatmap-intensity": 1,
@@ -106,6 +135,58 @@ export const HomePage: React.FC = () => {
                 }}
               />
             </>
+          )}
+
+          {mapLoaded &&
+            heatData &&
+            showMarkers &&
+            heatData.features.map((f) => {
+              const [lng, lat] = (f.geometry as GeoJSON.Point).coordinates;
+              const { id, genstand, datering } = f.properties as {
+                id: string;
+                genstand: string | null;
+                datering: string | null;
+              };
+              return (
+                <Marker
+                  key={id}
+                  longitude={lng}
+                  latitude={lat}
+                  anchor="bottom"
+                  onClick={(e) => {
+                    e.originalEvent.stopPropagation();
+                    setPopupInfo({ lng, lat, id, genstand, datering });
+                  }}
+                >
+                  <div className="home-page__marker" />
+                </Marker>
+              );
+            })}
+
+          {popupInfo && (
+            <Popup
+              longitude={popupInfo.lng}
+              latitude={popupInfo.lat}
+              anchor="bottom"
+              offset={20}
+              closeButton={false}
+              onClose={() => setPopupInfo(null)}
+            >
+              <div className="home-page__popup">
+                <p className="home-page__popup-title">
+                  {popupInfo.genstand ?? t("finding.unknownType")}
+                </p>
+                {popupInfo.datering && (
+                  <p className="home-page__popup-sub">{popupInfo.datering}</p>
+                )}
+                <button
+                  className="home-page__popup-link"
+                  onClick={() => navigate(routes.myFinding(popupInfo.id))}
+                >
+                  {t("home.viewFinding")}
+                </button>
+              </div>
+            </Popup>
           )}
         </Map>
 

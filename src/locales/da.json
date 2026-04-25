@@ -81,6 +81,7 @@
     "createFinding": "Opret fund",
     "createFindingDesc": "Registrer et nyt fund",
     "mapTitle": "Fundspredning",
+    "viewFinding": "Se fund",
     "tabs": {
       "register": "Opret fund",
       "import": "Importer fund"
@@ -92,6 +93,9 @@
       "createFinding": "Opret fund"
     },
     "mapTitle": "Fundspredning"
+  },
+  "finding": {
+    "unknownType": "Ukendt genstand"
   },
   "registerFinding": {
     "genstand": "Genstand",

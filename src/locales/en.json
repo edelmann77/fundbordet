@@ -81,6 +81,7 @@
     "createFinding": "Register find",
     "createFindingDesc": "Register a new find",
     "mapTitle": "Find distribution",
+    "viewFinding": "View find",
     "tabs": {
       "register": "Register find",
       "import": "Import finds"
@@ -92,6 +93,9 @@
       "createFinding": "Register find"
     },
     "mapTitle": "Find distribution"
+  },
+  "finding": {
+    "unknownType": "Unknown object"
   },
   "registerFinding": {
     "genstand": "Object",

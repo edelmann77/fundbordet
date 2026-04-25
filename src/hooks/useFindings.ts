@@ -850,7 +850,7 @@ export const useAllFindingsHeatmap = () => {
     // load all findings coordinates for heatmap
     supabase
       .from("findings")
-      .select("easting,northing")
+      .select("id,easting,northing,written_name,dating")
       .not("easting", "is", null)
       .not("northing", "is", null)
       .then(({ data, error }) => {
@@ -864,7 +864,11 @@ export const useAllFindingsHeatmap = () => {
               return {
                 type: "Feature",
                 geometry: { type: "Point", coordinates: [lng, lat] },
-                properties: {},
+                properties: {
+                  id: row.id as string,
+                  genstand: row.written_name as string | null,
+                  datering: row.dating as string | null,
+                },
               };
             })
             .filter(Boolean) as GeoJSON.Feature[];
