@@ -33,11 +33,17 @@ export const LanguageMenu: React.FC = () => {
     languages.find((language) => language.value === i18n.language) ??
     languages[0];
 
+  const handleToggle = () => setOpen((currentOpen) => !currentOpen);
+  const handleLanguageSelect = (value: Language) => () => {
+    i18n.changeLanguage(value);
+    setOpen(false);
+  };
+
   return (
     <div ref={ref} className="language-menu">
       <button
         type="button"
-        onClick={() => setOpen((currentOpen) => !currentOpen)}
+        onClick={handleToggle}
         aria-label={t("landing.selectLanguage")}
         aria-expanded={open}
         className="language-menu__trigger"
@@ -51,10 +57,7 @@ export const LanguageMenu: React.FC = () => {
             <button
               key={language.value}
               type="button"
-              onClick={() => {
-                i18n.changeLanguage(language.value);
-                setOpen(false);
-              }}
+              onClick={handleLanguageSelect(language.value)}
               className={[
                 "language-menu__option",
                 i18n.language === language.value

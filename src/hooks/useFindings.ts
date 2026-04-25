@@ -9,10 +9,10 @@ const UTM32N = "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs";
 /**
  * Convert UTM coordinates to WGS84 (lat/lng)
  */
-function utmToWGS84(easting: number, northing: number): [number, number] {
+const utmToWGS84 = (easting: number, northing: number): [number, number] => {
   const [lng, lat] = proj4(UTM32N, WGS84, [easting, northing]);
   return [lng, lat];
-}
+};
 
 /**
  * Finding interface matching Supabase schema
@@ -101,18 +101,18 @@ export interface FindingShare {
   sharedWithUserId: string;
 }
 
-export function getFindingOwnerDisplayName(
+export const getFindingOwnerDisplayName = (
   finding: Pick<Finding, "ownerFirstName" | "ownerLastName" | "sharedByEmail">,
-): string | null {
+): string | null => {
   const fullName = [finding.ownerFirstName, finding.ownerLastName]
     .map((value) => value?.trim() ?? "")
     .filter(Boolean)
     .join(" ");
 
   return fullName || finding.sharedByEmail || null;
-}
+};
 
-function extractImageUid(value: unknown): string | null {
+const extractImageUid = (value: unknown): string | null => {
   if (typeof value === "string") {
     const trimmed = value.trim();
     return trimmed || null;
@@ -139,9 +139,9 @@ function extractImageUid(value: unknown): string | null {
   }
 
   return null;
-}
+};
 
-function normalizeImageUids(value: unknown): string[] | null {
+const normalizeImageUids = (value: unknown): string[] | null => {
   if (!value) {
     return null;
   }
@@ -186,9 +186,9 @@ function normalizeImageUids(value: unknown): string[] | null {
   }
 
   return null;
-}
+};
 
-function mapRowToFinding(row: any): Finding {
+const mapRowToFinding = (row: any): Finding => {
   const accessLevel = row.access_level === "shared" ? "shared" : "owner";
   const oest = row.easting;
   const nord = row.northing;
@@ -216,9 +216,9 @@ function mapRowToFinding(row: any): Finding {
     coordinatesVisible:
       accessLevel === "owner" ? true : row.coordinates_visible === true,
   } as Finding;
-}
+};
 
-function mapRowToFindingCatalogEntry(row: any): FindingCatalogEntry {
+const mapRowToFindingCatalogEntry = (row: any): FindingCatalogEntry => {
   return {
     id: row.id,
     ownerUserId: row.owner_user_id ?? null,
@@ -231,9 +231,11 @@ function mapRowToFindingCatalogEntry(row: any): FindingCatalogEntry {
     dime_id: row.dime_id ?? null,
     created_at: row.created_at,
   };
-}
+};
 
-function mapRowToFindingCommentMention(row: any): FindingCommentMention | null {
+const mapRowToFindingCommentMention = (
+  row: any,
+): FindingCommentMention | null => {
   const mentionedUserId =
     typeof row?.mentionedUserId === "string"
       ? row.mentionedUserId
@@ -271,9 +273,9 @@ function mapRowToFindingCommentMention(row: any): FindingCommentMention | null {
     startIndex,
     endIndex,
   };
-}
+};
 
-function mapRowToFindingComment(row: any): FindingComment {
+const mapRowToFindingComment = (row: any): FindingComment => {
   const mentionsSource: unknown[] = Array.isArray(row.mentions)
     ? row.mentions
     : [];
@@ -295,53 +297,53 @@ function mapRowToFindingComment(row: any): FindingComment {
         ): mention is FindingCommentMention => Boolean(mention),
       ),
   };
-}
+};
 
-export function getFindingCommentAuthorDisplayName(
+export const getFindingCommentAuthorDisplayName = (
   comment: Pick<
     FindingComment,
     "authorFirstName" | "authorLastName" | "authorEmail"
   >,
-): string | null {
+): string | null => {
   const fullName = [comment.authorFirstName, comment.authorLastName]
     .map((value) => value?.trim() ?? "")
     .filter(Boolean)
     .join(" ");
 
   return fullName || comment.authorEmail || null;
-}
+};
 
-function toCatalogSearchValue(search: string): string | null {
+const toCatalogSearchValue = (search: string): string | null => {
   const normalized = search.trim();
   return normalized ? normalized : null;
-}
+};
 
-function sortFindings(findings: Finding[]): Finding[] {
+const sortFindings = (findings: Finding[]): Finding[] => {
   return [...findings].sort(
     (left, right) =>
       new Date(right.created_at).getTime() -
       new Date(left.created_at).getTime(),
   );
-}
+};
 
-function toNullableNumber(value: unknown): number | null {
+const toNullableNumber = (value: unknown): number | null => {
   if (value === null || value === undefined || value === "") return null;
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
-}
+};
 
 const imageUploadBaseUrl =
   (import.meta.env.VITE_IMAGE_UPLOAD_BASE_URL as string | undefined) ??
   "https://literally-villas-subscriber-hospital.trycloudflare.com";
 
-export function getFindingImageUrl(uid: string): string {
+export const getFindingImageUrl = (uid: string): string => {
   return `${imageUploadBaseUrl}/images/${uid}`;
-}
+};
 
-export function useFindingImageUids(
+export const useFindingImageUids = (
   findingId: string | null,
   refreshKey?: unknown,
-) {
+) => {
   const [imageUids, setImageUids] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -392,12 +394,12 @@ export function useFindingImageUids(
   }, [findingId, refreshKey]);
 
   return { imageUids, loading, error };
-}
+};
 
-export async function uploadFindingImages(
+export const uploadFindingImages = async (
   findingId: string,
   images: File[],
-): Promise<void> {
+): Promise<void> => {
   if (images.length === 0) {
     return;
   }
@@ -417,12 +419,12 @@ export async function uploadFindingImages(
   if (!response.ok) {
     throw new Error(`Image upload failed with status ${response.status}`);
   }
-}
+};
 
-export async function updateCurrentUserFinding(
+export const updateCurrentUserFinding = async (
   findingId: string,
   values: Partial<Finding>,
-): Promise<void> {
+): Promise<void> => {
   const user = await requireSessionUser();
 
   const updatePayload = {
@@ -463,11 +465,11 @@ export async function updateCurrentUserFinding(
       throw new Error("No finding was updated");
     }
   }
-}
+};
 
-export async function listFindingComments(
+export const listFindingComments = async (
   findingId: string,
-): Promise<FindingComment[]> {
+): Promise<FindingComment[]> => {
   const { data, error } = await supabase.rpc("get_finding_comments", {
     target_finding_id: findingId,
   });
@@ -477,13 +479,13 @@ export async function listFindingComments(
   }
 
   return ((data as any[]) ?? []).map(mapRowToFindingComment);
-}
+};
 
-export async function createFindingComment({
+export const createFindingComment = async ({
   findingId,
   content,
   mentions = [],
-}: CreateFindingCommentInput): Promise<void> {
+}: CreateFindingCommentInput): Promise<void> => {
   const user = await requireSessionUser();
   const normalizedContent = content.trim();
 
@@ -550,9 +552,11 @@ export async function createFindingComment({
   if (insertMentionsError) {
     throw insertMentionsError;
   }
-}
+};
 
-export async function listFindingShares(findingId: string): Promise<string[]> {
+export const listFindingShares = async (
+  findingId: string,
+): Promise<string[]> => {
   const { data, error } = await supabase
     .schema("public")
     .from("finding_shares")
@@ -566,12 +570,12 @@ export async function listFindingShares(findingId: string): Promise<string[]> {
   return ((data as Array<{ shared_with_user_id: string }> | null) ?? []).map(
     (row) => row.shared_with_user_id,
   );
-}
+};
 
-export async function updateFindingShares(
+export const updateFindingShares = async (
   findingId: string,
   sharedWithUserIds: string[],
-): Promise<void> {
+): Promise<void> => {
   const user = await requireSessionUser();
 
   const normalizedNextIds = [...new Set(sharedWithUserIds)].filter(Boolean);
@@ -611,12 +615,12 @@ export async function updateFindingShares(
       throw insertError;
     }
   }
-}
+};
 
 /**
  * Hook to fetch findings for the current user with real-time subscriptions
  */
-export function useUserFindings() {
+export const useUserFindings = () => {
   const [findings, setFindings] = useState<Finding[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -832,12 +836,12 @@ export function useUserFindings() {
   }, []);
 
   return { findings, loading, error };
-}
+};
 
 /**
  * Hook to fetch all findings (no user filter) for heatmap display
  */
-export function useAllFindingsHeatmap() {
+export const useAllFindingsHeatmap = () => {
   const [heatData, setHeatData] = useState<GeoJSON.FeatureCollection | null>(
     null,
   );
@@ -870,9 +874,9 @@ export function useAllFindingsHeatmap() {
   }, []);
 
   return heatData;
-}
+};
 
-export function useFindingComments(findingId: string | null) {
+export const useFindingComments = (findingId: string | null) => {
   const [comments, setComments] = useState<FindingComment[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -975,13 +979,13 @@ export function useFindingComments(findingId: string | null) {
     error,
     refresh: () => setRefreshKey((currentKey) => currentKey + 1),
   };
-}
+};
 
-export function useFindingsCatalog(
+export const useFindingsCatalog = (
   page: number,
   pageSize: number,
   search: string,
-) {
+) => {
   const [findings, setFindings] = useState<FindingCatalogEntry[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -1033,9 +1037,9 @@ export function useFindingsCatalog(
   }, [page, pageSize, search]);
 
   return { findings, totalCount, loading, error };
-}
+};
 
-export function useFindingCatalogPreviewImages(findingIds: string[]) {
+export const useFindingCatalogPreviewImages = (findingIds: string[]) => {
   const [previewImages, setPreviewImages] = useState<
     Record<string, FindingCatalogPreviewImage>
   >({});
@@ -1098,14 +1102,14 @@ export function useFindingCatalogPreviewImages(findingIds: string[]) {
   }, [findingIds]);
 
   return { previewImages, loading };
-}
+};
 
 /**
  * Convert UTM finding to WGS84 coordinates for map display
  */
-export function findingToCoordinates(
+export const findingToCoordinates = (
   finding: Finding,
-): [number, number] | null {
+): [number, number] | null => {
   if (finding.oest == null || finding.nord == null) return null;
   return utmToWGS84(finding.oest, finding.nord);
-}
+};

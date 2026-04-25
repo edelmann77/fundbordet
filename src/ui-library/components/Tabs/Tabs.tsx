@@ -24,30 +24,21 @@ export interface TabItem {
 export type TabVariant = "line" | "pill";
 export type TabSize = "sm" | "md" | "lg";
 
-export interface TabsProps {
-  /** Array of tab definitions */
-  tabs: TabItem[];
-  /** Controlled active tab value */
-  value?: string;
-  /** Default active tab value (uncontrolled) */
-  defaultValue?: string;
-  /** Called when the active tab changes */
-  onChange?: (value: string) => void;
-  /** Visual style of the tab list */
-  variant?: TabVariant;
-  /** Size of the tab triggers */
-  size?: TabSize;
-  /** Additional class names for the root element */
-  className?: string;
-}
-
 // ─── Class maps ───────────────────────────────────────────────────────────────
 
 // Styles moved to Tabs.css
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-export const Tabs: React.FC<TabsProps> = ({
+export const Tabs: React.FC<{
+  tabs: TabItem[];
+  value?: string;
+  defaultValue?: string;
+  onChange?: (value: string) => void;
+  variant?: TabVariant;
+  size?: TabSize;
+  className?: string;
+}> = ({
   tabs,
   value: controlledValue,
   defaultValue,
@@ -112,6 +103,16 @@ export const Tabs: React.FC<TabsProps> = ({
     }
   };
 
+  const handleTabClick = (tab: (typeof tabs)[number]) => () => {
+    if (!tab.disabled) {
+      activate(tab.value);
+    }
+  };
+
+  const handleTabKeyDown =
+    (index: number) => (e: React.KeyboardEvent<HTMLButtonElement>) =>
+      handleKeyDown(e, index);
+
   return (
     <div className={cn("tabs", className)}>
       {/* Tab list */}
@@ -139,8 +140,8 @@ export const Tabs: React.FC<TabsProps> = ({
               aria-disabled={tab.disabled}
               disabled={tab.disabled}
               tabIndex={isActive ? 0 : -1}
-              onClick={() => !tab.disabled && activate(tab.value)}
-              onKeyDown={(e) => handleKeyDown(e, index)}
+              onClick={handleTabClick(tab)}
+              onKeyDown={handleTabKeyDown(index)}
               className={cn(
                 "tabs__trigger",
                 `tabs__trigger--${size}`,

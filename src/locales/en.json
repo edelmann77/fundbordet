@@ -148,7 +148,10 @@
     "shareLoading": "Loading shares...",
     "shareEmpty": "You do not have any confirmed friends to share with yet.",
     "shareLoadFailed": "The current sharing settings could not be loaded. Please try again.",
-    "shareSaveFailed": "The sharing settings could not be saved. Please try again."
+    "shareSaveFailed": "The sharing settings could not be saved. Please try again.",
+    "markerAriaLabel": "Select finding",
+    "mapExpandAriaLabel": "Expand map",
+    "mapCloseAriaLabel": "Close map"
   },
   "landing": {
     "selectLanguage": "Select language",

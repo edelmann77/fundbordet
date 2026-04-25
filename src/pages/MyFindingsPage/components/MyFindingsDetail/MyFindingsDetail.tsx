@@ -173,6 +173,64 @@ export const MyFindingsDetail: React.FC<{
     };
   }, [activeImage, imageUrls.length]);
 
+  const handleOpenShareMenu = () => {
+    setShareSelection(sharedFriendIds);
+    setShareMenuOpen((currentOpen) => !currentOpen);
+  };
+
+  const handleShareFriendToggle = (friendUserId: string) => {
+    setShareSelection((currentSelection) => {
+      if (currentSelection.includes(friendUserId)) {
+        return currentSelection.filter((userId) => userId !== friendUserId);
+      }
+      return [...currentSelection, friendUserId];
+    });
+  };
+
+  const handleShareCancel = () => {
+    setShareSelection(sharedFriendIds);
+    setShareMenuOpen(false);
+  };
+
+  const handleShareSave = () => {
+    void (async () => {
+      try {
+        await onShareChange(shareSelection);
+        setShareMenuOpen(false);
+      } catch {
+        // keep the menu open so the user can correct the selection
+      }
+    })();
+  };
+
+  const handleCloseLightbox = () => setActiveImageIndex(null);
+
+  const handleLightboxStopPropagation = (event: React.MouseEvent) => {
+    event.stopPropagation();
+  };
+
+  const handleLightboxPrev = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setActiveImageIndex((currentIndex) => {
+      if (currentIndex == null) {
+        return imageUrls.length - 1;
+      }
+      return (currentIndex - 1 + imageUrls.length) % imageUrls.length;
+    });
+  };
+
+  const handleLightboxNext = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.stopPropagation();
+    setActiveImageIndex((currentIndex) => {
+      if (currentIndex == null) {
+        return 0;
+      }
+      return (currentIndex + 1) % imageUrls.length;
+    });
+  };
+
+  const handleOpenImage = (index: number) => () => setActiveImageIndex(index);
+
   if (!selectedFinding || !editValues) {
     return (
       <div className="my-findings__detail-empty">
@@ -222,10 +280,7 @@ export const MyFindingsDetail: React.FC<{
                 aria-expanded={shareMenuOpen}
                 aria-haspopup="dialog"
                 aria-label={t("myFindings.shareAction")}
-                onClick={() => {
-                  setShareSelection(sharedFriendIds);
-                  setShareMenuOpen((currentOpen) => !currentOpen);
-                }}
+                onClick={handleOpenShareMenu}
               >
                 <svg
                   viewBox="0 0 24 24"
@@ -278,25 +333,11 @@ export const MyFindingsDetail: React.FC<{
                             <input
                               type="checkbox"
                               checked={isSelected}
-                              onChange={() => {
-                                setShareSelection((currentSelection) => {
-                                  if (
-                                    currentSelection.includes(
-                                      friend.counterpartUserId,
-                                    )
-                                  ) {
-                                    return currentSelection.filter(
-                                      (userId) =>
-                                        userId !== friend.counterpartUserId,
-                                    );
-                                  }
-
-                                  return [
-                                    ...currentSelection,
-                                    friend.counterpartUserId,
-                                  ];
-                                });
-                              }}
+                              onChange={() =>
+                                handleShareFriendToggle(
+                                  friend.counterpartUserId,
+                                )
+                              }
                             />
                             <span className="my-findings__detail-share-option-copy">
                               <span className="my-findings__detail-share-option-email">
@@ -319,10 +360,7 @@ export const MyFindingsDetail: React.FC<{
                     <Button
                       type="button"
                       variant="outline"
-                      onClick={() => {
-                        setShareSelection(sharedFriendIds);
-                        setShareMenuOpen(false);
-                      }}
+                      onClick={handleShareCancel}
                     >
                       {t("registerFinding.cancel")}
                     </Button>
@@ -331,16 +369,7 @@ export const MyFindingsDetail: React.FC<{
                       variant="primary"
                       loading={sharesSaving}
                       disabled={sharesLoading}
-                      onClick={() => {
-                        void (async () => {
-                          try {
-                            await onShareChange(shareSelection);
-                            setShareMenuOpen(false);
-                          } catch {
-                            // keep the menu open so the user can correct the selection
-                          }
-                        })();
-                      }}
+                      onClick={handleShareSave}
                     >
                       {t("myFindings.shareSave")}
                     </Button>
@@ -481,7 +510,7 @@ export const MyFindingsDetail: React.FC<{
                       key={uid}
                       type="button"
                       className="my-findings__detail-image-card"
-                      onClick={() => setActiveImageIndex(index)}
+                      onClick={handleOpenImage(index)}
                       aria-label={t("myFindings.openImage", {
                         index: index + 1,
                       })}
@@ -533,12 +562,12 @@ export const MyFindingsDetail: React.FC<{
           role="dialog"
           aria-modal="true"
           aria-label={t("myFindings.imagesHeading")}
-          onClick={() => setActiveImageIndex(null)}
+          onClick={handleCloseLightbox}
         >
           <button
             type="button"
             className="my-findings__detail-lightbox-close"
-            onClick={() => setActiveImageIndex(null)}
+            onClick={handleCloseLightbox}
             aria-label={t("myFindings.closeImageViewer")}
           >
             ×
@@ -549,18 +578,7 @@ export const MyFindingsDetail: React.FC<{
               <button
                 type="button"
                 className="my-findings__detail-lightbox-nav my-findings__detail-lightbox-nav--prev"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setActiveImageIndex((currentIndex) => {
-                    if (currentIndex == null) {
-                      return imageUrls.length - 1;
-                    }
-
-                    return (
-                      (currentIndex - 1 + imageUrls.length) % imageUrls.length
-                    );
-                  });
-                }}
+                onClick={handleLightboxPrev}
                 aria-label={t("myFindings.previousImage")}
               >
                 ‹
@@ -568,16 +586,7 @@ export const MyFindingsDetail: React.FC<{
               <button
                 type="button"
                 className="my-findings__detail-lightbox-nav my-findings__detail-lightbox-nav--next"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  setActiveImageIndex((currentIndex) => {
-                    if (currentIndex == null) {
-                      return 0;
-                    }
-
-                    return (currentIndex + 1) % imageUrls.length;
-                  });
-                }}
+                onClick={handleLightboxNext}
                 aria-label={t("myFindings.nextImage")}
               >
                 ›
@@ -587,7 +596,7 @@ export const MyFindingsDetail: React.FC<{
 
           <div
             className="my-findings__detail-lightbox-stage"
-            onClick={(event) => event.stopPropagation()}
+            onClick={handleLightboxStopPropagation}
           >
             <img
               className="my-findings__detail-lightbox-image"

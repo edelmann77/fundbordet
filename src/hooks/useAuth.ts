@@ -9,7 +9,7 @@ supabase.auth.onAuthStateChange((_event, session) => {
   validatedUserPromise = null;
 });
 
-export async function getSessionUser(): Promise<User | null> {
+export const getSessionUser = async (): Promise<User | null> => {
   const {
     data: { session },
     error,
@@ -20,9 +20,9 @@ export async function getSessionUser(): Promise<User | null> {
   }
 
   return session?.user ?? null;
-}
+};
 
-export async function requireSessionUser(): Promise<User> {
+export const requireSessionUser = async (): Promise<User> => {
   const user = await getSessionUser();
 
   if (!user) {
@@ -30,9 +30,9 @@ export async function requireSessionUser(): Promise<User> {
   }
 
   return user;
-}
+};
 
-export async function getValidatedUser(): Promise<User | null> {
+export const getValidatedUser = async (): Promise<User | null> => {
   const sessionUser = await getSessionUser();
 
   if (!sessionUser) {
@@ -62,12 +62,12 @@ export async function getValidatedUser(): Promise<User | null> {
   }
 
   return validatedUserPromise;
-}
+};
 
-export function useAuth() {
+export const useAuth = () => {
   return {
     getSessionUser,
     requireSessionUser,
     getValidatedUser,
   };
-}
+};

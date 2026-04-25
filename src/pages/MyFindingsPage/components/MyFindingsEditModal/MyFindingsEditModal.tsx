@@ -102,6 +102,20 @@ export const MyFindingsEditModal: React.FC<{
     event.target.value = "";
   };
 
+  const handleGenstandChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    onEditChange("genstand", event.target.value);
+  const handleMaterialeChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    onEditChange("materiale", event.target.value);
+  const handleDateringChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    onEditChange("datering", event.target.value);
+  const handleDimeIdChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    onEditChange("dime_id", event.target.value);
+  const handleOestChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    onEditChange("oest", event.target.value);
+  const handleNordChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    onEditChange("nord", event.target.value);
+  const handleClearImages = () => onImagesChange([]);
+
   return (
     <div className="my-findings__modal" role="dialog" aria-modal="true">
       <div className="my-findings__modal-backdrop" onClick={onCancel} />
@@ -142,33 +156,25 @@ export const MyFindingsEditModal: React.FC<{
                     <TextInput
                       label={t("registerFinding.genstand")}
                       value={editValues.genstand || ""}
-                      onChange={(event) =>
-                        onEditChange("genstand", event.target.value)
-                      }
+                      onChange={handleGenstandChange}
                       size="md"
                     />
                     <TextInput
                       label={t("registerFinding.materiale")}
                       value={editValues.materiale || ""}
-                      onChange={(event) =>
-                        onEditChange("materiale", event.target.value)
-                      }
+                      onChange={handleMaterialeChange}
                       size="md"
                     />
                     <TextInput
                       label={t("registerFinding.datering")}
                       value={editValues.datering || ""}
-                      onChange={(event) =>
-                        onEditChange("datering", event.target.value)
-                      }
+                      onChange={handleDateringChange}
                       size="md"
                     />
                     <TextInput
                       label={t("registerFinding.dimeId")}
                       value={editValues.dime_id || ""}
-                      onChange={(event) =>
-                        onEditChange("dime_id", event.target.value)
-                      }
+                      onChange={handleDimeIdChange}
                       size="md"
                     />
                   </div>
@@ -190,17 +196,13 @@ export const MyFindingsEditModal: React.FC<{
                     <TextInput
                       label={t("registerFinding.oest")}
                       value={editValues.oest?.toString() || ""}
-                      onChange={(event) =>
-                        onEditChange("oest", event.target.value)
-                      }
+                      onChange={handleOestChange}
                       size="md"
                     />
                     <TextInput
                       label={t("registerFinding.nord")}
                       value={editValues.nord?.toString() || ""}
-                      onChange={(event) =>
-                        onEditChange("nord", event.target.value)
-                      }
+                      onChange={handleNordChange}
                       size="md"
                     />
                   </div>
@@ -235,7 +237,7 @@ export const MyFindingsEditModal: React.FC<{
                       <button
                         type="button"
                         className="my-findings__modal-link-button"
-                        onClick={() => onImagesChange([])}
+                        onClick={handleClearImages}
                       >
                         {t("myFindings.clearImages")}
                       </button>

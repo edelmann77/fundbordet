@@ -60,7 +60,10 @@ interface MentionNotificationRow {
   created_at: string;
 }
 
-function mapRowToFriend(row: FriendRow, currentUserId: string): FriendRecord {
+const mapRowToFriend = (
+  row: FriendRow,
+  currentUserId: string,
+): FriendRecord => {
   return {
     id: row.id,
     inviter: row.inviter,
@@ -73,15 +76,15 @@ function mapRowToFriend(row: FriendRow, currentUserId: string): FriendRecord {
     isIncoming: row.invitee === currentUserId,
     createdAt: row.created_at,
   };
-}
+};
 
-async function getCurrentUserId(): Promise<string> {
+const getCurrentUserId = async (): Promise<string> => {
   const user = await requireSessionUser();
 
   return user.id;
-}
+};
 
-export async function listCurrentUserFriends(): Promise<FriendRecord[]> {
+export const listCurrentUserFriends = async (): Promise<FriendRecord[]> => {
   const currentUserId = await getCurrentUserId();
 
   const { data, error } = await supabase.rpc("get_my_friends");
@@ -93,15 +96,17 @@ export async function listCurrentUserFriends(): Promise<FriendRecord[]> {
   return ((data ?? []) as FriendRow[]).map((row) =>
     mapRowToFriend(row, currentUserId),
   );
-}
+};
 
-export async function listConfirmedFriends(): Promise<FriendRecord[]> {
+export const listConfirmedFriends = async (): Promise<FriendRecord[]> => {
   const friends = await listCurrentUserFriends();
 
   return friends.filter((friend) => friend.status === CONFIRMED_FRIEND_STATUS);
-}
+};
 
-export async function listPendingFriendRequests(): Promise<AppNotification[]> {
+export const listPendingFriendRequests = async (): Promise<
+  AppNotification[]
+> => {
   const friends = await listCurrentUserFriends();
 
   return friends
@@ -115,11 +120,11 @@ export async function listPendingFriendRequests(): Promise<AppNotification[]> {
       friendId: friend.id,
       senderEmail: friend.email,
     }));
-}
+};
 
-export async function listCommentMentionNotifications(): Promise<
+export const listCommentMentionNotifications = async (): Promise<
   AppNotification[]
-> {
+> => {
   const currentUserId = await getCurrentUserId();
 
   const { data, error } = await supabase
@@ -168,9 +173,9 @@ export async function listCommentMentionNotifications(): Promise<
       findingId: mention.finding_id,
       commentId: mention.comment_id,
     }));
-}
+};
 
-export async function listAppNotifications(): Promise<AppNotification[]> {
+export const listAppNotifications = async (): Promise<AppNotification[]> => {
   const [friendRequests, mentionNotifications] = await Promise.all([
     listPendingFriendRequests(),
     listCommentMentionNotifications(),
@@ -180,9 +185,9 @@ export async function listAppNotifications(): Promise<AppNotification[]> {
     (left, right) =>
       new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime(),
   );
-}
+};
 
-export async function addFriend(inviteeUserId: string): Promise<void> {
+export const addFriend = async (inviteeUserId: string): Promise<void> => {
   const inviterUserId = await getCurrentUserId();
 
   if (inviterUserId === inviteeUserId) {
@@ -204,9 +209,9 @@ export async function addFriend(inviteeUserId: string): Promise<void> {
   }
 
   throw error;
-}
+};
 
-export async function confirmFriend(friendId: string): Promise<void> {
+export const confirmFriend = async (friendId: string): Promise<void> => {
   const { error } = await supabase
     .from("friends")
     .update({ status: CONFIRMED_FRIEND_STATUS })
@@ -215,15 +220,15 @@ export async function confirmFriend(friendId: string): Promise<void> {
   if (error) {
     throw error;
   }
-}
+};
 
-export async function deleteFriend(friendId: string): Promise<void> {
+export const deleteFriend = async (friendId: string): Promise<void> => {
   const { error } = await supabase.from("friends").delete().eq("id", friendId);
 
   if (error) {
     throw error;
   }
-}
+};
 
 export const useFriendSearch = (): {
   findFriendByEmail: (email: string) => Promise<FriendLookupResult | null>;

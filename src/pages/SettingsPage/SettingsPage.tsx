@@ -86,6 +86,11 @@ export const SettingsPage: React.FC = () => {
     }
   };
 
+  const handleFirstNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setFirstName(event.target.value);
+  const handleLastNameChange = (event: React.ChangeEvent<HTMLInputElement>) =>
+    setLastName(event.target.value);
+
   return (
     <div className="settings-page">
       <Breadcrumb
@@ -141,7 +146,7 @@ export const SettingsPage: React.FC = () => {
                 <TextInput
                   label={t("settingsPage.firstName")}
                   value={firstName}
-                  onChange={(event) => setFirstName(event.target.value)}
+                  onChange={handleFirstNameChange}
                   autoComplete="given-name"
                   size="md"
                   disabled={saving}
@@ -149,7 +154,7 @@ export const SettingsPage: React.FC = () => {
                 <TextInput
                   label={t("settingsPage.lastName")}
                   value={lastName}
-                  onChange={(event) => setLastName(event.target.value)}
+                  onChange={handleLastNameChange}
                   autoComplete="family-name"
                   size="md"
                   disabled={saving}

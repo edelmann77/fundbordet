@@ -194,6 +194,13 @@ export const ImportFindingForm: React.FC<{
 
   const withCoords = rows.filter((r) => r.lng !== undefined);
 
+  const handleDropzoneClick = () => inputRef.current?.click();
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    setDragging(true);
+  };
+  const handleDragLeave = () => setDragging(false);
+
   return (
     <div className="import-finding-form">
       <div className="import-finding-form__body">
@@ -226,12 +233,9 @@ export const ImportFindingForm: React.FC<{
                 "import-finding-form__dropzone",
                 dragging ? "import-finding-form__dropzone--dragging" : "",
               ].join(" ")}
-              onClick={() => inputRef.current?.click()}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setDragging(true);
-              }}
-              onDragLeave={() => setDragging(false)}
+              onClick={handleDropzoneClick}
+              onDragOver={handleDragOver}
+              onDragLeave={handleDragLeave}
               onDrop={handleDrop}
             >
               {t("importFinding.dropzone")}

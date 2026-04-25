@@ -35,15 +35,8 @@ export const LandingPage: React.FC = () => {
         items={[{ label: t("breadcrumb.home"), current: true }]}
       />
       <main className="landing-page__main">
-        <h1 className="landing-page__title">
-          {t("landing.title", "Welcome to Hobbybordet")}
-        </h1>
-        <p className="landing-page__info">
-          {t(
-            "landing.info",
-            "This page will provide information about the site. Text will be added later.",
-          )}
-        </p>
+        <h1 className="landing-page__title">{t("landing.title")}</h1>
+        <p className="landing-page__info">{t("landing.info")}</p>
       </main>
     </div>
   );

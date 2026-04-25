@@ -39,6 +39,9 @@ export const HomePage: React.FC = () => {
   const [createOpen, setCreateOpen] = useState(false);
   const heatData = useAllFindingsHeatmap();
 
+  const handleOpenCreate = () => setCreateOpen(true);
+  const handleCloseCreate = () => setCreateOpen(false);
+
   return (
     <div className="home-page">
       <header className="home-page__header">
@@ -58,7 +61,7 @@ export const HomePage: React.FC = () => {
         <div className="home-page__main-content">
           <div className="home-page__nav">
             <button
-              onClick={() => setCreateOpen(true)}
+              onClick={handleOpenCreate}
               className="home-page__card home-page__card--primary"
             >
               <p className="home-page__card-title">{t("home.createFinding")}</p>
@@ -162,7 +165,7 @@ export const HomePage: React.FC = () => {
 
       <Modal
         open={createOpen}
-        onClose={() => setCreateOpen(false)}
+        onClose={handleCloseCreate}
         size="full"
         className="home-page__modal"
         hideCloseButton
@@ -179,8 +182,8 @@ export const HomePage: React.FC = () => {
               children: (
                 <RegisterFindingForm
                   key={String(createOpen)}
-                  onCancel={() => setCreateOpen(false)}
-                  onSubmit={() => setCreateOpen(false)}
+                  onCancel={handleCloseCreate}
+                  onSubmit={handleCloseCreate}
                 />
               ),
             },
@@ -189,8 +192,8 @@ export const HomePage: React.FC = () => {
               label: t("home.tabs.import"),
               children: (
                 <ImportFindingForm
-                  onCancel={() => setCreateOpen(false)}
-                  onSubmit={() => setCreateOpen(false)}
+                  onCancel={handleCloseCreate}
+                  onSubmit={handleCloseCreate}
                 />
               ),
             },

@@ -59,42 +59,42 @@ export const PLACE_MARKER_ZOOM = 14;
 
 export type FindingWithCoordinates = Finding & { lng: number; lat: number };
 
-export function utmToWGS84(
+export const utmToWGS84 = (
   easting: number,
   northing: number,
-): [number, number] {
+): [number, number] => {
   const [lng, lat] = proj4(UTM32N, WGS84, [easting, northing]);
   return [lng, lat];
-}
+};
 
-export function wgs84ToUTM(
+export const wgs84ToUTM = (
   lng: number,
   lat: number,
-): { easting: number; northing: number } {
+): { easting: number; northing: number } => {
   const [easting, northing] = proj4(WGS84, UTM32N, [lng, lat]);
   return { easting: Math.round(easting), northing: Math.round(northing) };
-}
+};
 
-export function isValidUTM(easting: number, northing: number): boolean {
+export const isValidUTM = (easting: number, northing: number): boolean => {
   return (
     easting >= 400000 &&
     easting <= 900000 &&
     northing >= 6000000 &&
     northing <= 6800000
   );
-}
+};
 
-export function formatDate(iso: string): string {
+export const formatDate = (iso: string): string => {
   return new Date(iso).toLocaleDateString(undefined, {
     day: "numeric",
     month: "short",
     year: "numeric",
   });
-}
+};
 
-export function getFindingWithCoordinates(
+export const getFindingWithCoordinates = (
   finding?: Finding | null,
-): FindingWithCoordinates | undefined {
+): FindingWithCoordinates | undefined => {
   if (
     !finding ||
     finding.oest == null ||
@@ -106,11 +106,11 @@ export function getFindingWithCoordinates(
 
   const [lng, lat] = utmToWGS84(Number(finding.oest), Number(finding.nord));
   return { ...finding, lng, lat };
-}
+};
 
-export function getFindingsWithCoordinates(
+export const getFindingsWithCoordinates = (
   findings: Finding[],
-): FindingWithCoordinates[] {
+): FindingWithCoordinates[] => {
   return findings
     .filter((finding) => finding.oest != null && finding.nord != null)
     .filter(
@@ -123,15 +123,15 @@ export function getFindingsWithCoordinates(
       const [lng, lat] = utmToWGS84(Number(finding.oest), Number(finding.nord));
       return { ...finding, lng, lat };
     });
-}
+};
 
-export function calculateMapBounds(
+export const calculateMapBounds = (
   findings: FindingWithCoordinates[],
   selected?: FindingWithCoordinates,
 ): {
   center: [number, number];
   zoom: number;
-} {
+} => {
   if (selected) {
     return { center: [selected.lng, selected.lat], zoom: 14 };
   }
@@ -152,4 +152,4 @@ export function calculateMapBounds(
     center: [(minLng + maxLng) / 2, (minLat + maxLat) / 2],
     zoom: 6,
   };
-}
+};

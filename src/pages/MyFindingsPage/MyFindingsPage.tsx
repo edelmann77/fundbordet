@@ -113,6 +113,29 @@ export const MyFindingsPage: React.FC = () => {
     }
   };
 
+  const handleStartEditing = () => {
+    setSelectedImages([]);
+    setIsEditing(true);
+  };
+
+  const handleShareChange = async (nextSharedFriendIds: string[]) => {
+    if (!selectedFinding || selectedFinding.accessLevel !== "owner") {
+      return;
+    }
+
+    try {
+      setSharingSaving(true);
+      setShareError(null);
+      await updateFindingShares(selectedFinding.id, nextSharedFriendIds);
+      setSharedFriendIds(nextSharedFriendIds);
+    } catch (error) {
+      setShareError(t("myFindings.shareSaveFailed"));
+      throw error;
+    } finally {
+      setSharingSaving(false);
+    }
+  };
+
   const handleImagesChange = useCallback((images: File[]) => {
     setSelectedImages(images);
   }, []);
@@ -379,32 +402,10 @@ export const MyFindingsPage: React.FC = () => {
             sharesLoading={sharingLoading}
             sharesSaving={sharingSaving}
             selectedImages={selectedImages}
-            onStartEditing={() => {
-              setSelectedImages([]);
-              setIsEditing(true);
-            }}
+            onStartEditing={handleStartEditing}
             onCancel={handleCancel}
             onSave={handleSave}
-            onShareChange={async (nextSharedFriendIds) => {
-              if (!selectedFinding || selectedFinding.accessLevel !== "owner") {
-                return;
-              }
-
-              try {
-                setSharingSaving(true);
-                setShareError(null);
-                await updateFindingShares(
-                  selectedFinding.id,
-                  nextSharedFriendIds,
-                );
-                setSharedFriendIds(nextSharedFriendIds);
-              } catch (error) {
-                setShareError(t("myFindings.shareSaveFailed"));
-                throw error;
-              } finally {
-                setSharingSaving(false);
-              }
-            }}
+            onShareChange={handleShareChange}
             onEditChange={handleEditChange}
             onImagesChange={handleImagesChange}
             onMapClick={handleMapClick}
