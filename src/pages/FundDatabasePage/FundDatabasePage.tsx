@@ -113,7 +113,7 @@ export const FundDatabasePage: React.FC = () => {
     />
   );
 
-  const handleToggleComments = (findingId: string) =>
+  const handleToggleComments = (findingId: string) => () =>
     setExpandedFindingId((currentId) =>
       currentId === findingId ? null : findingId,
     );
@@ -320,7 +320,7 @@ export const FundDatabasePage: React.FC = () => {
                     <button
                       type="button"
                       className="fund-database__comments-toggle"
-                      onClick={() => handleToggleComments(finding.id)}
+                      onClick={handleToggleComments(finding.id)}
                     >
                       {isCommentsOpen ? t("comments.hide") : t("comments.show")}
                     </button>

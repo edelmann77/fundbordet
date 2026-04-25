@@ -34,7 +34,7 @@ export const LanguageMenu: React.FC = () => {
     languages[0];
 
   const handleToggle = () => setOpen((currentOpen) => !currentOpen);
-  const handleLanguageSelect = (value: Language) => {
+  const handleLanguageSelect = (value: Language) => () => {
     i18n.changeLanguage(value);
     setOpen(false);
   };
@@ -57,7 +57,7 @@ export const LanguageMenu: React.FC = () => {
             <button
               key={language.value}
               type="button"
-              onClick={() => handleLanguageSelect(language.value)}
+              onClick={handleLanguageSelect(language.value)}
               className={[
                 "language-menu__option",
                 i18n.language === language.value

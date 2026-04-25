@@ -22,11 +22,11 @@ All css style should be placed in a separate css-file. Do not use inline styling
 
 # Function declaration
 
-Dont use the keyword 'function'. Instead, use arrow function notation.
+Don't use the keyword 'function'. Instead, use arrow function notation.
 
 # Function usage
 
-Dont create functions in jsx. Instead, create them before jsx is returned and assign them to a variable.
+Don't create functions in jsx. Instead, create them before jsx is returned and assign them to a variable.
 
 # Self assessment
 
