@@ -8,7 +8,7 @@ All React component should be placed in a new folder, called the component name,
 
 # Component naming
 
-All React component should be created like below. If props, specify them directly in the generic argument instead of creating a separate type. Always destructure props.
+All React components should be created like below. If props, specify them directly in the generic argument instead of creating a separate type. Always destructure props.
 
 ```ts
 export const ComponentName: React.FC<{example:string}> = ({example}) => {
@@ -22,12 +22,12 @@ All css style should be placed in a separate css-file. Do not use inline styling
 
 # Function declaration
 
-Dont use the keyword 'function'. Instead, use lambda function notation.
+Dont use the keyword 'function'. Instead, use arrow function notation.
 
 # Function usage
 
 Dont create functions in jsx. Instead, create them before jsx is returned and assign them to a variable.
 
-# Self assesment
+# Self assessment
 
 After every change, give me a % confidence that your fix actually solves the issue, and a short explanation why.

@@ -106,11 +106,6 @@
   height: 100%;
 }
 
-.import-finding-form__map-fill {
-  width: 100%;
-  height: 100%;
-}
-
 .import-finding-form__actions {
   display: flex;
   gap: 1.5rem;

@@ -146,8 +146,7 @@
   height: 60vh;
 }
 
-.home-page__map-canvas,
-.home-page__map-fill {
+.home-page__map-canvas {
   width: 100%;
   height: 100%;
 }
