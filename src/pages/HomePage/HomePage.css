@@ -52,6 +52,13 @@
 
 .home-page__main {
   flex: 1 1 0%;
+  display: flex;
+  flex-direction: row;
+  overflow: hidden;
+}
+
+.home-page__map-wrapper {
+  flex: 1 1 0%;
   position: relative;
   overflow: hidden;
 }
@@ -127,6 +134,29 @@
   flex-direction: column;
   gap: 0.25rem;
   min-width: 10rem;
+}
+
+.home-page__popup-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.home-page__popup-close {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-size: 0.75rem;
+  color: var(--color-ink-muted);
+  line-height: 1;
+  flex-shrink: 0;
+  transition: color 150ms;
+}
+
+.home-page__popup-close:hover {
+  color: var(--color-ink);
 }
 
 .home-page__popup-title {

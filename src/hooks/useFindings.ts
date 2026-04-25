@@ -850,7 +850,7 @@ export const useAllFindingsHeatmap = () => {
     // load all findings coordinates for heatmap
     supabase
       .from("findings")
-      .select("id,easting,northing,written_name,dating")
+      .select("id,easting,northing,written_name,dating,material,dime_id")
       .not("easting", "is", null)
       .not("northing", "is", null)
       .then(({ data, error }) => {
@@ -868,6 +868,8 @@ export const useAllFindingsHeatmap = () => {
                   id: row.id as string,
                   genstand: row.written_name as string | null,
                   datering: row.dating as string | null,
+                  materiale: row.material as string | null,
+                  dime_id: row.dime_id as string | null,
                 },
               };
             })

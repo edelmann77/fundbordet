@@ -95,7 +95,10 @@
     "mapTitle": "Find distribution"
   },
   "finding": {
-    "unknownType": "Unknown object"
+    "unknownType": "Unknown object",
+    "drawer": {
+      "close": "Close"
+    }
   },
   "registerFinding": {
     "genstand": "Object",

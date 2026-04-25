@@ -95,7 +95,10 @@
     "mapTitle": "Fundspredning"
   },
   "finding": {
-    "unknownType": "Ukendt genstand"
+    "unknownType": "Ukendt genstand",
+    "drawer": {
+      "close": "Luk"
+    }
   },
   "registerFinding": {
     "genstand": "Genstand",
