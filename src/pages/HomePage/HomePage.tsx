@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { Breadcrumb, Modal, Tabs } from "fundbrdet-ui";
+import { Modal, Tabs } from "fundbrdet-ui";
 import RegisterFindingForm from "../../components/RegisterFindingForm/RegisterFindingForm";
 import ImportFindingForm from "../../components/ImportFindingForm/ImportFindingForm";
 import AccountMenu from "../../components/AccountMenu/AccountMenu";
@@ -46,6 +46,17 @@ export const HomePage: React.FC = () => {
     <div className="home-page">
       <header className="home-page__header">
         <span className="home-page__header-icon">🪙</span>
+        <nav className="home-page__header-nav">
+          <Link to={routes.myFindings} className="home-page__header-nav-link">
+            {t("home.myFindings")}
+          </Link>
+          <Link to={routes.sharedFindings} className="home-page__header-nav-link">
+            {t("home.sharedFindings")}
+          </Link>
+          <Link to={routes.fundDatabase} className="home-page__header-nav-link">
+            {t("home.fundDatabase")}
+          </Link>
+        </nav>
         <div className="home-page__header-actions">
           <LanguageMenu />
           <NotificationsMenu />
@@ -54,113 +65,58 @@ export const HomePage: React.FC = () => {
       </header>
 
       <main className="home-page__main">
-        <Breadcrumb
-          className="page-breadcrumb"
-          items={[{ label: t("breadcrumb.home"), current: true }]}
-        />
-        <div className="home-page__main-content">
-          <div className="home-page__nav">
-            <button
-              onClick={handleOpenCreate}
-              className="home-page__card home-page__card--primary"
-            >
-              <p className="home-page__card-title">{t("home.createFinding")}</p>
-              <p className="home-page__card-desc">
-                {t("home.createFindingDesc")}
-              </p>
-            </button>
+        <Map
+          initialViewState={{
+            bounds: [8.0, 54.5, 15.2, 57.8],
+            fitBoundsOptions: { padding: 40 },
+          }}
+          style={{ width: "100%", height: "100%" }}
+          mapStyle={SATELLITE_STYLE}
+          interactive
+        >
+          {heatData && (
+            <>
+              <Source id="heat" type="geojson" data={heatData} />
+              <Layer
+                id="heatLayer"
+                type="heatmap"
+                source="heat"
+                paint={{
+                  "heatmap-weight": 1,
+                  "heatmap-intensity": 1,
+                  "heatmap-color": [
+                    "interpolate",
+                    ["linear"],
+                    ["heatmap-density"],
+                    0,
+                    "rgba(33,102,172,0)",
+                    0.2,
+                    "rgb(103,169,207)",
+                    0.4,
+                    "rgb(209,229,240)",
+                    0.6,
+                    "rgb(253,219,199)",
+                    0.8,
+                    "rgb(239,138,98)",
+                    1,
+                    "rgb(178,24,43)",
+                  ],
+                  "heatmap-radius": 20,
+                  "heatmap-opacity": 0.6,
+                }}
+              />
+            </>
+          )}
+        </Map>
 
-            <div className="home-page__nav-cards">
-              <Link
-                to={routes.myFindings}
-                className="home-page__card home-page__card--link"
-              >
-                <p className="home-page__card-title">{t("home.myFindings")}</p>
-                <p className="home-page__card-desc">
-                  {t("home.myFindingsDesc")}
-                </p>
-              </Link>
-
-              <Link
-                to={routes.sharedFindings}
-                className="home-page__card home-page__card--link"
-              >
-                <p className="home-page__card-title">
-                  {t("home.sharedFindings")}
-                </p>
-                <p className="home-page__card-desc">
-                  {t("home.sharedFindingsDesc")}
-                </p>
-              </Link>
-
-              <Link
-                to={routes.fundDatabase}
-                className="home-page__card home-page__card--link home-page__card--wide"
-              >
-                <p className="home-page__card-title">
-                  {t("home.fundDatabase")}
-                </p>
-                <p className="home-page__card-desc">
-                  {t("home.fundDatabaseDesc")}
-                </p>
-              </Link>
-            </div>
-          </div>
-
-          <div className="home-page__map-section">
-            <div className="home-page__map-container">
-              <h2 className="home-page__map-title">{t("home.mapTitle")}</h2>
-              <div className="home-page__map">
-                <div className="home-page__map-canvas">
-                  <Map
-                    initialViewState={{
-                      longitude: 11.5,
-                      latitude: 56.2,
-                      zoom: 6,
-                    }}
-                    style={{ width: "100%", height: "100%" }}
-                    mapStyle={SATELLITE_STYLE}
-                    interactive={false}
-                  >
-                    {heatData && (
-                      <>
-                        <Source id="heat" type="geojson" data={heatData} />
-                        <Layer
-                          id="heatLayer"
-                          type="heatmap"
-                          source="heat"
-                          paint={{
-                            "heatmap-weight": 1,
-                            "heatmap-intensity": 1,
-                            "heatmap-color": [
-                              "interpolate",
-                              ["linear"],
-                              ["heatmap-density"],
-                              0,
-                              "rgba(33,102,172,0)",
-                              0.2,
-                              "rgb(103,169,207)",
-                              0.4,
-                              "rgb(209,229,240)",
-                              0.6,
-                              "rgb(253,219,199)",
-                              0.8,
-                              "rgb(239,138,98)",
-                              1,
-                              "rgb(178,24,43)",
-                            ],
-                            "heatmap-radius": 20,
-                            "heatmap-opacity": 0.6,
-                          }}
-                        />
-                      </>
-                    )}
-                  </Map>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <button
+          onClick={handleOpenCreate}
+          className="home-page__fab"
+          aria-label={t("home.createFinding")}
+        >
+          <span className="home-page__fab-icon">+</span>
+          {t("home.createFinding")}
+        </button>
       </main>
 
       <Modal
